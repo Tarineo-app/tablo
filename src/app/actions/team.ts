@@ -24,6 +24,8 @@ async function appOrigin() {
 }
 
 /** Envoie l'invitation par email si Resend est configuré. Sinon, le lien est affiché pour être copié. */
+const esc = (v: string) => v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
 async function sendInviteEmail(to: string, venueName: string, role: Role, link: string) {
   const key = process.env.RESEND_API_KEY;
   if (!key) return false;
@@ -33,7 +35,7 @@ async function sendInviteEmail(to: string, venueName: string, role: Role, link: 
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from, to, subject: `${venueName} vous invite sur Tablo`,
-      html: `<p>Bonjour,</p><p>${venueName} vous invite à rejoindre son espace Tablo en tant que <b>${ROLE_LABEL[role]}</b>.</p><p><a href="${link}">Activer mon compte</a> (lien valable 7 jours)</p>`,
+      html: `<p>Bonjour,</p><p>${esc(venueName)} vous invite à rejoindre son espace Tablo en tant que <b>${esc(ROLE_LABEL[role])}</b>.</p><p><a href="${esc(link)}">Activer mon compte</a> (lien valable 7 jours)</p>`,
     }),
   }).catch(() => null);
   return !!r?.ok;

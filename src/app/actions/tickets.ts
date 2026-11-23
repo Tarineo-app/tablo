@@ -6,6 +6,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { MANAGE, requireMembership } from "@/lib/auth";
 import { toCents } from "@/lib/money";
+import { rateLimit } from "@/lib/ratelimit";
 import { SOLD, fmtTime, tierDeadline, tierLabel } from "@/lib/tickets";
 import type { ActionState } from "./club";
 
@@ -88,6 +89,8 @@ export async function buyTickets(raw: z.infer<typeof BuySchema>): Promise<{ erro
   const p = BuySchema.safeParse(raw);
   if (!p.success) return { error: p.error.issues[0].message };
   const d = p.data;
+  const tooMany = await rateLimit("billets", d.slug, 15, 10 * 60e3);
+  if (tooMany) return { error: tooMany };
   const venue = await db.venue.findUnique({ where: { slug: d.slug } });
   if (!venue) return { error: "Établissement introuvable." };
   const tier = await db.ticketTier.findFirst({ where: { id: d.tierId, eventId: d.eventId, active: true, event: { venueId: venue.id, isOpen: true } }, include: { event: true } });
@@ -150,6 +153,9 @@ export async function lookupCode(code: string): Promise<DoorResult> {
   const { venue } = await requireMembership();
   const c = code.trim();
   if (c.length < 6) return { error: "Code trop court." };
+  // Freine une recherche de codes au hasard depuis un compte compromis.
+  const tooMany = await rateLimit("porte", venue.id, 120, 60e3);
+  if (tooMany) return { error: tooMany };
   const t = await db.ticket.findFirst({ where: { venueId: venue.id, qrToken: { in: [c, c.toUpperCase()] } }, include: { tier: true, event: true } });
   if (t) {
     const warnings: string[] = [];

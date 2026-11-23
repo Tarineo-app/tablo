@@ -13,7 +13,9 @@ function key() {
 
 export async function createSession(userId: string) {
   const expires = new Date(Date.now() + DAYS * 864e5);
-  const token = await new SignJWT({ userId }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime(expires).sign(key());
+  // `purpose` empêche qu'un autre jeton signé avec la même clé (invitation, cagnotte…)
+  // soit accepté comme cookie de session.
+  const token = await new SignJWT({ userId, purpose: "session" }).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime(expires).sign(key());
   (await cookies()).set(COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", expires });
 }
 
@@ -22,7 +24,8 @@ export async function readSession(): Promise<{ userId: string } | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, key(), { algorithms: ["HS256"] });
-    return typeof payload.userId === "string" ? { userId: payload.userId } : null;
+    if (payload.purpose !== "session" || typeof payload.userId !== "string") return null;
+    return { userId: payload.userId };
   } catch {
     return null;
   }

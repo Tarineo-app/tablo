@@ -17,7 +17,7 @@ et donne toujours la commande exacte à lancer.
 ## Stack (identique à Tarineo)
 - Next.js 16 (App Router) + TypeScript + Tailwind 4, déployé sur Vercel. Lire `AGENTS.md` : cette version de Next.js a des changements, sa documentation est dans `node_modules/next/dist/docs/`.
 - PostgreSQL sur Supabase (région Frankfurt, RGPD) + Prisma. Supabase Storage pour les photos (bucket privé, chemins préfixés par `venueId`).
-- Sessions maison (jose + bcrypt, cookie httpOnly, voir `src/lib/session.ts`) pour l'espace club ; Google pourra être ajouté plus tard. Les clients finaux réservent **sans compte** (email + téléphone).
+- Sessions maison (jose + bcrypt, cookie httpOnly, voir `src/lib/session.ts`) pour l'espace club, **plus OAuth Google maison** (`src/app/auth/google/`). Les clients finaux réservent **sans compte** (email + téléphone).
 - Prisma **7** avec le générateur `prisma-client` (client généré dans `src/generated/prisma`, ignoré par git) et l'adaptateur `@prisma/adapter-pg`. Les URLs de connexion sont dans `prisma.config.ts`, plus dans `schema.prisma`.
 - Stripe :
   - **Stripe Billing** pour l'abonnement du club à Tablo.
@@ -52,16 +52,35 @@ Plan 3D (le MVP utilise un plan 2D), bouteilles 3D, shows générés par IA, dé
 fidélité et classement, objectifs par soirée, tarifs par soirée avancés, vues 360°.
 
 ## Où en est le code
-Fait (étapes 0 à 3 de docs/PROMPTS.md) :
-- Inscription, connexion, création de l'établissement (club ou beach club), garde `requireMembership()` dans `src/lib/auth.ts`.
-- Espace club `/app` : tableau de bord avec la mise en route, ambiance et marque (6 ambiances + tout réglable, aperçu en direct),
-  catégories (acompte %, shows inclus, minimum), éditeur de plan 2D (image + carrés déplaçables), bouteilles (3 formats, stock, goûts),
-  shows et pancarte (catégories où ils peuvent être offerts), soirées, page Intégrer (script, lien, QR), liste des réservations.
-- Widget public `/w/[slug]` : soirée → carré → bouteilles → pancarte et shows → coordonnées et mode de paiement → confirmation avec QR.
-  Tous les montants sont recalculés côté serveur (`src/app/actions/reserve.ts`). Règle des shows offerts : `src/lib/pricing.ts`.
-- `/embed.js` : bouton flottant + iframe, aux couleurs du club. Lien manager : `/w/[slug]?m=CODE`.
-- Données de démo : `npm run db:seed` crée « Le Velours » (compte demo@tablo.club / tablo-demo).
 
-À faire ensuite : étape 4 (Stripe Connect : acompte et paiement complet), puis 5 (cagnotte), 6 (managers), 7 (app serveur), 8 (abonnement).
-Les réservations restent en statut DRAFT tant que le paiement n'est pas branché.
-Images : pour l'instant logo et plan sont stockés en data URL (léger, compressé) ; passer à Supabase Storage avec l'étape des photos.
+Fait :
+- **Comptes et équipe** : inscription, connexion email/mot de passe, **connexion Google** (`/auth/google`, actif seulement si `GOOGLE_CLIENT_ID` est défini),
+  garde `requireMembership(roles?)` dans `src/lib/auth.ts`. Page Équipe : invitation par **lien signé** (JWT 7 jours, `src/lib/invite.ts`, aucune table),
+  changement de rôle, commission du manager, retrait. Page publique `/invitation/[token]`.
+  Rôles appliqués partout : la configuration est réservée à OWNER/DIRECTOR, le manager voit ses ventes et son lien, serveur et barman vont sur `/app/service`.
+- **Espace club rangé par métier** (`src/components/SideNav.tsx`) :
+  - `/app` **Ce soir** : plan de la soirée en direct (libre / réservé / arrivé / absent), panneau latéral par carré, marquer arrivé ou absent,
+    **installer un client sans réservation** en deux clics (`src/app/actions/floor.ts`). Rafraîchissement automatique.
+  - `/app/ventes` : carrés et entrées, onglets, totaux. (`/app/reservations` redirige ici.)
+  - `/app/clients` : fichier clients **déduit des ventes** (`src/lib/clients.ts`), aucune saisie : venues, dépensé, bouteilles préférées, manager, occasions.
+  - `/app/stats` : CA par soirée, remplissage, panier moyen, ventes par manager, entrées par tarif, taux d'absence, délai de réservation.
+  - `/app/service` : envois de la soirée, « Je prends » / « Servi », rafraîchissement automatique, mobile d'abord.
+  - `/app/entree` : contrôle à la porte, scan QR (BarcodeDetector) ou code tapé, marche pour les billets **et** les carrés.
+  - Réglages : ambiance, catégories, plan 2D, bouteilles, shows, soirées et billetterie, intégration, informations du club (`/app/reglages`).
+- **Widget public** `/w/[slug]` : soirée → carré → bouteilles → pancarte et shows → coordonnées et paiement → confirmation avec QR.
+  Montants recalculés côté serveur (`src/app/actions/reserve.ts`), shows offerts dans `src/lib/pricing.ts`.
+- **Billetterie** `/w/[slug]/billets` : tarifs par soirée avec **heure limite d'arrivée** et consos incluses (`src/lib/tickets.ts`, `src/app/actions/tickets.ts`),
+  quota par tarif, billet `/w/[slug]/b/[token]` avec QR et code à 8 caractères. Côté club : `/app/soirees/[id]`.
+- `/embed.js` : panneau latéral (ou fenêtre avec `data-mode="modal"`), `data-page="billets"`, `data-tablo-open="billets"`, aux couleurs du club.
+- **Landing** `public/landing.html` servie sur « / » : démo jouable dans le haut de page (iframe `public/demo.html?embed=1`),
+  visite guidée en 5 chapitres pilotée par `postMessage` (`tour(n)` dans demo.html), personnalisation en direct (ambiance, couleur, boutons, lieu, carré/entrée),
+  polaroïds horodatés, maquette de l'espace club, problèmes résolus, calculateur de gain, billetterie, tarifs, FAQ.
+- Données de démo : `npm run db:seed` crée « Le Velours » (demo@tablo.club / tablo-demo) avec 4 tarifs d'entrée par soirée.
+
+À faire ensuite : **étape 4 (Stripe Connect : acompte et paiement complet)**, puis cagnotte `/c/[token]`, abonnement Stripe Billing,
+emails Resend (invitations et confirmations), photos sur Supabase Storage (aujourd'hui en data URL).
+Les réservations et les billets payants restent en « à payer » tant que Stripe n'est pas branché.
+
+### Migrations
+- `20261123115825_init`
+- `20261123130000_billetterie` (TicketTier, Ticket, enum TicketStatus) — à appliquer avec `npx prisma migrate deploy`.

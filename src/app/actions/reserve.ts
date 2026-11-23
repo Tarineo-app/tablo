@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { depositCents, priceShows } from "@/lib/pricing";
+import { rateLimit } from "@/lib/ratelimit";
 
 const Input = z.object({
   slug: z.string().min(1),
@@ -27,6 +28,8 @@ export async function createReservation(raw: z.infer<typeof Input>): Promise<Res
   const p = Input.safeParse(raw);
   if (!p.success) return { error: p.error.issues[0].message };
   const d = p.data;
+  const tooMany = await rateLimit("reserve", d.slug, 10, 10 * 60e3);
+  if (tooMany) return { error: tooMany };
 
   const venue = await db.venue.findUnique({ where: { slug: d.slug } });
   if (!venue) return { error: "Établissement introuvable." };

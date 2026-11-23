@@ -42,7 +42,7 @@ const WalkIn = z.object({
  * Le détail des bouteilles se fait ensuite, comme pour une réservation en ligne.
  */
 export async function createWalkIn(_: FloorState, form: FormData): Promise<FloorState> {
-  const { venue, membership } = await requireMembership();
+  const { venue, membership } = await requireMembership(["OWNER", "DIRECTOR", "MANAGER"]);
   const p = WalkIn.safeParse(Object.fromEntries(form));
   if (!p.success) return { error: p.error.issues[0].message };
   const d = p.data;
@@ -54,7 +54,7 @@ export async function createWalkIn(_: FloorState, form: FormData): Promise<Floor
   if (!event || !table) return { error: "Soirée ou carré introuvable." };
   if (d.guests > table.capacity) return { error: `Ce carré accueille ${table.capacity} personnes maximum.` };
 
-  const total = d.amount ? toCents(d.amount) : 0;
+  const total = Math.max(0, d.amount ? toCents(d.amount) : 0);
   try {
     await db.$transaction(async (tx) => {
       const taken = await tx.reservation.count({ where: { eventId: event.id, tableId: table.id, status: { notIn: ["CANCELLED", "NO_SHOW"] } } });
