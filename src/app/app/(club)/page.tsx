@@ -1,68 +1,88 @@
-import { yesterday } from "@/lib/dates";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isFloor } from "@/lib/roles";
-import ManagerHome from "./ManagerHome";
-import { saveVenueInfo } from "@/app/actions/club";
-import ActionForm from "@/components/ActionForm";
 import { requireMembership } from "@/lib/auth";
+import { tonight, yesterday } from "@/lib/dates";
 import { db } from "@/lib/db";
 import { eur } from "@/lib/money";
+import { isFloor } from "@/lib/roles";
+import ManagerHome from "./ManagerHome";
+import Tonight, { type FloorTable } from "./Tonight";
 
-export const metadata = { title: "Tableau de bord · Tablo" };
+export const metadata = { title: "Ce soir · Tablo" };
 
-export default async function Dashboard() {
+const jour = (d: Date) => d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
+
+export default async function Page() {
   const { venue, membership } = await requireMembership();
   if (isFloor(membership.role)) redirect("/app/service");
   if (membership.role === "MANAGER") return <ManagerHome membershipId={membership.id} code={membership.managerCode} pct={membership.commissionPct ?? 0} slug={venue.slug} />;
-  const [cats, tables, bottles, shows, events, resa] = await Promise.all([
-    db.tableCategory.count({ where: { venueId: venue.id } }),
-    db.venueTable.count({ where: { venueId: venue.id, active: true } }),
-    db.bottle.count({ where: { venueId: venue.id, active: true } }),
-    db.show.count({ where: { venueId: venue.id, active: true } }),
-    db.event.count({ where: { venueId: venue.id, isOpen: true, date: { gte: yesterday() } } }),
-    db.reservation.findMany({ where: { venueId: venue.id }, select: { totalCents: true, status: true } }),
+
+  const event = await db.event.findFirst({ where: { venueId: venue.id, date: tonight() }, orderBy: { date: "asc" } });
+
+  if (!event) {
+    const [next, tables, events] = await Promise.all([
+      db.event.findFirst({ where: { venueId: venue.id, date: { gte: yesterday() } }, orderBy: { date: "asc" }, include: { _count: { select: { reservations: true, tickets: true } } } }),
+      db.venueTable.count({ where: { venueId: venue.id, active: true } }),
+      db.event.count({ where: { venueId: venue.id, isOpen: true, date: { gte: yesterday() } } }),
+    ]);
+    return (
+      <>
+        <header>
+          <h1>Pas de soirée <span className="holo">ce soir</span></h1>
+          <p>{next ? <>Prochaine : <b style={{ color: "var(--text)", textTransform: "capitalize" }}>{jour(next.date)}</b>{next.name ? ` · ${next.name}` : ""}.</> : "Ajoutez une date dans Soirées et billetterie pour ouvrir les réservations."}</p>
+        </header>
+        <div className="grid3">
+          {next && <div className="card"><span className="mute">Carrés déjà réservés</span><div style={{ font: "800 30px Unbounded", marginTop: 6 }}>{next._count.reservations} / {tables}</div></div>}
+          {next && <div className="card"><span className="mute">Billets vendus</span><div style={{ font: "800 30px Unbounded", marginTop: 6 }}>{next._count.tickets}</div></div>}
+          <div className="card"><span className="mute">Soirées ouvertes</span><div style={{ font: "800 30px Unbounded", marginTop: 6 }}>{events}</div></div>
+        </div>
+        <section className="card" style={{ marginTop: 18 }}>
+          <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
+            <Link className="btn btn-main" href="/app/soirees">Soirées et billetterie</Link>
+            <Link className="btn btn-out" href="/app/ventes">Voir les ventes</Link>
+            <Link className="btn btn-out" href="/app/reglages">Réglages du club</Link>
+          </div>
+        </section>
+      </>
+    );
+  }
+
+  const [tables, resas, tickets] = await Promise.all([
+    db.venueTable.findMany({ where: { venueId: venue.id, active: true }, include: { category: true }, orderBy: { name: "asc" } }),
+    db.reservation.findMany({
+      where: { venueId: venue.id, eventId: event.id, status: { not: "CANCELLED" } },
+      include: { manager: { include: { user: { select: { name: true } } } }, _count: { select: { orders: true } } },
+    }),
+    db.ticket.aggregate({ where: { eventId: event.id, status: { not: "CANCELLED" } }, _sum: { quantity: true, checkedIn: true, totalCents: true } }),
   ]);
-  const steps: [string, string, boolean, string][] = [
-    ["Ambiance et marque", "/app/ambiance", !!venue.theme, "Logo, couleurs, polices du widget"],
-    ["Catégories de carré", "/app/categories", cats > 0, `${cats} catégorie(s)`],
-    ["Plan des carrés", "/app/plan", tables > 0, `${tables} carré(s) placé(s)`],
-    ["Bouteilles", "/app/bouteilles", bottles > 0, `${bottles} bouteille(s)`],
-    ["Shows et pancarte", "/app/shows", shows > 0, `${shows} show(s)`],
-    ["Soirées", "/app/soirees", events > 0, `${events} soirée(s) à venir`],
-    ["Intégrer le widget", "/app/integrer", tables > 0 && events > 0, "Script, lien bio, QR code"],
-  ];
-  const done = steps.filter((s) => s[2]).length;
+
+  const byTable = new Map(resas.map((r) => [r.tableId, r]));
+  const floor: FloorTable[] = tables.map((t) => {
+    const r = byTable.get(t.id);
+    return {
+      id: t.id, name: t.name, category: t.category.name, capacity: t.capacity,
+      minSpendCents: t.minSpendCents ?? t.category.minSpendCents,
+      x: t.x, y: t.y, w: t.w, h: t.h,
+      resa: r ? { id: r.id, name: r.organizerName, phone: r.organizerPhone, guests: r.guests, totalCents: r.totalCents, paidCents: r.paidCents, status: r.status, manager: r.manager?.user.name ?? null, orders: r._count.orders } : null,
+    };
+  });
+
+  const vendu = resas.reduce((a, r) => a + r.totalCents, 0) + (tickets._sum.totalCents ?? 0);
+  const arrives = resas.filter((r) => r.status === "CHECKED_IN").length;
+
   return (
     <>
       <header>
-        <h1>Bonjour, <span className="holo">{venue.name}</span></h1>
-        <p>{done === steps.length ? "Votre widget est prêt à vendre." : `Configuration : ${done} étape(s) sur ${steps.length}. Suivez la liste, dans l'ordre.`}</p>
+        <h1><span className="holo">{event.name || "Ce soir"}</span></h1>
+        <p style={{ textTransform: "capitalize" }}>{jour(event.date)}</p>
       </header>
-      <div className="grid3" style={{ marginBottom: 22 }}>
-        <div className="card"><span className="mute">Réservations</span><div style={{ font: "800 30px Unbounded", marginTop: 6 }}>{resa.length}</div></div>
-        <div className="card"><span className="mute">Montant réservé</span><div style={{ font: "800 30px Unbounded", marginTop: 6 }}>{eur(resa.reduce((a, r) => a + r.totalCents, 0))}</div></div>
-        <div className="card"><span className="mute">Soirées ouvertes</span><div style={{ font: "800 30px Unbounded", marginTop: 6 }}>{events}</div></div>
+      <div className="grid4" style={{ marginBottom: 18 }}>
+        <div className="card"><span className="mute">Carrés</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{resas.length} / {tables.length}</div><span className="mute" style={{ fontSize: 12 }}>{arrives} arrivé{arrives > 1 ? "s" : ""}</span></div>
+        <div className="card"><span className="mute">Entrées vendues</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{tickets._sum.quantity ?? 0}</div><span className="mute" style={{ fontSize: 12 }}>{tickets._sum.checkedIn ?? 0} entré{(tickets._sum.checkedIn ?? 0) > 1 ? "s" : ""}</span></div>
+        <div className="card"><span className="mute">Vendu ce soir</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{eur(vendu)}</div></div>
+        <div className="card"><span className="mute">Panier moyen carré</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{resas.length ? eur(Math.round(resas.reduce((a, r) => a + r.totalCents, 0) / resas.length)) : "—"}</div></div>
       </div>
-      <div className="grid2" style={{ alignItems: "start" }}>
-        <section className="card" style={{ display: "grid", gap: 8 }}>
-          <h2 style={{ fontSize: 18, marginBottom: 8 }}>Mise en route</h2>
-          {steps.map(([label, href, ok, sub], i) => (
-            <Link key={href} href={href} className="row" style={{ textDecoration: "none", padding: "10px 12px", borderRadius: 14, background: "var(--card2)" }}>
-              <span style={{ width: 28, height: 28, borderRadius: "50%", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 13, background: ok ? "var(--ok)" : "#2a2a32", color: ok ? "#06210f" : "#fff" }}>{ok ? "✓" : i + 1}</span>
-              <span style={{ display: "grid" }}><b style={{ fontSize: 14 }}>{label}</b><span className="mute" style={{ fontSize: 12 }}>{sub}</span></span>
-            </Link>
-          ))}
-        </section>
-        <section className="card">
-          <h2 style={{ fontSize: 18, marginBottom: 14 }}>Informations</h2>
-          <ActionForm action={saveVenueInfo} submit="Enregistrer">
-            <label className="field">Nom<input className="input" name="name" defaultValue={venue.name} required /></label>
-            <label className="field">Ville<input className="input" name="city" defaultValue={venue.city ?? ""} /></label>
-            <label className="field">Règles affichées aux clients (âge, tenue…)<textarea className="input" name="rules" rows={3} defaultValue={venue.rules ?? ""} /></label>
-          </ActionForm>
-        </section>
-      </div>
+      <Tonight tables={floor} eventId={event.id} planImageUrl={venue.planImageUrl} />
     </>
   );
 }
