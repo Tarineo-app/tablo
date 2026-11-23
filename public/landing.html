@@ -173,17 +173,19 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .hero{padding:128px 0 72px;text-align:center;position:relative}
 .story{position:relative;height:480vh}
 .storyInner{position:sticky;top:0;height:100vh;display:grid;place-items:center;overflow:hidden}
-.lightbg{position:absolute;inset:0;background:linear-gradient(170deg,#eceefb 0%,#dde2f6 55%,#cfd6ef 100%);opacity:0;transition:opacity .75s ease}
+.lightbg{position:absolute;inset:0;opacity:0;transition:opacity .75s ease;background:radial-gradient(70% 55% at 22% 38%,rgba(169,112,255,.20),transparent 68%),radial-gradient(60% 50% at 82% 70%,rgba(79,216,255,.12),transparent 70%),linear-gradient(180deg,#09090c,#050507)}
 .story.float .lightbg{opacity:1}
 
 .copy{position:absolute;left:max(24px,5vw);top:50%;transform:translateY(-50%);z-index:3;width:min(360px,30vw);opacity:0;pointer-events:none;transition:opacity .6s ease .15s,transform .6s ease .15s}
 .story.float .copy{opacity:1;pointer-events:auto}
-.storyTitle{font:900 clamp(28px,3.4vw,46px)/1.02 Unbounded,system-ui,sans-serif;letter-spacing:-.03em;color:#2b2fd6;margin:0 0 24px}
+.storyTitle{font:900 clamp(28px,3.4vw,46px)/1.02 Unbounded,system-ui,sans-serif;letter-spacing:-.03em;color:#fff;margin:0 0 24px}
+.storyTitle em{font-style:normal;background:var(--holo);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hs 7s linear infinite}
 .pills{display:grid;gap:11px;justify-items:start}
-.pills button{white-space:nowrap;border:1.6px solid #2b2fd6;color:#2b2fd6;background:transparent;border-radius:999px;padding:11px 22px;font:700 12.5px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;opacity:0;transform:translateY(10px);transition:opacity .45s,transform .45s,background .18s,color .18s}
+.pills button{white-space:nowrap;border:1.5px solid rgba(255,255,255,.28);color:#cfcdd9;background:transparent;border-radius:999px;padding:11px 22px;font:700 12.5px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;opacity:0;transform:translateY(10px);transition:opacity .45s,transform .45s,background .18s,color .18s}
 .pills button.show{opacity:1;transform:none}
-.pills button:hover,.pills button.on{background:#2b2fd6;color:#fff}
-.storyNote{margin:26px 0 0;color:#4a4e7a;font-size:14.5px;line-height:1.6;opacity:0;transition:opacity .5s .3s}
+.pills button:hover{border-color:#fff;color:#fff}
+.pills button.on{background:#fff;border-color:#fff;color:#08080a}
+.storyNote{margin:26px 0 0;color:var(--mute);font-size:14.5px;line-height:1.6;opacity:0;transition:opacity .5s .3s}
 .story.float .storyNote{opacity:1}
 
 .browser{position:relative;z-index:2;width:min(1120px,92vw);border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden;background:#0b0b0e;box-shadow:0 40px 120px rgba(0,0,0,.75);transition:transform .8s cubic-bezier(.4,0,.2,1),border-color .6s,background .6s,box-shadow .6s,width .8s cubic-bezier(.4,0,.2,1)}
@@ -206,15 +208,22 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .sitehero p{margin:0;color:#8e8c99;font-size:14.5px}
 .site::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 22% 28%,rgba(120,90,200,.34),transparent 70%),radial-gradient(50% 44% at 78% 72%,rgba(200,120,90,.22),transparent 70%),linear-gradient(180deg,#0a0a10,#060608)}
 .site::after{content:"";position:absolute;inset:0;opacity:.3;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);background-size:3px 3px;mix-blend-mode:overlay}
+.cursor{position:absolute;z-index:6;left:0;top:0;opacity:0;pointer-events:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.6));transition:transform 1.05s cubic-bezier(.33,0,.2,1),opacity .35s}
+.cursor.tap svg{transform:scale(.82)}
+.cursor svg{display:block;transition:transform .14s}
+.sitenav em{transition:transform .14s,box-shadow .2s}
+.sitenav em.tap{transform:scale(.94);box-shadow:0 0 0 8px rgba(255,255,255,.12)}
 .sidepanel{position:relative;border-left:1px solid rgba(255,255,255,.1);background:#060607;box-shadow:-30px 0 60px rgba(0,0,0,.55);transition:border-radius .7s,box-shadow .7s,border-color .7s}
 .sidepanel iframe{display:block;width:100%;height:100%;border:0}
 
 /* état détaché */
+.story:not(.opened):not(.float) .viewport{grid-template-columns:1fr 0fr}
+.sidepanel{overflow:hidden}
 .story.float .browser{background:transparent;border-color:transparent;box-shadow:none;width:min(1120px,92vw);transform:translateX(min(30%,330px))}
 .story.float .chromebar{opacity:0}
 .story.float .site{opacity:0}
 .story.float .viewport{grid-template-columns:0fr minmax(0,440px)}
-.story.float .sidepanel{border-left:0;border-radius:22px;box-shadow:0 34px 90px rgba(43,47,214,.22),0 0 0 1px rgba(20,20,60,.08)}
+.story.float .sidepanel{border-left:0;border-radius:22px;box-shadow:0 40px 110px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.1)}
 .story.float .sidepanel iframe{border-radius:22px}
 
 .scrollhint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:10px;font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);transition:opacity .4s}
@@ -223,11 +232,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .story.float .scrollhint{opacity:0}
 
 /* la barre du haut passe en clair pendant la présentation */
-nav.light{background:rgba(238,240,251,.82);border-bottom-color:rgba(20,20,60,.1)}
-nav.light .logo{color:#14143c}
-nav.light .dot{background:linear-gradient(180deg,#2b2fd6,#8b8ef0)}
-nav.light .links a{color:#4a4e7a}
-nav.light .links a:hover{color:#14143c}
 
 @media(max-width:980px){
   .story{height:420vh}
@@ -274,6 +278,33 @@ nav.light .links a:hover{color:#14143c}
 .bsteps b{color:var(--mute)}
 .bnext small{color:var(--mute);font-size:12.5px;line-height:1.5}
 @media(max-width:900px){.builder{grid-template-columns:1fr}.bpreview{position:static}.bnext{grid-column:auto}}
+
+/* Progression de l'étape 1 */
+.bprog{display:grid;gap:9px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.bprogtop{display:flex;justify-content:space-between;align-items:baseline;font:700 12px Manrope,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.bprogtop b{color:var(--text);letter-spacing:0;text-transform:none;font-size:15px}
+.btrack{height:7px;border-radius:9px;background:#17171d;overflow:hidden}
+.btrack i{display:block;height:100%;width:0;border-radius:9px;background:var(--holo);background-size:200% 100%;animation:hs 7s linear infinite;transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+/* Les étapes de la configuration */
+.bsteps{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.bsteps li{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border-radius:14px;color:var(--mute);transition:.3s}
+.bsteps li .num{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 12px Manrope,system-ui,sans-serif;background:#1c1c23;color:#8e8c99}
+.bsteps li b{display:block;font-size:14.5px;color:#cfcdd9}
+.bsteps li em{font-style:normal;font-size:12.5px;line-height:1.45;display:block;margin-top:2px}
+.bsteps li.done{background:rgba(169,112,255,.1);color:#cfcdd9}
+.bsteps li.done .num{background:var(--holo);background-size:200% 100%;animation:hs 7s linear infinite;color:#08080a}
+.bsteps li.done b{color:#fff}
+
+/* Barre collante : « vous avez commencé » */
+.keepbar{position:fixed;left:50%;bottom:18px;transform:translate(-50%,140%);z-index:60;display:flex;align-items:center;gap:14px;padding:11px 12px 11px 18px;border-radius:999px;background:rgba(16,16,22,.92);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 60px rgba(0,0,0,.6);transition:transform .5s cubic-bezier(.4,0,.2,1);max-width:min(560px,94vw)}
+.keepbar.on{transform:translate(-50%,0)}
+.keepbar.hide{transform:translate(-50%,140%)!important}
+.kdot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(61,220,151,.55);animation:rec 2.2s infinite}
+.ktxt{display:grid;min-width:0}
+.ktxt b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ktxt small{color:var(--mute);font-size:12px}
+@media(max-width:560px){.keepbar{left:12px;right:12px;transform:translateY(140%);max-width:none}.keepbar.on{transform:translateY(0)}.keepbar.hide{transform:translateY(140%)!important}.ktxt small{display:none}}
 </style></head>
 <body>
 
@@ -312,7 +343,7 @@ nav.light .links a:hover{color:#14143c}
     <div class="lightbg" aria-hidden="true"></div>
 
     <div class="copy">
-      <h2 class="storyTitle">La fenêtre<br>de réservation</h2>
+      <h2 class="storyTitle">La fenêtre<br><em>de réservation</em></h2>
       <div class="pills" id="pills">
         <button data-s="1">Plan des carrés</button>
         <button data-s="2">Vos bouteilles</button>
@@ -327,13 +358,16 @@ nav.light .links a:hover{color:#14143c}
       <div class="chromebar"><span class="dots"><i></i><i></i><i></i></span><span class="url">levelours.fr</span></div>
       <div class="viewport">
         <div class="site">
-          <div class="sitenav"><b id="siteName">LE VELOURS</b><span>Le club</span><span>Soirées</span><span>Galerie</span><span>Accès</span><em>Réserver</em></div>
+          <div class="sitenav"><b id="siteName">LE VELOURS</b><span>Le club</span><span>Soirées</span><span>Galerie</span><span>Accès</span><em id="siteBtn">Réserver</em></div>
           <div class="sitehero">
             <span class="kicker">Samedi 28 novembre</span>
             <h3 id="siteEvent">VELVET GOLD</h3>
             <p>Minuit — 6 h · Dress code soigné</p>
           </div>
         </div>
+        <span class="cursor" id="cursor" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path d="M5 2.5 L19.5 12.2 L12.6 13.1 L9.2 19.6 Z" fill="#fff" stroke="#111" stroke-width="1.1" stroke-linejoin="round"/></svg>
+        </span>
         <div class="sidepanel"><iframe id="liveW" src="demo.html?embed=1" title="Fenêtre de réservation Tablo" loading="eager"></iframe></div>
       </div>
     </div>
@@ -465,12 +499,16 @@ nav.light .links a:hover{color:#14143c}
 
 <section id="construire">
   <div class="wrap">
-    <div class="eyebrow rv">Votre interface</div>
-    <h2 class="rv">Mettez-la à votre nom, tout de suite.</h2>
-    <p class="sub rv">Changez le nom, l'ambiance et la couleur : la fenêtre du haut de page change en direct. C'est exactement ce que verront vos clients.</p>
+    <div class="eyebrow rv">Étape 1 sur 4 · L'apparence</div>
+    <h2 class="rv">Commençons par la vôtre.</h2>
+    <p class="sub rv">Réglez-la ici, elle est à vous. On garde tout : vous reprendrez où vous en êtes à l'étape suivante.</p>
 
     <div class="builder rv">
       <div class="bcontrols">
+        <div class="bprog">
+          <div class="bprogtop"><b>Votre apparence</b><span id="bCount">0 sur 4</span></div>
+          <div class="btrack"><i id="bBar" style="width:0%"></i></div>
+        </div>
         <label class="bfield">Le nom de votre établissement
           <input id="bName" maxlength="28" placeholder="Le Velours" autocomplete="organization">
         </label>
@@ -523,16 +561,15 @@ nav.light .links a:hover{color:#14143c}
       </aside>
 
       <aside class="bnext">
-        <h3>La suite, c'est votre plan</h3>
-        <p>Vous placez vos carrés sur une photo de votre salle, vous chargez votre carte des bouteilles, et vous collez une ligne sur votre site. Comptez une soirée.</p>
+        <h3 id="bTitle">Votre configuration</h3>
         <ol class="bsteps">
-          <li><b>1.</b> Vos catégories et vos minimums</li>
-          <li><b>2.</b> Vos carrés sur le plan</li>
-          <li><b>3.</b> Vos bouteilles et vos shows</li>
-          <li><b>4.</b> Le code à coller, ou le lien pour la bio</li>
+          <li class="done" id="bs1"><span class="num">1</span><div><b>L'apparence</b><em>Nom, ambiance, couleur</em></div></li>
+          <li><span class="num">2</span><div><b>Vos carrés</b><em>Catégories, minimums, plan de salle</em></div></li>
+          <li><span class="num">3</span><div><b>Votre carte</b><em>Bouteilles, shows, pancarte</em></div></li>
+          <li><span class="num">4</span><div><b>En ligne</b><em>Le code à coller, ou le lien pour la bio</em></div></li>
         </ol>
-        <a href="/inscription" class="btn main" id="bCta">Continuer avec ces réglages</a>
-        <small>Gratuit pour construire votre espace. Vous ne payez qu'au moment d'ouvrir les réservations.</small>
+        <a href="/inscription" class="btn main" id="bCta">Passer à l&apos;étape 2</a>
+        <small id="bSmall">Gratuit pour construire votre espace. Vous ne payez qu&apos;au moment d&apos;ouvrir les réservations.</small>
       </aside>
     </div>
   </div>
@@ -564,6 +601,12 @@ nav.light .links a:hover{color:#14143c}
 </section>
 </main>
 
+<div class="keepbar" id="keepbar" role="status">
+  <span class="kdot"></span>
+  <span class="ktxt"><b id="kName">Votre espace</b><small id="kSub">apparence réglée · étape 1 sur 4</small></span>
+  <a href="/inscription" class="btn main sm" id="kCta">Reprendre où j&apos;en suis</a>
+</div>
+
 <footer>
   <div class="wrap">
     <span>© Tablo — réservation de carrés VIP et billetterie pour la nuit.</span>
@@ -583,7 +626,7 @@ nav.light .links a:hover{color:#14143c}
  const send=d=>frames().forEach(x=>x.contentWindow&&x.contentWindow.postMessage(Object.assign({tablo:1},d),'*'));
  const sendTo=(el,d)=>el&&el.contentWindow&&el.contentWindow.postMessage(Object.assign({tablo:1},d),'*');
 
- const story=document.querySelector('.story'),pills=document.getElementById('pills'),nav=document.querySelector('nav');
+ const story=document.querySelector('.story'),pills=document.getElementById('pills');
  // 0 et 6 : la fenêtre est sur le site du club. 1 à 5 : elle se présente seule.
  const SCENES=[
   {float:false,act:{mode:'vip',tour:0}},
@@ -594,21 +637,43 @@ nav.light .links a:hover{color:#14143c}
   {float:true, act:{mode:'tix'},        pill:4},
   {float:false,act:{mode:'vip',tour:3}},
  ];
- let scene=-1,locked=false;
+ let scene=-1,timers=[],visible=false,pending=false;
  const pillBtns=pills?[...pills.querySelectorAll('button')]:[];
+ const cursor=document.getElementById('cursor'),siteBtn=document.getElementById('siteBtn'),site=document.querySelector('.site');
+ const clearTimers=()=>{timers.forEach(clearTimeout);timers=[]};
 
- function goto(n,fromClick){
+ /* le client arrive sur le site du club et clique sur « Réserver » */
+ function playOpen(){
+  if(!cursor||!siteBtn||!site)return;
+  const s=site.getBoundingClientRect(),b=siteBtn.getBoundingClientRect();
+  const from=[s.width*.42,s.height*.72],to=[b.left-s.left+b.width/2-6,b.top-s.top+b.height/2-4];
+  cursor.style.transition='none';
+  cursor.style.transform=`translate(${from[0]}px,${from[1]}px)`;
+  cursor.style.opacity='0';
+  timers.push(setTimeout(()=>{
+   cursor.style.transition='';cursor.style.opacity='1';
+   cursor.style.transform=`translate(${to[0]}px,${to[1]}px)`;
+  },420));
+  timers.push(setTimeout(()=>{cursor.classList.add('tap');siteBtn.classList.add('tap')},1500));
+  timers.push(setTimeout(()=>{cursor.classList.remove('tap');siteBtn.classList.remove('tap');story.classList.add('opened')},1700));
+  timers.push(setTimeout(()=>{cursor.style.opacity='0'},2100));
+  pending=false;
+ }
+
+ function goto(n){
   n=Math.max(0,Math.min(SCENES.length-1,n));
   if(n===scene)return;
-  scene=n;const sc=SCENES[n];
+  const was=scene;scene=n;const sc=SCENES[n];
+  clearTimers();
   story&&story.classList.toggle('float',sc.float);
-  nav&&nav.classList.toggle('light',sc.float);
   pillBtns.forEach((b,i)=>{
    b.classList.toggle('show',sc.float&&sc.pill!==undefined&&i<=sc.pill);
    b.classList.toggle('on',sc.pill===i);
   });
   sendTo(f,sc.act);
-  if(fromClick)locked=false;
+  if(n===0){story.classList.remove('opened');pending=true;if(visible)playOpen()}
+  else{story.classList.add('opened');if(cursor)cursor.style.opacity='0'}
+  void was;
  }
 
  function onScroll(){
@@ -617,6 +682,9 @@ nav.light .links a:hover{color:#14143c}
   if(span<=0)return;
   const p=Math.max(0,Math.min(1,-r.top/span));
   goto(Math.round(p*(SCENES.length-1)));
+  // la section occupe tout l'écran : c'est le moment de jouer le clic
+  visible=r.top<=12&&r.bottom>=window.innerHeight-12;
+  if(visible&&pending&&scene===0)playOpen();
  }
  if(story){
   addEventListener('scroll',onScroll,{passive:true});
@@ -640,22 +708,48 @@ nav.light .links a:hover{color:#14143c}
    if(look.btn!=='pill')q.set('boutons',look.btn);
    ctas.forEach(a=>a.href='/inscription?'+q.toString());
  };
- const pick=(box,el,key,val)=>{box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===el));look[key]=val;refreshCtas()};
+ const touched={};
+ const bBar=document.getElementById('bBar'),bCount=document.getElementById('bCount'),bTitle=document.getElementById('bTitle'),bSmall=document.getElementById('bSmall');
+ const keepbar=document.getElementById('keepbar'),kName=document.getElementById('kName'),kSub=document.getElementById('kSub'),kCta=document.getElementById('kCta');
+ if(kCta)ctas.push(kCta);
+
+ /* chaque réglage fait avancer l'étape 1 : il construit déjà son espace */
+ function progress(key){
+  if(key)touched[key]=true;
+  const n=['name','kind','amb','accent'].filter(k=>touched[k]).length;
+  bBar&&(bBar.style.width=(n/4*100)+'%');
+  bCount&&(bCount.textContent=n+' sur 4');
+  if(bTitle)bTitle.textContent=n===0?'Votre configuration':n<4?'Vous avez commencé':'Votre apparence est prête';
+  if(bSmall)bSmall.textContent=n===0
+    ? "Gratuit pour construire votre espace. Vous ne payez qu'au moment d'ouvrir les réservations."
+    : "Vos réglages sont gardés : vous reprendrez exactement ici.";
+  if(n>0&&keepbar){
+   keepbar.classList.add('on');
+   kName&&(kName.textContent=look.name||'Votre espace');
+   kSub&&(kSub.textContent='apparence réglée · il reste vos carrés, votre carte, le code');
+  }
+  refreshCtas();
+ }
+
+ const pick=(box,el,key,val)=>{box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===el));look[key]=val;progress(key)};
  const bName=document.getElementById('bName'),bEvent=document.getElementById('bEvent');
  bName&&bName.addEventListener('input',()=>{const v=bName.value.trim();look.name=v;
    if(siteName)siteName.textContent=(v||'Le Velours').toUpperCase();
-   send({name:v||'Le Velours'});refreshCtas()});
+   send({name:v||'Le Velours'});progress(v?'name':null);refreshCtas()});
  bEvent&&bEvent.addEventListener('input',()=>{look.event=bEvent.value.trim();if(siteEvent)siteEvent.textContent=(look.event||'Velvet Gold').toUpperCase()});
  const bKind=document.getElementById('bKind'),bAmb=document.getElementById('bAmb'),bCol=document.getElementById('bCol'),bBtn=document.getElementById('bBtn');
  bKind&&bKind.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
    pick(bKind,b,'kind',b.dataset.kind);
    const amb=b.dataset.kind==='beach'?'pool':'tablo';
    look.amb=amb;bAmb&&bAmb.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.amb===amb));
-   send({venue:b.dataset.kind,amb,name:look.name||'Le Velours'});refreshCtas()});
+   send({venue:b.dataset.kind,amb,name:look.name||'Le Velours'});progress('amb')});
  bAmb&&bAmb.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bAmb,b,'amb',b.dataset.amb);send({amb:b.dataset.amb})});
  bCol&&bCol.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bCol,b,'accent',b.dataset.c);send({accent:b.dataset.c})});
  bBtn&&bBtn.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bBtn,b,'btn',b.dataset.btn);send({btn:b.dataset.btn})});
- refreshCtas();
+ progress();
+ const fin=document.querySelector('.final');
+ if(fin&&keepbar&&'IntersectionObserver' in window)
+  new IntersectionObserver(es=>es.forEach(e=>keepbar.classList.toggle('hide',e.isIntersecting)),{threshold:.25}).observe(fin);
  const m=document.getElementById('liveM');
  m&&m.addEventListener('load',()=>setTimeout(()=>sendTo(m,{venue:look.kind,amb:look.amb,accent:look.accent||undefined,btn:look.btn,name:look.name||undefined}),400));
 
