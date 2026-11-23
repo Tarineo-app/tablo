@@ -3,349 +3,90 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tablo — Vendez la nuit, carré par carré</title>
+<title>Tablo — Vos carrés VIP se vendent sur votre site, sans commission</title>
+<meta name="description" content="Tablo installe la réservation de carrés VIP et la billetterie sur le site de votre club. Acompte, cagnotte, shows, app serveur. 79 € par mois, 0 % de commission.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;600;700;800&family=Cinzel:wght@600;700&family=Fraunces:ital,wght@1,600;1,800&family=Monoton&family=Bungee&display=swap">
 <style>
-:root{--bg:#060607;--bg2:#0f0f12;--card:#121216;--line:rgba(255,255,255,.09);--text:#f3f2f7;--mute:#8e8c99;
+:root{--bg:#060607;--bg2:#0f0f12;--card:#121216;--card2:#17171d;--line:rgba(255,255,255,.09);--text:#f3f2f7;--mute:#8e8c99;--ok:#3ddc97;
   --holo:linear-gradient(110deg,#ff5fa2 0%,#a970ff 30%,#4fd8ff 60%,#b6ff6a 85%,#ff5fa2 100%);
   --chrome:linear-gradient(180deg,#ffffff 0%,#d9dbe4 28%,#7d8094 50%,#f4f5fa 64%,#a3a6b8 82%,#ffffff 100%)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
-.disp{font-family:Unbounded,system-ui,sans-serif}
+img,svg{max-width:100%}
+.holo{background:var(--holo);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hs 7s linear infinite}
 .chrome{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent}
-.holo{background:var(--holo);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hs 6s linear infinite}
 @keyframes hs{to{background-position:-200% 0}}
-#lights{position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen}
-nav,main,footer{position:relative;z-index:1}
+.wrap{width:min(1120px,92vw);margin:0 auto}
+section{padding:78px 0}
+h2{font:800 clamp(28px,4vw,46px)/1.1 Unbounded,system-ui,sans-serif;margin:0 0 14px;letter-spacing:-.02em}
+h3{font:800 18px Unbounded,system-ui,sans-serif;margin:0}
+.eyebrow{font:800 11px Manrope,system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-bottom:14px}
+.sub{color:var(--mute);font-size:17px;line-height:1.65;max-width:620px;margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:54px;padding:0 26px;border-radius:999px;font:800 15px Manrope,system-ui,sans-serif;cursor:pointer;border:1px solid var(--line);background:#101014;color:var(--text);transition:.18s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn.main{background:var(--holo);background-size:200% 100%;color:#08080a;border:0;animation:hs 7s linear infinite;box-shadow:0 10px 36px rgba(169,112,255,.3)}
+.btn.sm{min-height:44px;padding:0 18px;font-size:14px}
 
-nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:30;width:min(1120px,calc(100% - 28px));display:flex;align-items:center;justify-content:space-between;
-  padding:10px 10px 10px 24px;border-radius:999px;background:rgba(18,18,22,.7);backdrop-filter:blur(14px);border:1px solid var(--line)}
-.logo{font:900 20px Unbounded,sans-serif;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
-.logo .dot{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9ea1b5 45%,#3a3c4a);box-shadow:0 0 12px rgba(169,112,255,.6)}
-.links{display:flex;gap:22px;font-size:13.5px;font-weight:600;color:#c9c7d4}
-.links a:hover{color:#fff}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 24px;border-radius:999px;font:700 14px Manrope,sans-serif;cursor:pointer;border:0;transition:.2s}
-.btn.main{background:#fff;color:#08080a}
-.btn.main:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(169,112,255,.35)}
-.btn.out{border:1px solid rgba(255,255,255,.22);color:#fff}
-.btn.out:hover{border-color:#fff}
-.btn.holob{position:relative;background:#0b0b0e;color:#fff}
-.btn.holob::before{content:"";position:absolute;inset:-1.5px;border-radius:inherit;background:var(--holo);z-index:-1;background-size:200%;animation:hs 4s linear infinite}
+/* Barre du haut */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px max(20px,4vw);backdrop-filter:blur(16px);background:rgba(6,6,7,.72);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:9px;font:800 20px Unbounded,system-ui,sans-serif}
+.dot{width:16px;height:16px;border-radius:50%;background:var(--chrome);box-shadow:0 0 14px rgba(255,255,255,.4)}
+nav .links{display:flex;gap:26px;font-size:14px;font-weight:600;color:#c9c7d4}
+nav .links a:hover{color:#fff}
+@media(max-width:860px){nav .links{display:none}}
 
-/* HERO */
-.hero{min-height:100vh;padding:140px 24px 0;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center}
-.pill{display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:#cfcdd9;background:rgba(255,255,255,.03)}
-.pill b{background:var(--holo);color:#08080a;font-size:11px;padding:4px 10px;border-radius:999px;letter-spacing:.04em}
-h1{font:900 clamp(46px,8.4vw,128px)/.95 Unbounded,sans-serif;letter-spacing:-.03em;margin:28px 0 22px;max-width:1150px}
-.lead{max-width:600px;color:#b3b1bf;font-size:18px;line-height:1.65;margin:0 auto 34px}
+/* Héros */
+.hero{padding:146px 0 0;text-align:center;position:relative;overflow:hidden}
+.hero .ball{position:absolute;width:clamp(90px,11vw,160px);opacity:.5;pointer-events:none}
+.hero .ball.l{left:3%;top:120px}
+.hero .ball.r{right:3%;top:210px}
+@media(max-width:900px){.hero .ball{display:none}}
+.badge{display:inline-flex;align-items:center;gap:10px;padding:7px 8px 7px 7px;border-radius:999px;border:1px solid var(--line);background:#0d0d11;font-size:13.5px;color:#cfcdd9;margin-bottom:26px}
+.badge b{font:800 10.5px Manrope,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:var(--holo);background-size:200% 100%;color:#0a0a0c;animation:hs 7s linear infinite}
+h1{font:900 clamp(38px,7vw,82px)/.98 Unbounded,system-ui,sans-serif;letter-spacing:-.035em;margin:0 0 20px}
+.lead{font-size:clamp(17px,2vw,20px);line-height:1.6;color:#c6c4d2;max-width:660px;margin:0 auto 30px}
 .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.heroball{position:absolute;top:84px;width:150px;left:7%;animation:sw 6s ease-in-out infinite;transform-origin:50% -60px}
-.heroball.r{left:auto;right:8%;width:100px;top:120px;animation-delay:-3s}
-@keyframes sw{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
-.rope{width:1.5px;height:90px;margin:0 auto -2px;background:linear-gradient(transparent,#aaa)}
-.floorwrap{position:relative;width:min(1100px,100%);height:330px;margin-top:40px;perspective:700px}
-.floor{position:absolute;left:50%;bottom:-70px;width:1200px;margin-left:-600px;display:grid;grid-template-columns:repeat(14,1fr);gap:6px;transform:rotateX(62deg);transform-origin:50% 100%}
-.floor i{aspect-ratio:1;border-radius:4px;background:#141419;border:1px solid #1e1e26;transition:background .35s,box-shadow .35s}
-.crew{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;align-items:flex-end;gap:3vw}
-.crew svg{width:min(150px,20vw)}
-.crew svg.big{width:min(185px,24vw)}
+.proofs{display:flex;gap:10px 28px;justify-content:center;flex-wrap:wrap;margin-top:24px;font-size:14px;color:var(--mute)}
+.proofs span{display:inline-flex;align-items:center;gap:7px}
+.proofs i{color:var(--ok);font-style:normal;font-weight:900}
 
-/* AUDIENCE SWITCH */
-.aud{display:inline-flex;gap:4px;padding:5px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);margin:-4px 0 22px;flex-wrap:wrap;justify-content:center}
-.aud button{min-height:40px;padding:0 18px;border-radius:999px;border:0;background:none;color:#bdbbc9;font:700 14px Manrope,system-ui,sans-serif;cursor:pointer;transition:.2s}
-.aud button:hover{color:#fff}
-.aud button.on{background:#fff;color:#08080a}
-#audlead{min-height:3.3em;transition:opacity .25s}
-
-/* POUR QUI */
-.who{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
-.wc{position:relative;border-radius:28px;overflow:hidden;min-height:400px;display:flex;flex-direction:column;justify-content:flex-end;padding:30px;border:1px solid var(--line);text-decoration:none;transition:.3s}
-.wc:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.25)}
-.wc .art{position:absolute;inset:0;z-index:0}
-.wc::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(6,6,7,.92) 85%);z-index:1}
-.wc>*:not(.art){position:relative;z-index:2}
-.wc small{font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#cfcdd9}
-.wc h3{font:800 26px/1.08 Unbounded,system-ui,sans-serif;margin:10px 0 10px;letter-spacing:-.02em}
-.wc p{margin:0;color:#b9b7c6;font-size:15px;line-height:1.6}
-.wc .go{margin-top:18px;font-weight:800;font-size:14px}
-
-/* THEMES */
-#themes{overflow:hidden}
-.thgrid{display:grid;grid-template-columns:330px 1fr;gap:50px;align-items:center;margin-top:56px}
-.thlist{display:grid;gap:10px}
-.thb{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font:700 15px Manrope,system-ui,sans-serif;transition:.2s;min-height:48px}
-.thb:hover{border-color:rgba(255,255,255,.25)}
-.thb.on{border-color:#fff;background:#18181e}
-.thb i{width:34px;height:34px;border-radius:10px;flex:none}
-.thb small{display:block;color:var(--mute);font-weight:600;font-size:12px;margin-top:2px}
-.evstage{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
-.evpage{border-radius:28px;overflow:hidden;border:1px solid var(--line);background:var(--ebg);color:var(--eink);transition:background .5s,color .5s;position:relative;min-height:520px;display:flex;flex-direction:column}
-.evhead{padding:34px 28px 24px;position:relative;text-align:center;flex:none}
-.evdeco{position:absolute;inset:0;pointer-events:none;opacity:.9}
-.evkick{font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;opacity:.8;position:relative}
-.evtitle{font-family:var(--efont);font-size:var(--esize);line-height:1;margin:14px 0 10px;color:var(--eacc);position:relative;text-shadow:var(--eglow);transition:color .5s}
-.evdate{font:600 14px Manrope,system-ui,sans-serif;opacity:.85;position:relative}
-.evbody{padding:0 22px 22px;display:grid;gap:10px;flex:1;align-content:end}
-.evrow{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:16px;background:var(--ecard);font:600 14px Manrope,system-ui,sans-serif;transition:background .5s}
-.evrow b{font-family:Unbounded,system-ui,sans-serif;font-size:13px}
-.evbtn{height:52px;border-radius:var(--erad);background:var(--eacc);color:var(--ebtn);display:grid;place-items:center;font:800 14px Manrope,system-ui,sans-serif;letter-spacing:.04em;transition:background .5s,border-radius .5s}
-.evplan{border-radius:28px;border:1px solid var(--line);background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px}
-.evplan .ph{display:flex;justify-content:space-between;font:800 14px Unbounded,system-ui,sans-serif}
-.evplan .ph small{font:600 12px Manrope,system-ui,sans-serif;color:var(--mute)}
-.mp{flex:1;border-radius:18px;background:#15151b;position:relative;min-height:300px;border:1px solid var(--line)}
-.mp .stg{position:absolute;left:50%;top:16px;transform:translateX(-50%);font:700 10px Manrope,system-ui,sans-serif;letter-spacing:.2em;color:var(--mute);border:1px dashed #333;padding:8px 30px;border-radius:10px}
-.mp .t{position:absolute;border-radius:10px;background:#22222b;border:1px solid #2e2e38;display:grid;place-items:center;font:700 10px Manrope,system-ui,sans-serif;color:#aaa;transition:.5s}
-.mp .t.hot{background:var(--eacc);color:var(--ebtn);border-color:transparent;box-shadow:0 0 26px var(--eacc)}
-.mp .t.x{opacity:.35}
-.tick2{display:flex;gap:8px;flex-wrap:wrap}
-.tick2 span{padding:8px 12px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:#cfcdd9}
-
-/* ORGANISATEURS */
-.org{display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;margin-top:20px}
-.org ul{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:18px}
-.org li{display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:start}
-.org li .n{width:44px;height:44px;border-radius:14px;background:#17171d;border:1px solid var(--line);display:grid;place-items:center;font:800 14px Unbounded,system-ui,sans-serif}
-.org li b{display:block;font:700 17px Unbounded,system-ui,sans-serif;margin-bottom:6px;letter-spacing:-.01em}
-.org li p{margin:0;color:var(--mute);line-height:1.6;font-size:15px}
-.dash{border-radius:28px;background:var(--card);border:1px solid var(--line);padding:24px;display:grid;gap:14px;box-shadow:0 40px 100px rgba(0,0,0,.5)}
-.dash .top{display:flex;justify-content:space-between;align-items:center}
-.dash .top b{font:800 16px Unbounded,system-ui,sans-serif}
-.dash .live{font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.12em;padding:6px 10px;border-radius:999px;background:rgba(182,255,106,.12);color:#b6ff6a}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.kpi{border-radius:16px;background:#18181f;padding:14px}
-.kpi small{color:var(--mute);font-size:12px;font-weight:600}
-.kpi div{font:800 22px Unbounded,system-ui,sans-serif;margin-top:6px;letter-spacing:-.02em}
-.bars{display:grid;gap:8px}
-.bars div{display:grid;grid-template-columns:110px 1fr 44px;gap:10px;align-items:center;font-size:13px}
-.bars i{height:8px;border-radius:9px;background:#1e1e26;overflow:hidden;display:block}
-.bars i::after{content:"";display:block;height:100%;width:var(--w);background:var(--holo)}
-.bars span{text-align:right;color:var(--mute);font-weight:700}
-.split{border-radius:16px;background:#18181f;padding:14px;display:flex;justify-content:space-between;align-items:center;font-size:14px}
-.split b{font-family:Unbounded,system-ui,sans-serif}
-
-/* TICKER */
-.ticker{border-block:1px solid var(--line);background:#0b0b0e;overflow:hidden;white-space:nowrap;padding:20px 0;position:relative;z-index:2}
-.ticker div{display:inline-block;animation:tk 30s linear infinite;font:600 22px Unbounded,sans-serif;letter-spacing:-.01em}
-.ticker span{margin:0 26px}.ticker em{font-style:normal;margin:0 6px;opacity:.9}
-@keyframes tk{to{transform:translateX(-50%)}}
-
-section{padding:130px 24px;position:relative}
-.wrap{max-width:1140px;margin:0 auto}
-.eyebrow{font:700 12px Manrope,system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:10px}
-.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--holo)}
-h2{font:800 clamp(34px,4.8vw,64px)/1.02 Unbounded,sans-serif;letter-spacing:-.03em;margin:18px 0 18px;max-width:800px}
-.sub{color:var(--mute);font-size:17px;line-height:1.7;max-width:560px;margin:0}
-
-/* HOW: sticky phone */
-.how{display:grid;grid-template-columns:1fr 380px;gap:80px;margin-top:60px}
-.steps .st{min-height:62vh;display:flex;flex-direction:column;justify-content:center;opacity:.28;transition:.4s}
-.steps .st.on{opacity:1}
-.st .n{font:800 14px Unbounded,system-ui,sans-serif;color:var(--mute);margin-bottom:14px}
-.st.on .n{color:#fff}
-.st h3{font:700 clamp(26px,2.8vw,38px)/1.1 Unbounded,sans-serif;margin:0 0 14px;letter-spacing:-.02em}
-.st p{color:var(--mute);font-size:17px;line-height:1.7;max-width:460px;margin:0}
-.phonecol{position:relative}
-.phone{position:sticky;top:calc(50vh - 330px);width:340px;height:660px;border-radius:48px;background:#000;padding:12px;box-shadow:0 0 0 1.5px #3a3a44,0 0 0 9px #16161b,0 40px 100px rgba(0,0,0,.7),0 0 120px rgba(169,112,255,.18)}
-.scr{position:absolute;inset:12px;border-radius:38px;background:#0d0d11;overflow:hidden;opacity:0;transform:scale(.97);transition:.45s;padding:54px 18px 18px;display:flex;flex-direction:column;gap:12px}
-.scr.on{opacity:1;transform:none}
-.notch{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:96px;height:26px;border-radius:20px;background:#000;z-index:3}
-.sh{display:flex;justify-content:space-between;align-items:center;font:800 14px Unbounded,system-ui,sans-serif}
-.sh small{font:600 11px Manrope,system-ui,sans-serif;color:var(--mute)}
-.plan{flex:1;border-radius:20px;background:#15151b;border:1px solid var(--line);position:relative}
-.plan .dj{position:absolute;left:50%;top:14px;transform:translateX(-50%);font:700 10px Manrope,system-ui,sans-serif;letter-spacing:.2em;color:var(--mute);border:1px dashed #333;padding:8px 26px;border-radius:10px}
-.plan .c{position:absolute;width:62px;height:44px;border-radius:12px;background:#1f1f27;border:1px solid #2c2c36;font:700 10px Manrope,system-ui,sans-serif;display:grid;place-items:center;color:#aaa}
-.plan .c.sel{background:#fff;color:#000;box-shadow:0 0 30px rgba(169,112,255,.8);border:0}
-.plan .c.x{opacity:.35;text-decoration:line-through}
-.row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#15151b;border:1px solid var(--line);font-size:13px}
-.row .b{width:26px;height:58px;flex:none;border-radius:7px 7px 5px 5px;background:linear-gradient(90deg,#2a2a32,#6d6f80 40%,#2a2a32);position:relative}
-.row .b::before{content:"";position:absolute;top:-10px;left:9px;width:8px;height:14px;border-radius:3px;background:#c9a45a}
-.row b{display:block;font-size:13px}.row small{color:var(--mute)}
-.row .pr{margin-left:auto;font:700 13px Unbounded,system-ui,sans-serif}
-.qty{display:flex;gap:6px;align-items:center;font-weight:800}.qty i{font-style:normal;width:26px;height:26px;border-radius:50%;border:1px solid #333;display:grid;place-items:center}
-.prev{height:250px;border-radius:20px;background:radial-gradient(ellipse at 50% 100%,#3b1d5e,#0b0b10 70%);position:relative;overflow:hidden}
-.spk{position:absolute;bottom:40px;width:3px;height:80px;background:linear-gradient(transparent,#ffd38a);border-radius:2px}
-.spk::before{content:"";position:absolute;top:-6px;left:-7px;width:17px;height:17px;border-radius:50%;background:radial-gradient(#fff,#ffcf6b 40%,transparent 70%);animation:fl .25s infinite alternate}
-@keyframes fl{to{transform:scale(1.5);opacity:.6}}
-.prev .lbl{position:absolute;left:14px;bottom:12px;font:700 12px Manrope,system-ui,sans-serif}
-.bar{height:10px;border-radius:9px;background:#1d1d24;overflow:hidden}.bar i{display:block;height:100%;width:72%;background:var(--holo)}
-.av{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#15151b;font-size:13px}
-.av span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#000;font-size:12px}
-.av b{margin-left:auto}
-.big{font:800 34px Unbounded,system-ui,sans-serif;letter-spacing:-.02em}
-.ok{width:86px;height:86px;border-radius:50%;margin:20px auto 6px;background:var(--holo);display:grid;place-items:center;font-size:40px;color:#000}
-.qr{width:150px;height:150px;margin:10px auto;border-radius:16px;background:#fff;padding:10px;display:grid;grid-template-columns:repeat(9,1fr);gap:2px}
-.qr i{background:#000;border-radius:1px}.qr i.w{background:#fff}
-.pbtn{margin-top:auto;height:50px;border-radius:16px;background:#fff;color:#000;display:grid;place-items:center;font-weight:800;font-size:14px}
-
-/* BENTO */
-.bento{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(220px,auto);gap:16px;margin-top:60px}
-.tile{grid-column:span 2;border-radius:28px;background:var(--card);border:1px solid var(--line);padding:30px;position:relative;overflow:hidden;transition:.3s}
-.tile:hover{border-color:rgba(255,255,255,.22);transform:translateY(-4px)}
-.tile.w3{grid-column:span 3}.tile.w4{grid-column:span 4}
-.tile h3{font:700 22px/1.15 Unbounded,sans-serif;margin:0 0 10px;letter-spacing:-.02em}
-.tile p{color:var(--mute);margin:0;line-height:1.6;font-size:15px;max-width:420px}
-.tile .tag{display:inline-block;font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#08080a;background:#fff;padding:5px 10px;border-radius:999px;margin-bottom:18px}
-.tile.glow::after{content:"";position:absolute;width:300px;height:300px;right:-80px;bottom:-120px;border-radius:50%;background:var(--holo);filter:blur(70px);opacity:.35}
-.miniplan{position:absolute;right:28px;top:28px;bottom:28px;width:44%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-content:center}
-.miniplan i{height:44px;border-radius:10px;background:#1c1c23;border:1px solid #2a2a33;transition:.25s;cursor:pointer}
-.miniplan i:hover,.miniplan i.hot{background:#fff;box-shadow:0 0 24px rgba(169,112,255,.7)}
-.stat{font:900 56px Unbounded,system-ui,sans-serif;letter-spacing:-.04em;margin-top:18px}
-.lb{margin-top:18px;display:grid;gap:8px}
-.lb div{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#191920;font-size:14px}
-.lb div b{font-family:Unbounded;width:22px}.lb div span{margin-left:auto;color:var(--mute);font-size:13px}
-.notif{margin-top:18px;padding:14px;border-radius:16px;background:#191920;display:flex;gap:12px;align-items:center;font-size:14px;animation:pop 3s ease-in-out infinite}
-.notif .i{width:36px;height:36px;border-radius:10px;background:var(--holo);flex:none}
-@keyframes pop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.swatches{display:flex;gap:10px;margin-top:20px}.swatches i{width:40px;height:40px;border-radius:12px;border:1px solid var(--line)}
-
-/* DISCO */
-#shows{text-align:center;overflow:hidden}
-#shows h2,#shows .sub{margin-left:auto;margin-right:auto}
-#shows .eyebrow{justify-content:center}
-.showgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:56px;text-align:left}
-.sc{border-radius:22px;background:var(--card);border:1px solid var(--line);overflow:hidden}
-.sc .v{height:170px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#2b1747,#0b0b10 70%)}
-.sc .t{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
-.sc .t span{font:700 13px Unbounded,system-ui,sans-serif;color:var(--mute)}
-.sc .v svg{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);height:160px}
-
-/* PRICING */
-.prices{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:56px}
-.price{border-radius:30px;background:var(--card);border:1px solid var(--line);padding:38px;position:relative}
-.price.best{background:linear-gradient(#121216,#121216) padding-box,var(--holo) border-box;border:1.5px solid transparent}
-.price h3{font:700 20px Unbounded,system-ui,sans-serif;margin:0}
-.price .amt{font:900 64px Unbounded,system-ui,sans-serif;letter-spacing:-.04em;margin:18px 0 4px}
-.price .amt span{font:600 16px Manrope,system-ui,sans-serif;color:var(--mute);letter-spacing:0}
-.price .nt{color:var(--mute);margin-bottom:26px}
-.price ul{list-style:none;padding:0;margin:0 0 30px;display:grid;gap:12px}
-.price li{display:flex;gap:12px;font-size:15px}
-.price li::before{content:"";flex:none;width:18px;height:18px;margin-top:2px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12l4 4 8-8' stroke='%23000' stroke-width='3' fill='none'/%3E%3C/svg%3E") center/12px no-repeat}
-.price .btn{width:100%}
-.badge{position:absolute;top:24px;right:24px;font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:999px;background:var(--holo);color:#000}
-
-/* FAQ */
-.q:is(a):hover{border-color:rgba(255,255,255,.3)}
-.faq{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:56px}
-.q{border-radius:22px;background:var(--card);border:1px solid var(--line);padding:26px 28px}
-.q h4{font:700 17px/1.35 Unbounded,sans-serif;margin:0 0 10px;letter-spacing:-.01em}
-.q p{margin:0;color:var(--mute);line-height:1.65;font-size:15px}
-
-.final{text-align:center;padding:150px 24px 130px;overflow:hidden}
-.final h2{margin:0 auto 18px;max-width:900px;font-size:clamp(40px,6.4vw,90px)}
-footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-content:space-between;color:#6a6875;font-size:13px}
-
-/* disco character anim */
-.dz .bob{animation:bob .9s ease-in-out infinite}
-.dz .armL{animation:armL .9s ease-in-out infinite;transform-origin:72px 118px}
-.dz .armR{animation:armR .9s ease-in-out infinite;transform-origin:128px 118px}
-.dz .head{animation:tilt 1.8s ease-in-out infinite;transform-origin:100px 92px}
-.dz.alt .bob,.dz.alt .armL,.dz.alt .armR{animation-delay:-.45s}
-.dz.slow .bob,.dz.slow .armL,.dz.slow .armR{animation-duration:1.15s}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes armL{0%,100%{transform:rotate(0)}50%{transform:rotate(-24deg)}}
-@keyframes armR{0%,100%{transform:rotate(0)}50%{transform:rotate(24deg)}}
-@keyframes tilt{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
-.twk{animation:twk 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-@keyframes twk{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1)}}
-
-.rv{opacity:0;transform:translateY(26px);transition:.9s cubic-bezier(.2,.7,.2,1)}.rv.in{opacity:1;transform:none}
-
-@media (max-width:980px){
-  .who,.evstage{grid-template-columns:1fr}.thgrid,.org{grid-template-columns:1fr;gap:30px}.wc{min-height:320px}
-  .links{display:none}
-  .how{grid-template-columns:1fr}.phonecol{display:none}.steps .st{min-height:auto;padding:28px 0;opacity:1}
-  .bento{grid-template-columns:1fr 1fr}.tile,.tile.w3,.tile.w4{grid-column:span 2}
-  .showgrid{grid-template-columns:1fr 1fr}.prices,.faq{grid-template-columns:1fr}
-  .heroball{width:90px}.heroball.r{display:none}
-  .miniplan{position:static;width:100%;margin-top:20px}.tile p[style]{max-width:none!important}
-}
-@media (max-width:980px){#projet .faq{grid-template-columns:1fr!important}}
-@media (max-width:560px){.nav-cta{display:none}nav{padding:12px 20px}.showgrid{grid-template-columns:1fr}footer{flex-direction:column;gap:8px;text-align:center}.floorwrap{height:240px}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-.live{width:min(1180px,100%);margin:34px auto 0;text-align:left}
-.livehead{display:flex;align-items:center;gap:10px;justify-content:center;font-size:14px;color:#bdbbc9;margin-bottom:14px;text-align:center}
-.rec{width:9px;height:9px;border-radius:50%;background:#ff3b5c;box-shadow:0 0 0 0 rgba(255,59,92,.6);animation:rec 1.6s infinite;flex:none}
-@keyframes rec{70%{box-shadow:0 0 0 10px rgba(255,59,92,0)}100%{box-shadow:0 0 0 0 rgba(255,59,92,0)}}
-.liveframe{position:relative;border-radius:24px;padding:1px;background:var(--holo);box-shadow:0 30px 120px rgba(169,112,255,.22),0 0 0 8px rgba(255,255,255,.03)}
-.liveframe iframe{display:block;width:100%;height:min(760px,82vh);border:0;border-radius:23px;background:#060607}
-.tune{display:flex;flex-wrap:wrap;gap:14px 26px;justify-content:center;margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.02)}
-.tg{display:grid;gap:8px;justify-items:start}
-.tg>b{font:700 11px Manrope,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips button{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:#121216;color:#d9d8e2;font:700 13px Manrope,sans-serif;cursor:pointer;transition:.15s}
-.chips button i{width:16px;height:16px;border-radius:50%;display:block}
-.chips button:hover{border-color:rgba(255,255,255,.3)}
-.chips button.on{background:#fff;color:#08080a;border-color:#fff}
-.sws{display:flex;gap:7px;flex-wrap:wrap}
-.sws button{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.12);cursor:pointer;transition:.15s}
-.sws button.on{outline:2px solid #fff;outline-offset:2px}
-.fulldemo{display:block;text-align:center;margin-top:14px;color:#bdbbc9;font-size:14px;font-weight:700;text-decoration:none}
-.fulldemo:hover{color:#fff}
-.hero{padding-top:112px}
-.hero h1{font-size:clamp(40px,6.2vw,92px);margin:22px 0 18px}
-.hero .lead{margin-bottom:22px;font-size:17px}
-.hero .aud{margin-bottom:14px}
-.live{margin-top:24px}
-@media (max-width:560px){.liveframe iframe{height:640px}.tune{justify-content:flex-start}.hero{padding-top:110px}}
-
-.stairs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:end;height:300px;margin:44px 0 0;padding:0 4px;border-bottom:1px solid var(--line)}
-.st{height:var(--h);border-radius:18px 18px 0 0;background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border:1px solid var(--line);border-bottom:0;padding:16px;display:flex;flex-direction:column;gap:6px;position:relative}
-.st b{font:800 clamp(20px,2.6vw,32px) Unbounded,sans-serif}
-.st span{font-size:13px;color:#bdbbc9;line-height:1.4}
-.st i{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-top:auto}
-.st.on{background:linear-gradient(180deg,rgba(169,112,255,.35),rgba(79,216,255,.06));border-color:rgba(169,112,255,.5)}
-.st.on b{background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
-.tix3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
-.tix3>div{border:1px solid var(--line);border-radius:20px;padding:22px;background:var(--card)}
-.tix3 h4{font:800 16px Unbounded,sans-serif;margin:0 0 8px}
-.tix3 p{color:var(--mute);margin:0;line-height:1.6;font-size:15px}
-@media (max-width:760px){.stairs{height:260px;gap:6px}.st{padding:10px;border-radius:12px 12px 0 0}.st span{font-size:11px}.tix3{grid-template-columns:1fr}}
-
-nav .links a,nav .nav-cta{white-space:nowrap}
-
-/* Visite guidée de la démo */
-.tourbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 0 14px}
-.tourbar button{min-height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#bdbbc9;font:700 13px Manrope,system-ui,sans-serif;cursor:pointer;transition:.15s}
-.tourbar button:hover{color:#fff;border-color:rgba(255,255,255,.3)}
-.tourbar button.on{background:var(--holo);color:#0a0a0c;border-color:transparent}
-.liveframe{position:relative}
-.tipwrap{text-align:center;margin:0 0 20px}
-.tip{position:relative;display:inline-flex;max-width:560px;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:14px;background:#fff;color:#111;font:600 13.5px/1.45 Manrope,system-ui,sans-serif;box-shadow:0 14px 40px rgba(0,0,0,.5);transition:opacity .25s}
-.tip i{flex:none;width:10px;height:10px;margin-top:4px;border-radius:50%;background:#ff3b5c;box-shadow:0 0 0 0 rgba(255,59,92,.6);animation:rec 1.6s infinite}
+/* Démo en direct */
+.demo{margin-top:56px}
+.demohead{display:flex;align-items:center;gap:9px;justify-content:center;font-size:14px;color:#bdbbc9;margin-bottom:16px}
+.rec{width:9px;height:9px;border-radius:50%;background:#ff3b5c;animation:rec 1.6s infinite;flex:none}
+@keyframes rec{0%{box-shadow:0 0 0 0 rgba(255,59,92,.6)}70%{box-shadow:0 0 0 10px rgba(255,59,92,0)}100%{box-shadow:0 0 0 0 rgba(255,59,92,0)}}
+.chapters{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.chapters button{min-height:38px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#bdbbc9;font:700 13px Manrope,system-ui,sans-serif;cursor:pointer;transition:.15s}
+.chapters button:hover{color:#fff}
+.chapters button.on{background:#fff;color:#08080a;border-color:#fff}
+.tip{display:inline-flex;gap:10px;align-items:flex-start;text-align:left;max-width:560px;margin:0 auto 18px;padding:11px 15px;border-radius:14px;background:#fff;color:#111;font:600 13.5px/1.45 Manrope,system-ui,sans-serif;position:relative}
+.tip i{flex:none;width:9px;height:9px;margin-top:4px;border-radius:50%;background:#ff3b5c;animation:rec 1.6s infinite}
 .tip::after{content:"";position:absolute;left:50%;margin-left:-7px;bottom:-7px;width:14px;height:14px;background:#fff;transform:rotate(45deg)}
+.frame{border-radius:24px;padding:1px;background:var(--holo);background-size:200% 100%;animation:hs 7s linear infinite;box-shadow:0 30px 110px rgba(169,112,255,.22)}
+.frame iframe{display:block;width:100%;height:min(740px,80vh);border:0;border-radius:23px;background:#060607}
+.skin{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--mute);align-items:center}
+.skin button{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.14);cursor:pointer}
+.skin button.on{outline:2px solid #fff;outline-offset:2px}
+.skin .amb{width:auto;height:34px;border-radius:999px;padding:0 13px;background:#101014;color:#bdbbc9;font:700 12.5px Manrope,system-ui,sans-serif;border:1px solid var(--line)}
+.skin .amb.on{background:#fff;color:#08080a;border-color:#fff;outline:0}
 
-/* Polaroïds */
-.nuit{padding-top:100px}
-.polas{display:flex;gap:18px;overflow-x:auto;padding:36px 4px 10px;scrollbar-width:none}
-.polas::-webkit-scrollbar{display:none}
-.pola{flex:0 0 206px;margin:0;background:#f4f2ec;border-radius:4px;padding:12px 12px 0;box-shadow:0 18px 44px rgba(0,0,0,.55);transform:rotate(var(--r,0deg));transition:transform .3s}
-.pola:hover{transform:rotate(0) translateY(-6px)}
-.pola .shot{height:150px;border-radius:2px;position:relative;overflow:hidden;display:grid;place-items:center}
-.pola figcaption{font:600 10.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#2a2a2e;letter-spacing:-.02em;padding:11px 2px 16px;text-align:center}
-.shot.a{background:radial-gradient(circle at 50% 30%,#3a2b66,#0b0712)}
-.shot.a svg{width:112px;filter:drop-shadow(0 0 24px rgba(169,112,255,.75))}
-.shot.b{background:radial-gradient(circle at 50% 60%,#13324a,#060b12)}
-.shot.c{background:radial-gradient(circle at 50% 40%,#1f3a2a,#050c08)}
-.shot.d{background:radial-gradient(circle at 50% 70%,#5a1f46,#120611);align-items:end}
-.shot.d svg{width:120px;margin-bottom:-6px}
-.shot.e{background:radial-gradient(circle at 50% 80%,#4a3a12,#0f0b05)}
-.coins{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.coins i{width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#8fd3ff,#2f7fb5);box-shadow:0 0 14px rgba(79,216,255,.6)}
-.coins i:nth-child(5),.coins i:nth-child(6){opacity:.35}
-.qrsmall{width:92px;height:92px;border-radius:6px;padding:4px;background:#fff;box-shadow:0 0 30px rgba(125,255,168,.5)}
-.bott{width:44px;height:120px;border-radius:14px 14px 8px 8px;background:linear-gradient(180deg,#f7dc95,#a87a2c);box-shadow:0 0 30px rgba(247,220,149,.55);position:relative}
-.bott::before{content:"";position:absolute;left:50%;top:-22px;margin-left:-7px;width:14px;height:26px;border-radius:4px;background:#c8a64e}
-.sprk{position:absolute;left:50%;top:14px;width:2px;height:54px;margin-left:-1px;background:linear-gradient(180deg,#fff,rgba(255,255,255,0));box-shadow:0 0 16px #fff}
-@media (max-width:760px){.pola{flex-basis:190px}.tip{max-width:none}}
+/* Bénéfices */
+.gains{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.gain{border:1px solid var(--line);border-radius:22px;background:var(--card);padding:28px;display:grid;gap:12px;align-content:start}
+.gain .big{font:900 clamp(34px,4vw,48px)/1 Unbounded,system-ui,sans-serif}
+.gain p{margin:0;color:var(--mute);font-size:15.5px;line-height:1.65}
+@media(max-width:860px){.gains{grid-template-columns:1fr}}
 
-/* Maquette de l'espace club */
+/* Bande « aussi inclus » */
+.strip{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.strip span{border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-size:13.5px;color:#cfcdd9;background:#0e0e12}
+
+/* Espace club */
 .apptabs{display:flex;gap:6px;flex-wrap:wrap;margin:30px 0 16px}
-.apptabs button{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#bdbbc9;font:700 13.5px Manrope,system-ui,sans-serif;cursor:pointer;transition:.15s}
-.apptabs button:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+.apptabs button{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#bdbbc9;font:700 13.5px Manrope,system-ui,sans-serif;cursor:pointer}
 .apptabs button.on{background:#fff;color:#08080a;border-color:#fff}
 .appwin{border:1px solid var(--line);border-radius:20px;background:#0a0a0d;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.6)}
 .appbar{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line);background:#101014;font:700 13px Manrope,system-ui,sans-serif;color:#cfcdd9}
@@ -355,81 +96,83 @@ nav .links a,nav .nav-cta{white-space:nowrap}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
 .kpis>div{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--card)}
 .kpis span{display:block;font-size:12px;color:var(--mute)}
-.kpis b{font:800 22px Unbounded,sans-serif}
-.appgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.kpis b{font:800 22px Unbounded,system-ui,sans-serif}
+.appgrid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;align-items:start}
 .appplan{position:relative;aspect-ratio:16/9;border:1px solid var(--line);border-radius:16px;background:#0d0d11;overflow:hidden}
 .appplan .t{position:absolute;border-radius:9px;border:1.5px solid var(--line);background:#15151b;display:grid;place-items:center;text-align:center;font:700 11px Manrope,system-ui,sans-serif;font-style:normal;color:#e7e5ef;padding:2px}
 .appplan .t em{display:block;font-style:normal;font-weight:600;font-size:9.5px;color:#9b99a7;margin-top:2px}
 .appplan .t.pris{background:rgba(169,112,255,.22);border-color:rgba(169,112,255,.7)}
 .appplan .t.arrive{background:rgba(61,220,151,.22);border-color:rgba(61,220,151,.7)}
 .appplan .t.arrive em,.appplan .t.pris em{color:#e7e5ef}
-.appplan .piste{position:absolute;left:28%;top:36%;width:44%;height:30%;border-radius:50%;background:radial-gradient(circle,rgba(169,112,255,.3),rgba(79,216,255,.12));display:grid;place-items:center;font:800 11px Unbounded,sans-serif;font-style:normal;letter-spacing:.2em;color:#cfcdd9}
+.appplan .piste{position:absolute;left:28%;top:36%;width:44%;height:30%;border-radius:50%;background:radial-gradient(circle,rgba(169,112,255,.3),rgba(79,216,255,.12));display:grid;place-items:center;font:800 11px Unbounded,system-ui,sans-serif;font-style:normal;letter-spacing:.2em;color:#cfcdd9}
 .appside{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px;display:grid;gap:9px;align-content:start}
-.appside>b{font:800 18px Unbounded,sans-serif}
+.appside>b{font:800 18px Unbounded,system-ui,sans-serif}
 .mut{color:var(--mute);font-size:12.5px;line-height:1.5}
-.appcard{border:1px solid var(--line);border-radius:14px;background:var(--card2,#101014);padding:12px;display:grid;gap:6px}
+.appcard{border:1px solid var(--line);border-radius:14px;background:var(--card2);padding:12px;display:grid;gap:6px}
 .appcard .ln{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
 .appcard .ln b{color:var(--text)}
 .chip{justify-self:start;font:700 11px Manrope,system-ui,sans-serif;padding:3px 9px;border-radius:999px;background:#22222a;color:#cfcdd9}
 .approw{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .btnfake{display:inline-flex;align-items:center;min-height:34px;padding:0 13px;border-radius:999px;border:1px solid var(--line);font:700 12.5px Manrope,system-ui,sans-serif;color:#cfcdd9;background:#15151b}
 .btnfake.main{background:#fff;color:#08080a;border-color:#fff}
-.kpis.four{grid-template-columns:repeat(4,1fr)}
-.appbars{display:flex;align-items:flex-end;gap:12px;height:180px;margin:6px 0 18px;padding:0 2px}
+.appbars{display:flex;align-items:flex-end;gap:12px;height:170px;margin:6px 0 18px}
 .appbars>div{flex:1;display:grid;grid-template-rows:1fr auto auto;gap:4px;justify-items:center;height:100%}
 .appbars i{width:100%;max-width:60px;height:var(--h);align-self:end;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#a970ff,#4fd8ff)}
 .appbars em{font-style:normal;font-size:11.5px;font-weight:700}
 .appbars span{font-size:11px;color:var(--mute)}
 .appgrid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .appgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.mline{display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;font-size:13px}
+.mline{display:grid;grid-template-columns:84px 1fr auto;gap:10px;align-items:center;font-size:13px}
 .mline u{text-decoration:none;height:8px;border-radius:9px;background:#1b1b22;position:relative;overflow:hidden}
 .mline u::after{content:"";position:absolute;inset:0;width:var(--w);border-radius:9px;background:linear-gradient(90deg,#a970ff,#4fd8ff)}
 .mline em{font-style:normal;font-weight:700;font-size:12.5px}
 .envoi .eh{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.envoi .eh b{font:800 17px Unbounded,sans-serif}
+.envoi .eh b{font:800 17px Unbounded,system-ui,sans-serif}
 .envoi .num{font:800 11px Manrope,system-ui,sans-serif;padding:3px 9px;border-radius:999px;background:#1a1a20;color:#cfcdd9}
 .envoi .it{font-size:13.5px;padding:7px 9px;border-radius:9px;background:#0f0f13}
-.envoi .cashline{font-size:12.5px;padding:7px 9px;border-radius:9px;background:rgba(255,210,95,.1);color:#ffd25f}
+.envoi .it.g{background:rgba(169,112,255,.12);border:1px solid rgba(169,112,255,.35)}
 .envoi .ok{color:#3ddc97;font-size:13px;font-weight:700}
-.envoi.done{opacity:.72}
-.porte{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
-.codein{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:800 19px ui-monospace,Menlo,monospace;letter-spacing:.12em}
-.appcard.valid{border-color:rgba(61,220,151,.5);box-shadow:0 0 0 1px rgba(61,220,151,.3) inset}
-.appcard.warn{border-color:rgba(255,176,32,.5);box-shadow:0 0 0 1px rgba(255,176,32,.3) inset}
-.green{color:#3ddc97;font-size:19px}.orange{color:#ffb020;font-size:14px}
-.apptable{width:100%;border-collapse:collapse;font-size:13.5px}
-.apptable th{text-align:left;color:var(--mute);font-weight:600;padding:10px 8px;border-bottom:1px solid var(--line);font-size:12.5px}
-.apptable td{padding:12px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-.apptable td .mut{display:block;margin-top:2px}
-@media (max-width:900px){.appgrid,.appgrid2,.porte{grid-template-columns:1fr}.appgrid3{grid-template-columns:1fr}.kpis,.kpis.four{grid-template-columns:repeat(2,1fr)}.apptable{display:block;overflow-x:auto}}
+@media(max-width:900px){.appgrid,.appgrid2{grid-template-columns:1fr}.appgrid3{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
 
-/* Problèmes */
-.probs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}
-.prob{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px;display:grid;gap:10px;align-content:start}
-.prob h3{font:800 16px/1.35 Unbounded,sans-serif;margin:0}
-.prob p{margin:0;color:var(--mute);font-size:15px;line-height:1.6}
-.prob span{justify-self:start;font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:#17171d;color:#9b99a7}
+/* Tarifs */
+.calcmini{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px;margin-top:34px}
+.calcmini label{display:grid;gap:6px;font:600 12.5px Manrope,system-ui,sans-serif;color:#cfcdd9}
+.calcmini input{width:120px;min-height:46px;border-radius:12px;border:1px solid var(--line);background:#0c0c0f;color:var(--text);padding:0 14px;font:700 16px Manrope,system-ui,sans-serif}
+.calcmini .res{margin-left:auto;text-align:right}
+.calcmini .res span{display:block;font-size:12.5px;color:var(--mute)}
+.calcmini .res b{font:900 clamp(26px,3vw,36px) Unbounded,system-ui,sans-serif}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.plan{border:1px solid var(--line);border-radius:24px;background:var(--card);padding:30px;display:grid;gap:14px;align-content:start;position:relative}
+.plan.best{border-color:rgba(169,112,255,.55);box-shadow:0 0 0 1px rgba(169,112,255,.25)}
+.plan .tagbest{position:absolute;top:-12px;left:30px;font:800 10.5px Manrope,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;padding:6px 12px;border-radius:999px;background:var(--holo);background-size:200% 100%;color:#0a0a0c;animation:hs 7s linear infinite}
+.price{font:900 clamp(34px,4vw,46px) Unbounded,system-ui,sans-serif}
+.price small{font:700 14px Manrope,system-ui,sans-serif;color:var(--mute)}
+.plan ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:14.5px;color:#cfcdd9}
+.plan li{display:flex;gap:9px}
+.plan li::before{content:"✓";color:var(--ok);font-weight:900}
+.orga{margin-top:16px;border:1px dashed var(--line);border-radius:20px;padding:20px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;color:var(--mute);font-size:14.5px}
+@media(max-width:860px){.plans{grid-template-columns:1fr}.calcmini .res{margin-left:0;text-align:left;width:100%}}
 
-/* Calculateur */
-.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:34px;align-items:start}
-.calcin{display:grid;grid-template-columns:1fr 1fr;gap:12px;border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px}
-.calcin label{display:grid;gap:6px;font:600 12.5px Manrope,system-ui,sans-serif;color:#cfcdd9}
-.calcin input{min-height:46px;border-radius:12px;border:1px solid var(--line);background:#0c0c0f;color:var(--text);padding:0 14px;font:700 16px Manrope,system-ui,sans-serif}
-.calcin input:focus{outline:2px solid #a970ff;outline-offset:1px}
-.calcout{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px;display:grid;gap:14px;align-content:start}
-.co{display:grid;gap:2px}
-.co span{font-size:13px;color:var(--mute)}
-.co b{font:800 30px Unbounded,sans-serif}
-.co.big{border-top:1px solid var(--line);padding-top:14px}
-.co.big b{font-size:40px}
-.calcnote{margin:0;font-size:12px;color:var(--mute);line-height:1.6}
-@media (max-width:900px){.probs{grid-template-columns:1fr}.calc{grid-template-columns:1fr}.calcin{grid-template-columns:1fr 1fr}}
-</style>
-</head>
+/* FAQ */
+.faq{display:grid;gap:10px;margin-top:32px;max-width:820px}
+.faq details{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:18px 22px}
+.faq summary{cursor:pointer;font:800 15.5px Manrope,system-ui,sans-serif;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";float:right;color:var(--mute);font-weight:800}
+.faq details[open] summary::after{content:"−"}
+.faq p{margin:12px 0 0;color:var(--mute);line-height:1.65;font-size:15px}
+
+/* Fin */
+.final{text-align:center;padding:100px 0 110px;border-top:1px solid var(--line);background:radial-gradient(900px 300px at 50% 0%,rgba(169,112,255,.14),transparent)}
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* Apparition au défilement */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}*{animation:none!important}}
+</style></head>
 <body>
-<canvas id="lights"></canvas>
-
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs>
   <radialGradient id="shade" cx="36%" cy="30%" r="72%"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#000" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>
@@ -472,201 +215,113 @@ nav .links a,nav .nav-cta{white-space:nowrap}
 
 <nav>
   <a href="#" class="logo"><span class="dot"></span>tablo</a>
-  <div class="links"><a href="#comment">Comment ça marche</a><a href="#espace-club">Espace club</a><a href="#billetterie">Billetterie</a><a href="#calcul">Calculateur</a><a href="#tarifs">Tarifs</a><a href="/connexion">Connexion</a></div>
-  <a href="#essai" class="btn main nav-cta">Essayer maintenant</a>
+  <div class="links">
+    <a href="#demo">La démo</a>
+    <a href="#espace-club">Espace club</a>
+    <a href="#tarifs">Tarifs</a>
+    <a href="/connexion">Connexion</a>
+  </div>
+  <a href="/inscription" class="btn main sm">Créer mon espace</a>
 </nav>
 
 <main>
 <header class="hero">
-  <div class="heroball"><div class="rope"></div><svg viewBox="0 0 120 120"><use href="#ball"/></svg></div>
-  <div class="heroball r"><div class="rope"></div><svg viewBox="0 0 120 120"><use href="#ball"/></svg></div>
-  <div class="pill"><b>NOUVEAU</b>Carrés VIP et soirées à thème, réservés en ligne</div>
-  <h1><span class="chrome">Vendez la nuit,</span><br><span class="holo">carré par carré.</span></h1>
-  <div class="aud" role="tablist" aria-label="Vous êtes"><button class="on" data-aud="0">Un club</button><button data-aud="1">Un beach club</button><button data-aud="2">Un organisateur de soirées</button></div>
-  <p class="lead" id="audlead">Tablo s'installe sur votre site en une ligne. Vos clients choisissent leur carré, leurs bouteilles et leur show, puis paient entre amis. Vous, vous encaissez.</p>
-  <div class="ctas"><a href="/inscription" class="btn main">Créer l'espace de mon club</a><a href="#comment" class="btn out">Voir comment ça marche</a></div>
-  <div class="live" id="essai">
-    <div class="livehead"><span class="rec"></span>En direct : c'est la vraie fenêtre de réservation, telle que la voient vos clients.</div>
-    <div class="tourbar" id="tourbar" role="tablist" aria-label="Visite guidée">
-      <button class="on" data-tour="0">1 · Le carré</button>
-      <button data-tour="1">2 · Les bouteilles</button>
-      <button data-tour="2">3 · Shows et pancarte</button>
-      <button data-tour="3">4 · Payer entre amis</button>
-      <button data-tour="tix">5 · L'entrée</button>
+  <svg class="ball l" viewBox="0 0 120 120" aria-hidden="true"><use href="#ball"/></svg>
+  <svg class="ball r" viewBox="0 0 120 120" aria-hidden="true"><use href="#ball"/></svg>
+  <div class="wrap">
+    <span class="badge"><b>Nouveau</b> Carrés VIP, billetterie et cagnotte, au même endroit</span>
+    <h1>Vos carrés se vendent<br><span class="holo">sur votre site.</span></h1>
+    <p class="lead">Le client choisit son carré sur le plan, ses bouteilles et son show, puis paie l'acompte. Vous ouvrez le samedi avec la soirée déjà vendue.</p>
+    <div class="ctas">
+      <a href="/inscription" class="btn main">Créer l'espace de mon club</a>
+      <a href="#demo" class="btn">Essayer la démo</a>
     </div>
-    <div class="tipwrap"><div class="tip" id="tip"><i></i><span>Touchez un carré libre sur le plan : le client voit la catégorie, le minimum et les shows offerts.</span></div></div>
-    <div class="liveframe">
-      <iframe id="liveW" src="demo.html?embed=1" title="Démo de réservation de carré Tablo" loading="eager"></iframe>
+    <div class="proofs">
+      <span><i>✓</i> 0 % de commission</span>
+      <span><i>✓</i> Installé en une ligne sur votre site</span>
+      <span><i>✓</i> Sans engagement</span>
     </div>
-    <div class="tune" aria-label="Personnaliser la démo">
-      <div class="tg"><b>Ambiance</b><div class="chips" id="tAmb">
-        <button data-amb="tablo" class="on"><i style="background:#060607;border:1px solid #333"></i>Tablo</button>
-        <button data-amb="masque"><i style="background:radial-gradient(circle at 50% 0%,#283080,#0c0f33)"></i>Bal masqué</button>
-        <button data-amb="jungle"><i style="background:radial-gradient(circle at 30% 0%,#0f5a36,#04170e)"></i>Jungle</button>
-        <button data-amb="disco"><i style="background:radial-gradient(circle at 50% 0%,#3b1d6e,#0b0716)"></i>Disco</button>
-        <button data-amb="pool"><i style="background:linear-gradient(180deg,#ffb45f,#ff7aa8 50%,#2bd4c4)"></i>Pool party</button>
-        <button data-amb="chic"><i style="background:#f6f5f2"></i>Chic clair</button>
-      </div></div>
-      <div class="tg"><b>Couleur</b><div class="sws" id="tCol">
-        <button style="background:#ffffff" data-c="#ffffff" aria-label="Blanc"></button><button style="background:#e2b860" data-c="#e2b860" aria-label="Or"></button><button style="background:#ff5fa2" data-c="#ff5fa2" aria-label="Rose"></button><button style="background:#a970ff" data-c="#a970ff" aria-label="Violet"></button><button style="background:#4fd8ff" data-c="#4fd8ff" aria-label="Bleu"></button><button style="background:#7dffa8" data-c="#7dffa8" aria-label="Vert"></button><button style="background:#ff3b3b" data-c="#ff3b3b" aria-label="Rouge"></button>
-      </div></div>
-      <div class="tg"><b>Boutons</b><div class="chips" id="tBtn"><button data-btn="pill">Pilule</button><button data-btn="round">Arrondis</button><button data-btn="square">Carrés</button></div></div>
-      <div class="tg"><b>Vendre</b><div class="chips" id="tMode"><button data-mode="vip" class="on">Carré VIP</button><button data-mode="tix">Entrée</button></div></div>
-      <div class="tg"><b>Lieu</b><div class="chips" id="tVen"><button data-v="club" class="on">Club</button><button data-v="beach">Beach club</button></div></div>
-    </div>
-    <a class="fulldemo" href="/demo">Voir la démo complète, avec le site du club et l'espace de personnalisation →</a>
-  </div>
-  <div class="floorwrap">
-    <div class="floor" id="floor"></div>
-    <div class="crew">
-      <svg class="dz" viewBox="0 0 200 330" aria-hidden="true"><use href="#guy"/></svg>
-      <svg class="dz alt big" viewBox="0 0 200 330" aria-hidden="true"><use href="#guy"/></svg>
-      <svg class="dz slow" viewBox="0 0 200 330" aria-hidden="true" style="transform:scaleX(-1)"><use href="#guy"/></svg>
+
+    <div class="demo" id="demo">
+      <div class="demohead"><span class="rec"></span>En direct : la vraie fenêtre de réservation, telle que la voient vos clients.</div>
+      <div class="chapters" id="chapters" role="tablist" aria-label="Visite guidée">
+        <button class="on" data-tour="0">1 · Le carré</button>
+        <button data-tour="1">2 · Les bouteilles</button>
+        <button data-tour="2">3 · Shows et pancarte</button>
+        <button data-tour="3">4 · Payer entre amis</button>
+        <button data-tour="tix">5 · L'entrée</button>
+      </div>
+      <div class="tip" id="tip"><i></i><span>Touchez un carré libre : le client voit la catégorie, le minimum et les shows offerts.</span></div>
+      <div class="frame"><iframe id="liveW" src="demo.html?embed=1" title="Démo de réservation Tablo" loading="eager"></iframe></div>
+      <div class="skin" id="skin">
+        <span>À vos couleurs :</span>
+        <button class="amb on" data-amb="tablo">Club</button>
+        <button class="amb" data-amb="masque">Bal masqué</button>
+        <button class="amb" data-amb="jungle">Jungle</button>
+        <button class="amb" data-amb="disco">Disco</button>
+        <button class="amb" data-amb="pool">Beach club</button>
+        <button style="background:#ffffff" data-c="#ffffff" aria-label="Blanc"></button>
+        <button style="background:#e2b860" data-c="#e2b860" aria-label="Or"></button>
+        <button style="background:#ff5fa2" data-c="#ff5fa2" aria-label="Rose"></button>
+        <button style="background:#4fd8ff" data-c="#4fd8ff" aria-label="Bleu"></button>
+        <button style="background:#7dffa8" data-c="#7dffa8" aria-label="Vert"></button>
+      </div>
     </div>
   </div>
 </header>
 
-
-<!-- LA NUIT -->
-<section id="nuit" class="nuit">
+<section id="gains">
   <div class="wrap">
-    <div class="eyebrow rv">Une soirée vue de la régie</div>
-    <h2 class="rv">Ce que Tablo fait pendant que vous travaillez.</h2>
-    <div class="polas">
-      <figure class="pola rv" style="--r:-3deg">
-        <div class="shot a"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#ball"/></svg></div>
-        <figcaption>[18:02] CARRÉ IMPÉRIAL RÉSERVÉ · 2 190 €</figcaption>
-      </figure>
-      <figure class="pola rv" style="--r:2deg">
-        <div class="shot b"><span class="coins"><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
-        <figcaption>[20:41] CAGNOTTE COMPLÈTE · 6 AMIS</figcaption>
-      </figure>
-      <figure class="pola rv" style="--r:-2deg">
-        <div class="shot c"><svg class="qrsmall" viewBox="0 0 21 21" shape-rendering="crispEdges" aria-hidden="true"><rect width="21" height="21" fill="#fff"/><g fill="#111"><path d="M0 0h7v7H0zm1 1v5h5V1z"/><path d="M2 2h3v3H2z"/><path d="M14 0h7v7h-7zm1 1v5h5V1z"/><path d="M16 2h3v3h-3z"/><path d="M0 14h7v7H0zm1 1v5h5v-5z"/><path d="M2 16h3v3H2z"/><path d="M9 0h1v2H9zm2 1h1v2h-1zM8 3h2v1H8zm3 2h2v1h-2zM9 6h1v2H9zm4-3h1v3h-1zM8 9h2v1H8zm3 0h1v2h-1zm2 1h2v1h-2zm3 2h1v2h-1zm-2 1h1v1h-1zm3 1h2v1h-2zm-5 1h1v2h-1zm3 1h1v2h-1zm2 1h1v1h-1zm-5 2h2v1h-2zm4 0h1v1h-1zM9 12h1v2H9zm-2 2h1v1H7zm0 3h1v1H7zm2 1h1v2H9zm2-2h1v1h-1zM3 9h2v1H3zM0 9h2v1H0zm6 1h1v2H6zM4 11h1v1H4zm13-2h2v1h-2zm2 2h2v1h-2z"/></g></svg></div>
-        <figcaption>[23:12] 4 ENTRÉES SCANNÉES À LA PORTE</figcaption>
-      </figure>
-      <figure class="pola rv" style="--r:3deg">
-        <div class="shot d"><svg class="dz" viewBox="0 0 200 330" aria-hidden="true"><use href="#guy"/></svg></div>
-        <figcaption>[00:28] SHOW DANSEURS · CARRÉ SCÈNE 1</figcaption>
-      </figure>
-      <figure class="pola rv" style="--r:-4deg">
-        <div class="shot e"><span class="bott"></span><span class="sprk"></span></div>
-        <figcaption>[01:05] ENVOI N°2 SERVI · 3 MAGNUMS</figcaption>
-      </figure>
+    <div class="eyebrow rv">Ce que ça change</div>
+    <h2 class="rv">Trois raisons de passer en ligne.</h2>
+    <div class="gains">
+      <article class="gain rv">
+        <span class="big holo">0 %</span>
+        <h3>De commission</h3>
+        <p>79 € par mois, quoi que vous vendiez. L'argent des réservations arrive directement sur le compte du club, pas sur le nôtre.</p>
+      </article>
+      <article class="gain rv">
+        <span class="big chrome">Acompte</span>
+        <h3>Fini les carrés fantômes</h3>
+        <p>Acompte obligatoire par catégorie, carte enregistrée en garantie. Un carré bloqué est un carré payé.</p>
+      </article>
+      <article class="gain rv">
+        <span class="big chrome">+ panier</span>
+        <h3>Les extras se vendent tout seuls</h3>
+        <p>Bouteilles, couronnes, shows et pancarte au prénom : le client ajoute lui-même, avant la soirée, sans qu'un serveur ait à vendre.</p>
+      </article>
     </div>
-    <p class="sub rv" style="max-width:720px;margin-top:26px">Vous n'avez rien tapé de la nuit : les carrés se vendent, la cagnotte se remplit, les entrées se contrôlent et les serveurs reçoivent les envois sur leur téléphone.</p>
-  </div>
-</section>
-
-<div class="ticker" aria-hidden="true"><div id="tick"></div></div>
-
-
-<!-- POUR QUI -->
-<section id="pour-qui">
-  <div class="wrap">
-    <div class="eyebrow rv">Pour qui</div>
-    <h2 class="rv">Trois façons de vendre la nuit.</h2>
-    <p class="sub rv">Le même outil, que vous teniez le lieu ou que vous le louiez pour une soirée.</p>
-    <div class="who">
-      <a class="wc rv" href="#comment"><div class="art" style="background:radial-gradient(circle at 70% 25%,#6b3fd1 0%,#2a1660 35%,#0b0b10 75%)"><svg viewBox="0 0 120 120" style="position:absolute;right:26px;top:26px;width:110px"><use href="#ball"/></svg></div>
-        <small>Clubs et discothèques</small><h3>Vos carrés vendus avant minuit.</h3><p>Plan du club, bouteilles, pancartes et shows. Acompte garanti, managers commerciaux et app serveur.</p><span class="go holo">Voir le parcours →</span></a>
-      <a class="wc rv" href="#fonctions"><div class="art" style="background:linear-gradient(180deg,#ff8a5f 0%,#ff5fa2 30%,#4b2a8a 58%,#0b0b10 82%)"><svg viewBox="0 0 400 300" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><circle cx="200" cy="150" r="60" fill="#ffd25f" opacity=".85"/><path d="M0 170 Q50 160 100 170 T200 170 T300 170 T400 170 V300 H0Z" fill="#2bd4c4" opacity=".35"/><path d="M0 190 Q50 180 100 190 T200 190 T300 190 T400 190 V300 H0Z" fill="#1a8f9e" opacity=".45"/></svg></div>
-        <small>Beach clubs et rooftops</small><h3>Transats, cabanas et carrés au soleil.</h3><p>Réservation à la journée ou au coucher du soleil, minimum par zone, offre adaptée à la saison.</p><span class="go holo">Voir les fonctions →</span></a>
-      <a class="wc rv" href="#organisateurs"><div class="art" style="background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.35),transparent 45%),radial-gradient(circle at 20% 70%,#0f7a4a,transparent 45%),radial-gradient(circle at 85% 60%,#c9a24a,transparent 40%),#0b0b10"></div>
-        <small>Organisateurs de soirées</small><h3>Vos soirées à thème, dans n'importe quel club.</h3><p>Une page à la DA de votre soirée, billets et carrés dans le même lien, ventes de vos ambassadeurs en direct.</p><span class="go holo">Pour les organisateurs →</span></a>
+    <div class="strip rv">
+      <span>Cagnotte entre amis</span>
+      <span>Billetterie : prix selon l'heure</span>
+      <span>Liens managers et commissions</span>
+      <span>Contrôle à l'entrée par QR</span>
+      <span>App serveur</span>
+      <span>Garage : la bouteille gardée au club</span>
+      <span>Revente du billet à un proche</span>
+      <span>Fichier clients automatique</span>
     </div>
   </div>
 </section>
 
-<!-- COMMENT -->
-<section id="comment">
-  <div class="wrap">
-    <div class="eyebrow rv">Comment ça marche</div>
-    <h2 class="rv">Du swipe au seau à glace, en cinq étapes.</h2>
-    <div class="how">
-      <div class="steps">
-        <div class="st" data-s="0"><div class="n">01</div><h3>Le client choisit son carré sur le plan</h3><p>Plan de votre club, photo réelle et vue 360° de chaque carré. Les carrés déjà pris sont grisés, les prix s'affichent selon la soirée.</p></div>
-        <div class="st" data-s="1"><div class="n">02</div><h3>Il compose sa commande</h3><p>Vos bouteilles en photo, avec formats et goûts. Le minimum du carré se remplit sous ses yeux, l'upsell se fait tout seul.</p></div>
-        <div class="st" data-s="2"><div class="n">03</div><h3>Il voit le show avant de l'acheter</h3><p>Parade de sparklers, danseurs boule à facettes, pancarte avec son texte : chaque show a son aperçu.</p></div>
-        <div class="st" data-s="3"><div class="n">04</div><h3>Ses amis paient leur part</h3><p>L'organisateur règle l'acompte de la catégorie, partage un lien, chacun met ce qu'il veut. Sa carte garantit le reste.</p></div>
-        <div class="st" data-s="4"><div class="n">05</div><h3>Le soir même, tout est prêt</h3><p>QR code à l'entrée, envoi n°1 sur l'app du serveur, points de fidélité crédités après la soirée.</p></div>
-      </div>
-      <div class="phonecol"><div class="phone">
-        <div class="notch"></div>
-        <div class="scr on">
-          <div class="sh">Choisir un carré<small>Sam. 28 nov.</small></div>
-          <div class="plan">
-            <div class="dj">DJ BOOTH</div>
-            <div class="c" style="left:18px;top:80px">S1</div><div class="c x" style="left:94px;top:80px">S2</div><div class="c" style="left:170px;top:80px">S3</div><div class="c" style="left:246px;top:80px;width:40px">S4</div>
-            <div class="c sel" style="left:40px;top:180px;width:110px;height:70px">IMPÉRIAL<br>1 500 €</div><div class="c" style="left:168px;top:180px;width:110px;height:70px">ROYAL</div>
-            <div class="c" style="left:18px;top:300px">L1</div><div class="c x" style="left:94px;top:300px">L2</div><div class="c" style="left:170px;top:300px">L3</div><div class="c" style="left:246px;top:300px;width:40px">L4</div>
-          </div>
-          <div class="pbtn">Continuer · Impérial</div>
-        </div>
-        <div class="scr">
-          <div class="sh">Bouteilles<small>min. 1 500 €</small></div>
-          <div class="row"><div class="b"></div><div><b>Champagne Brut</b><small>Magnum 1,5 L</small></div><div class="qty"><i>−</i>2<i>+</i></div></div>
-          <div class="row"><div class="b" style="background:linear-gradient(90deg,#1c2a3a,#5a7da0 40%,#1c2a3a)"></div><div><b>Vodka premium</b><small>70 cl · goût original</small></div><div class="qty"><i>−</i>1<i>+</i></div></div>
-          <div class="row"><div class="b" style="background:linear-gradient(90deg,#3a2a12,#c99a4c 40%,#3a2a12)"></div><div><b>Tequila añejo</b><small>70 cl</small></div><div class="qty"><i>−</i>0<i>+</i></div></div>
-          <div class="sh" style="font-size:12px;margin-top:6px">Minimum atteint<small>1 620 €</small></div>
-          <div class="bar"><i style="width:100%"></i></div>
-          <div class="pbtn">Continuer</div>
-        </div>
-        <div class="scr">
-          <div class="sh">Shows<small>1 inclus</small></div>
-          <div class="prev" id="prev"><div class="lbl">Parade de sparklers · aperçu</div></div>
-          <div class="row"><div><b>Parade de sparklers</b><small>Inclus avec Impérial</small></div><div class="pr">0 €</div></div>
-          <div class="row"><div><b>Danseurs boule à facettes</b><small>3 danseurs, 5 min</small></div><div class="pr">150 €</div></div>
-          <div class="pbtn">Continuer</div>
-        </div>
-        <div class="scr">
-          <div class="sh">Cagnotte<small>Impérial · 8 pers.</small></div>
-          <div class="big">1 290 €<small style="font:600 14px Manrope,system-ui,sans-serif;color:var(--mute)"> / 1 800 €</small></div>
-          <div class="bar"><i></i></div>
-          <div class="av"><span style="background:#ff8fbf">S</span>Sarah (organisatrice)<b>900 €</b></div>
-          <div class="av"><span style="background:#b9a0ff">Y</span>Yanis<b>200 €</b></div>
-          <div class="av"><span style="background:#8fe6ff">I</span>Inès<b>110 €</b></div>
-          <div class="av"><span style="background:#cfff9a">M</span>Mehdi<b>80 €</b></div>
-          <div class="pbtn">Partager le lien</div>
-        </div>
-        <div class="scr" style="text-align:center">
-          <div class="ok">✓</div>
-          <div class="big" style="font-size:24px">C'est réservé</div>
-          <div style="color:var(--mute);font-size:13px">Impérial · samedi 28 nov. · 23 h</div>
-          <div class="qr" id="qr"></div>
-          <div class="row" style="text-align:left"><div><b>+ 3 600 points</b><small>×2 organisatrice · Top 3 en vue</small></div></div>
-        </div>
-      </div></div>
-    </div>
-  </div>
-</section>
-
-
-
-<!-- ESPACE CLUB -->
 <section id="espace-club">
   <div class="wrap">
     <div class="eyebrow rv">Votre côté de l'écran</div>
     <h2 class="rv">Le client voit un widget. Vous, vous tenez la soirée.</h2>
-    <p class="sub rv">Pas besoin d'un logiciel de plus : tout se passe au même endroit, depuis le bureau ou depuis le téléphone d'un serveur.</p>
-
+    <p class="sub rv">Le plan en direct, les envois sur le téléphone des serveurs, le QR à la porte et les chiffres du mois. Au même endroit.</p>
     <div class="apptabs rv" role="tablist" aria-label="Espace club">
       <button class="on" data-app="soir">Ce soir</button>
-      <button data-app="stats">Statistiques</button>
       <button data-app="service">Service du soir</button>
-      <button data-app="porte">Contrôle entrée</button>
-      <button data-app="clients">Clients</button>
+      <button data-app="stats">Statistiques</button>
     </div>
-
     <div class="appwin rv">
       <div class="appbar"><span class="dots"><i></i><i></i><i></i></span><b>Le Velours · espace club</b></div>
-
       <div class="appview on" data-view="soir">
         <div class="appgrid">
           <div>
             <div class="kpis">
               <div><span>Carrés</span><b>7 / 10</b></div>
-              <div><span>Entrées vendues</span><b>186</b></div>
+              <div><span>Entrées</span><b>186</b></div>
               <div><span>Vendu ce soir</span><b>14 380 €</b></div>
               <div><span>Panier moyen</span><b>2 054 €</b></div>
             </div>
@@ -674,9 +329,9 @@ nav .links a,nav .nav-cta{white-space:nowrap}
               <i class="t pris" style="left:4%;top:8%;width:21%;height:22%">Impérial<em>Sarah · 8p</em></i>
               <i class="t arrive" style="left:30%;top:8%;width:16%;height:20%">Scène 1<em>Karim · 6p</em></i>
               <i class="t pris" style="left:50%;top:8%;width:16%;height:20%">Scène 2<em>Inès · 6p</em></i>
-              <i class="t libre" style="left:72%;top:8%;width:22%;height:22%">Royal<em>libre · 10p</em></i>
+              <i class="t" style="left:72%;top:8%;width:22%;height:22%">Royal<em>libre · 10p</em></i>
               <i class="t arrive" style="left:4%;top:44%;width:17%;height:20%">Lounge 1<em>Hugo · 5p</em></i>
-              <i class="t libre" style="left:4%;top:72%;width:17%;height:20%">Lounge 2<em>libre · 6p</em></i>
+              <i class="t" style="left:4%;top:72%;width:17%;height:20%">Lounge 2<em>libre · 6p</em></i>
               <i class="t pris" style="left:76%;top:44%;width:18%;height:20%">Lounge 3<em>Léa · 6p</em></i>
               <i class="t arrive" style="left:76%;top:72%;width:18%;height:20%">Lounge 4<em>Nina · 4p</em></i>
               <i class="piste">PISTE</i>
@@ -686,15 +341,26 @@ nav .links a,nav .nav-cta{white-space:nowrap}
             <b>Impérial</b>
             <span class="mut">Prestige · 8 personnes · minimum 1 500 €</span>
             <div class="appcard"><b>Sarah Martin</b><span class="mut">06 •• •• •• 12 · 8 personnes</span><span class="chip">via Karim</span>
-              <div class="ln"><span>Total</span><b>2 190 €</b></div><div class="ln"><span>Déjà payé</span><b>1 095 €</b></div><div class="ln"><span>Envois</span><b>2</b></div></div>
+              <div class="ln"><span>Total</span><b>2 190 €</b></div><div class="ln"><span>Déjà payé</span><b>1 095 €</b></div></div>
             <div class="approw"><span class="btnfake main">Marquer arrivé</span><span class="btnfake">Absent</span></div>
-            <span class="mut">Un client se présente sans réservation ? Touchez un carré libre et il est installé en deux clics.</span>
+            <span class="mut">Un client arrive sans réservation ? Touchez un carré libre, il est installé en deux clics.</span>
           </aside>
         </div>
       </div>
-
+      <div class="appview" data-view="service">
+        <div class="appgrid3">
+          <div class="appcard envoi"><div class="eh"><b>Impérial</b><span class="num">Envoi n°2</span></div><span class="mut">Prestige · Sarah Martin · 8 pers.</span>
+            <div class="it">2 × Champagne Magnum</div><div class="it g">1 × Vodka 70 cl · du garage</div>
+            <div class="approw"><span class="btnfake main">Je prends</span><span class="btnfake">Servi ✓</span></div></div>
+          <div class="appcard envoi"><div class="eh"><b>Scène 1</b><span class="num">Envoi n°1</span></div><span class="mut">Scène · Karim · 6 pers.</span>
+            <div class="it">1 × Champagne Brut 75 cl</div><div class="it">2 × Tequila añejo</div>
+            <div class="approw"><span class="mut" style="font-size:12px">Pris par Léa</span><span class="btnfake main">Servi ✓</span></div></div>
+          <div class="appcard envoi"><div class="eh"><b>Lounge 1</b><span class="num">Envoi n°1</span></div><span class="mut">Lounge · Hugo · 5 pers.</span>
+            <div class="it">1 × Vodka 1,75 L</div><div class="ok">Servi par Léa</div></div>
+        </div>
+      </div>
       <div class="appview" data-view="stats">
-        <div class="kpis four">
+        <div class="kpis">
           <div><span>Chiffre d'affaires</span><b>128 400 €</b></div>
           <div><span>Carrés vendus</span><b>63</b></div>
           <div><span>Via un manager</span><b>41 %</b></div>
@@ -717,391 +383,136 @@ nav .links a,nav .nav-cta{white-space:nowrap}
           <div class="appcard"><b>Entrées par tarif</b>
             <div class="mline"><span>Early</span><u style="--w:64%"></u><em>240</em></div>
             <div class="mline"><span>Avant minuit</span><u style="--w:100%"></u><em>372</em></div>
-            <div class="mline"><span>Entrée + conso</span><u style="--w:48%"></u><em>181</em></div>
+            <div class="mline"><span>+ conso</span><u style="--w:48%"></u><em>181</em></div>
           </div>
         </div>
       </div>
-
-      <div class="appview" data-view="service">
-        <div class="appgrid3">
-          <div class="appcard envoi"><div class="eh"><b>Impérial</b><span class="num">Envoi n°2</span></div><span class="mut">Prestige · Sarah Martin · 8 pers.</span>
-            <div class="it">2 × Moët &amp; Chandon Magnum</div><div class="it">1 × Belvedere 70 cl</div>
-            <div class="cashline">Reste à encaisser : <b>1 095 €</b></div>
-            <div class="approw"><span class="btnfake main">Je prends</span><span class="btnfake">Servi ✓</span></div></div>
-          <div class="appcard envoi"><div class="eh"><b>Scène 1</b><span class="num">Envoi n°1</span></div><span class="mut">Scène · Karim · 6 pers.</span>
-            <div class="it">1 × Ruinart 75 cl</div><div class="it">2 × Jägermeister</div>
-            <div class="approw"><span class="mut" style="font-size:12px">Pris par Léa</span><span class="btnfake main">Servi ✓</span></div></div>
-          <div class="appcard envoi done"><div class="eh"><b>Lounge 1</b><span class="num">Envoi n°1</span></div><span class="mut">Lounge · Hugo · 5 pers.</span>
-            <div class="it">1 × Absolut 1 L</div><div class="ok">Servi par Léa</div></div>
-        </div>
-      </div>
-
-      <div class="appview" data-view="porte">
-        <div class="porte">
-          <div class="appcard"><span class="mut">Code du billet</span><div class="codein">P7QFXN37<span class="btnfake main">Vérifier</span><span class="btnfake">Scanner</span></div></div>
-          <div class="appcard valid"><b class="green">✓ Valide</b><b style="font-size:19px">Sarah Martin</b>
-            <span class="mut">Billet d'entrée · Avant minuit + conso · 1 conso incluse</span>
-            <span>0 / 4 déjà entrés</span>
-            <div class="approw"><span class="btnfake">Faire entrer 1</span><span class="btnfake main">Faire entrer les 4</span></div></div>
-          <div class="appcard warn"><b class="orange">⚠ À vérifier</b><b style="font-size:19px">Mehdi R.</b>
-            <span class="mut">Billet d'entrée · Early · sans conso</span>
-            <span class="orange">• Arrivée après 23 h 30 : ce tarif n'est plus valable.</span></div>
-        </div>
-      </div>
-
-      <div class="appview" data-view="clients">
-        <table class="apptable">
-          <thead><tr><th>Client</th><th>Carrés</th><th>Entrées</th><th>Dépensé</th><th>Ses bouteilles</th><th>Manager</th></tr></thead>
-          <tbody>
-            <tr><td><b>🥇 Sarah Martin</b><span class="mut">Pancarte : HAPPY BDAY SARAH</span></td><td>7</td><td>2</td><td><b>14 900 €</b></td><td>Moët Magnum, Belvedere</td><td><span class="chip">Karim</span></td></tr>
-            <tr><td><b>🥈 Yanis B.</b><span class="mut">4 soirées cette saison</span></td><td>4</td><td>6</td><td><b>9 240 €</b></td><td>Ruinart, Jägermeister</td><td><span class="chip">Léa</span></td></tr>
-            <tr><td><b>🥉 Chloé D.</b><span class="mut">Vient toujours à deux</span></td><td>3</td><td>11</td><td><b>6 810 €</b></td><td>Cîroc Red Berry</td><td><span class="mut">—</span></td></tr>
-            <tr><td><b>Hugo L.</b><span class="mut">Première venue en mars</span></td><td>2</td><td>3</td><td><b>4 150 €</b></td><td>Absolut 1 L</td><td><span class="chip">Karim</span></td></tr>
-          </tbody>
-        </table>
-        <p class="sub" style="margin-top:16px;font-size:15px">Le fichier se remplit tout seul à chaque réservation et à chaque billet. Aucune saisie, aucun double emploi.</p>
-      </div>
     </div>
   </div>
 </section>
 
-<!-- THEMES -->
-<section id="themes">
-  <div class="wrap">
-    <div class="eyebrow rv">Soirées à thème</div>
-    <h2 class="rv">Une soirée, une DA. Le widget suit.</h2>
-    <p class="sub rv">Bal masqué, jungle, disco ou pool party : chaque soirée a sa page, ses couleurs, sa police et ses shows. Choisissez un thème pour voir.</p>
-    <div class="thgrid">
-      <div class="thlist" id="thlist"></div>
-      <div class="evstage">
-        <div class="evpage" id="evpage">
-          <div class="evhead"><svg class="evdeco" id="evdeco" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice"></svg>
-            <div class="evkick" id="evkick">Samedi · soirée à thème</div>
-            <div class="evtitle" id="evtitle">Nuit Vénitienne</div>
-            <div class="evdate" id="evdate">Sam. 19 déc. · 23 h · dress code : masque</div></div>
-          <div class="evbody">
-            <div class="evrow"><span>Entrée</span><b id="evp1">25 €</b></div>
-            <div class="evrow"><span>Carré Prestige · 8 pers.</span><b id="evp2">dès 900 €</b></div>
-            <div class="evrow"><span id="evshow">Show inclus : parade de sparklers</span><b>✦</b></div>
-            <div class="evbtn" id="evbtn">Réserver un carré</div>
-          </div>
-        </div>
-        <div class="evplan">
-          <div class="ph">Plan de la soirée<small id="evvenue">Club partenaire</small></div>
-          <div class="mp"><div class="stg" id="evstg">SCÈNE</div>
-            <div class="t" style="left:8%;top:22%;width:24%;height:15%">S1</div><div class="t x" style="left:38%;top:22%;width:24%;height:15%">S2</div><div class="t" style="left:68%;top:22%;width:24%;height:15%">S3</div>
-            <div class="t hot" style="left:14%;top:46%;width:34%;height:20%">PRESTIGE</div><div class="t" style="left:52%;top:46%;width:34%;height:20%">ROYAL</div>
-            <div class="t" style="left:8%;top:74%;width:24%;height:14%">L1</div><div class="t" style="left:38%;top:74%;width:24%;height:14%">L2</div><div class="t x" style="left:68%;top:74%;width:24%;height:14%">L3</div>
-          </div>
-          <div class="tick2" id="evtags"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ORGANISATEURS -->
-<section id="organisateurs">
-  <div class="wrap org">
-    <div>
-      <div class="eyebrow rv">Organisateurs</div>
-      <h2 class="rv">Vous louez le lieu. Tablo vend la soirée.</h2>
-      <p class="sub rv">Pour les collectifs et agences qui créent des soirées à thème dans des clubs, des hangars ou des rooftops.</p>
-      <ul>
-        <li class="rv"><span class="n">01</span><div><b>Une page à la DA de votre soirée</b><p>Votre affiche, vos couleurs, votre police. Un lien pour Instagram, un QR code pour les flyers.</p></div></li>
-        <li class="rv"><span class="n">02</span><div><b>Billets et carrés dans le même lien</b><p>Importez le plan du lieu en photo, placez les carrés, vendez les entrées et les tables au même endroit.</p></div></li>
-        <li class="rv"><span class="n">03</span><div><b>Vos ambassadeurs, suivis en direct</b><p>Un lien par ambassadeur, ses ventes et sa récompense calculées toutes seules.</p></div></li>
-        <li class="rv"><span class="n">04</span><div><b>Le partage avec le club, réglé d'avance</b><p>Billetterie pour vous, bouteilles pour le club, ou le pourcentage que vous avez négocié : chacun voit sa part.</p></div></li>
-      </ul>
-    </div>
-    <div class="dash rv">
-      <div class="top"><b>Jungle Nocturne</b><span class="live">EN VENTE</span></div>
-      <div class="kpis"><div class="kpi"><small>Billets</small><div>412</div></div><div class="kpi"><small>Carrés</small><div>11 / 14</div></div><div class="kpi"><small>Ventes</small><div class="holo">18,4 k€</div></div></div>
-      <div class="bars"><div>Léa (ambassadrice)<i style="--w:88%"></i><span>96</span></div><div>Karim<i style="--w:64%"></i><span>71</span></div><div>Inès<i style="--w:41%"></i><span>45</span></div><div>Instagram direct<i style="--w:100%"></i><span>200</span></div></div>
-      <div class="split"><span>Votre part · billetterie</span><b>10 300 €</b></div>
-      <div class="split"><span>Part du club · bouteilles</span><b>8 100 €</b></div>
-      <p style="margin:0;color:var(--mute);font-size:12px">Exemple fictif, pour illustrer le tableau de bord.</p>
-    </div>
-  </div>
-</section>
-
-<!-- BENTO -->
-<section id="fonctions">
-  <div class="wrap">
-    <div class="eyebrow rv">Fonctions</div>
-    <h2 class="rv">Tout le club dans une seule app.</h2>
-    <p class="sub rv">Le widget pour vos clients. L'espace gérant pour la direction, les managers commerciaux, les serveurs et les barmans.</p>
-    <div class="bento">
-      <div class="tile w4 rv"><span class="tag">Plan</span><h3>Votre club en 3D,<br>chaque carré en photo.</h3><p style="max-width:46%">Importez votre plan, placez vos carrés, ajoutez photos et vues 360°. Le client sait exactement où il sera.</p>
-        <div class="miniplan" id="mini"></div></div>
-      <div class="tile w2 glow rv"><span class="tag">Paiement</span><h3>Acompte garanti</h3><p>Pourcentage obligatoire par catégorie de carré. Cagnotte, paiement complet ou espèces.</p><div class="stat holo">0 %</div><p>de commission sur vos réservations.</p></div>
-      <div class="tile w2 rv"><span class="tag">Équipe</span><h3>App serveur</h3><p>Chaque envoi arrive sur le bon téléphone.</p><div class="notif"><div class="i"></div><div><b>Envoi n°2 · Impérial</b><br><span style="color:var(--mute);font-size:13px">2 magnums · sparklers</span></div></div></div>
-      <div class="tile w2 rv"><span class="tag">Fidélité</span><h3>Top 3 du mois</h3><div class="lb"><div><b>1</b>Sarah B.<span>bouteille offerte</span></div><div><b>2</b>Karim D.<span>show offert</span></div><div><b>3</b>Léa M.<span>upgrade</span></div></div></div>
-      <div class="tile w2 rv"><span class="tag">Commercial</span><h3>Managers</h3><p>Liens perso, packages à leurs prix, commandes à table, objectifs et commissions en direct.</p></div>
-      <div class="tile w3 rv"><span class="tag">Bouteilles</span><h3>Photos officielles, fond détouré.</h3><p>Formats de 75 cl au Mathusalem, goûts, stock. Importez une photo, le fond disparaît tout seul.</p></div>
-      <div class="tile w3 glow rv"><span class="tag">Marque</span><h3>À votre image, chaque soirée.</h3><p>Logo, couleurs, polices, boutons. Bal masqué en décembre, pool party en juillet.</p><div class="swatches"><i style="background:#0b0c2a"></i><i style="background:#e2b860"></i><i style="background:#2bd4c4"></i><i style="background:#ff7a3d"></i><i style="background:#fff"></i></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- BILLETTERIE -->
-<section id="billetterie">
-  <div class="wrap">
-    <div class="eyebrow rv">Billetterie</div>
-    <h2 class="rv">Les entrées aussi. Plus tôt, moins cher.</h2>
-    <p class="sub rv">Vendez l'entrée dans le même lien que les carrés. Le prix monte au fil de la soirée, avec ou sans conso, et chaque tarif se ferme tout seul à l'heure prévue.</p>
-    <div class="stairs rv" aria-label="Exemple de tarifs selon l'heure d'arrivée">
-      <div class="st" style="--h:28%"><b>Gratuit</b><span>Early · avant 23 h 30</span><i>80 places</i></div>
-      <div class="st" style="--h:48%"><b>10 €</b><span>Avant 0 h 30 · sans conso</span></div>
-      <div class="st" style="--h:68%"><b>15 €</b><span>Avant 0 h 30 · 1 conso</span></div>
-      <div class="st on" style="--h:92%"><b>20 €</b><span>Toute la nuit · 1 conso</span></div>
-    </div>
-    <div class="tix3">
-      <div class="rv"><h4>Des prix selon l'heure</h4><p>Early gratuit, avant minuit, toute la nuit : vous fixez l'heure limite de chaque tarif et le nombre de places.</p></div>
-      <div class="rv"><h4>Avec ou sans conso</h4><p>Proposez l'entrée seule ou avec une ou deux consommations incluses. Le client choisit, le bar sait quoi servir.</p></div>
-      <div class="rv"><h4>Contrôle à l'entrée</h4><p>Le videur scanne le QR code avec son téléphone : nom, tarif, nombre de personnes, et une alerte si le client arrive après l'heure.</p></div>
-    </div>
-    <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a href="#essai" class="btn main" data-try-tix>Essayer la billetterie</a></div>
-  </div>
-</section>
-
-<!-- SHOWS -->
-<section id="shows">
-  <div class="wrap">
-    <div class="eyebrow rv">Shows</div>
-    <h2 class="rv">Le show, ça se voit avant de s'acheter.</h2>
-    <p class="sub rv">Vos photos, vos vidéos, ou un visuel créé par l'IA dans la DA de la soirée. Des shows inclus par catégorie, le reste en upsell.</p>
-    <div class="showgrid">
-      <div class="sc rv"><div class="v"><svg class="dz" viewBox="0 0 200 330"><use href="#guy"/></svg></div><div class="t">Danseurs disco<span>150 €</span></div></div>
-      <div class="sc rv"><div class="v" id="spk"></div><div class="t">Parade de sparklers<span>80 €</span></div></div>
-      <div class="sc rv"><div class="v" style="display:grid;place-items:center"><div style="font:900 22px Unbounded,system-ui,sans-serif;padding:16px 20px;border:2px solid #fff;border-radius:12px;box-shadow:0 0 30px rgba(255,95,162,.6),inset 0 0 20px rgba(255,95,162,.4)" class="holo">HAPPY BDAY</div></div><div class="t">Pancarte personnalisée<span>incluse</span></div></div>
-      <div class="sc rv"><div class="v" style="display:grid;place-items:center"><svg viewBox="0 0 120 120" style="position:static;transform:none;height:120px;animation:sw 4s ease-in-out infinite"><use href="#ball"/></svg></div><div class="t">Boule à facettes XXL<span>120 €</span></div></div>
-    </div>
-  </div>
-</section>
-
-
-<!-- PROBLEMES -->
-<section id="problemes">
-  <div class="wrap">
-    <div class="eyebrow rv">Ce que ça règle</div>
-    <h2 class="rv">Les soirs où ça coince.</h2>
-    <p class="sub rv">Chaque fonction de Tablo répond à un problème que vous connaissez déjà.</p>
-    <div class="probs">
-      <article class="prob rv"><h3>« Le carré était réservé, personne n'est venu. »</h3><p>Acompte obligatoire par catégorie, carte enregistrée en garantie. Un carré bloqué est un carré payé.</p><span>Acompte · cagnotte · garantie</span></article>
-      <article class="prob rv"><h3>« On passe la soirée au téléphone et sur WhatsApp. »</h3><p>Le client choisit son carré, ses bouteilles et son show en ligne. Vous recevez une réservation complète, pas une conversation.</p><span>Widget · plan · catalogue</span></article>
-      <article class="prob rv"><h3>« Les groupes se divisent sur qui paie quoi. »</h3><p>L'organisateur paie l'acompte et partage un lien : chacun met ce qu'il veut. Le solde est débité la veille.</p><span>Cagnotte entre amis</span></article>
-      <article class="prob rv"><h3>« Je ne sais pas qui a vendu quoi. »</h3><p>Chaque manager a son lien et son QR. Les ventes et les commissions se calculent toutes seules.</p><span>Liens managers · commissions</span></article>
-      <article class="prob rv"><h3>« L'entrée se paie en liquide, à l'arrache. »</h3><p>Billetterie intégrée : prix selon l'heure, avec ou sans conso, QR contrôlé à la porte.</p><span>Billetterie · contrôle entrée</span></article>
-      <article class="prob rv"><h3>« Je ne sais pas ce qui a marché le mois dernier. »</h3><p>Remplissage, panier moyen, ventes par manager, entrées par tarif, taux d'absence : tout est compté sans rien saisir.</p><span>Statistiques · fichier clients</span></article>
-    </div>
-  </div>
-</section>
-
-<!-- CALCULATEUR -->
-<section id="calcul">
-  <div class="wrap">
-    <div class="eyebrow rv">Est-ce que ça vaut le coup ?</div>
-    <h2 class="rv">Faites le calcul avec vos chiffres.</h2>
-    <p class="sub rv">Une estimation, pas une promesse : changez les valeurs, le résultat suit.</p>
-    <div class="calc rv">
-      <div class="calcin">
-        <label>Carrés vendus par soirée<input type="number" id="cT" value="8" min="0" max="200"></label>
-        <label>Panier moyen par carré (€)<input type="number" id="cP" value="900" min="0" step="50"></label>
-        <label>Soirées par mois<input type="number" id="cS" value="8" min="1" max="31"></label>
-        <label>Carrés qui ne viennent pas (%)<input type="number" id="cN" value="10" min="0" max="60"></label>
-        <label>Acompte demandé (%)<input type="number" id="cA" value="30" min="0" max="100"></label>
-        <label>Entrées payantes par soirée<input type="number" id="cE" value="150" min="0" step="10"></label>
-      </div>
-      <div class="calcout">
-        <div class="co"><span>Encaissé par mois via Tablo</span><b id="rCA">—</b></div>
-        <div class="co"><span>Récupéré sur les carrés absents</span><b id="rNo" class="holo">—</b></div>
-        <div class="co"><span>Commission prise par Tablo</span><b>0 €</b></div>
-        <div class="co big"><span>Face à l'abonnement de 79 €, l'acompte seul rapporte</span><b id="rNet" class="holo">—</b></div>
-        <p class="calcnote">Calcul : carrés × panier × soirées pour l'encaissé ; carrés absents × panier × acompte pour le récupéré. Les entrées sont comptées à part, à un tarif moyen de 12 €. Tablo ne prend aucune commission : seuls les frais bancaires du paiement s'appliquent.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TARIFS -->
 <section id="tarifs">
   <div class="wrap">
     <div class="eyebrow rv">Tarifs</div>
     <h2 class="rv">Un abonnement. Zéro commission.</h2>
-    <p class="sub rv">Sans engagement. L'argent des réservations arrive directement sur le compte de l'établissement.</p>
-    <div class="prices">
-      <div class="price rv"><h3>Club</h3><div class="amt">79 €<span> /mois</span></div><div class="nt">Pour lancer la réservation en ligne.</div>
-        <ul><li>Widget, lien bio et QR code</li><li>Plan interactif et photos des carrés</li><li>Bouteilles, pancartes et shows</li><li>Cagnotte, acompte et espèces</li><li>Billetterie : prix selon l'heure, avec ou sans conso</li><li>App serveur et contrôle entrée</li></ul><a href="/inscription" class="btn out">Créer mon espace</a></div>
-      <div class="price best rv"><span class="badge">Le plus choisi</span><h3>Prestige</h3><div class="amt">149 €<span> /mois</span></div><div class="nt">Pour les clubs avec une équipe commerciale.</div>
-        <ul><li>Tout le plan Club</li><li>Plan 3D et vues 360°</li><li>Managers, packages et commissions</li><li>Objectifs et tarifs par soirée</li><li>Fidélité, classement et Top 3</li><li>Personnalisation complète et shows IA</li></ul><a href="/inscription" class="btn main">Créer mon espace</a></div>
-      <div class="price rv"><h3>Organisateur</h3><div class="amt" style="font-size:44px">À la soirée</div><div class="nt">Pour les soirées à thème dans des lieux loués.</div>
-        <ul><li>Page de soirée à votre DA</li><li>Billets et carrés dans le même lien</li><li>Plan du lieu importé en photo</li><li>Liens ambassadeurs et ventes en direct</li><li>Partage des recettes avec le club</li></ul><a href="#faq" class="btn out">Nous contacter</a></div>
+    <p class="sub rv">Faites le calcul avec vos chiffres : c'est l'acompte seul qui paie l'abonnement.</p>
+
+    <div class="calcmini rv">
+      <label>Carrés par soirée<input type="number" id="cT" value="8" min="0" max="200"></label>
+      <label>Panier moyen (€)<input type="number" id="cP" value="900" min="0" step="50"></label>
+      <label>Soirées par mois<input type="number" id="cS" value="8" min="1" max="31"></label>
+      <label>Absents (%)<input type="number" id="cN" value="10" min="0" max="60"></label>
+      <div class="res"><span>Récupéré chaque mois grâce à l'acompte de 30 %</span><b id="rNo" class="holo">—</b></div>
+    </div>
+
+    <div class="plans">
+      <article class="plan rv">
+        <h3>Club</h3>
+        <div class="price">79 €<small> /mois</small></div>
+        <p class="sub" style="font-size:15px">Pour lancer la réservation en ligne.</p>
+        <ul>
+          <li>Widget, lien bio et QR code</li>
+          <li>Plan des carrés, bouteilles, shows et pancarte</li>
+          <li>Acompte, cagnotte et espèces</li>
+          <li>Billetterie, revente et contrôle à l'entrée</li>
+          <li>App serveur et fichier clients</li>
+        </ul>
+        <a href="/inscription" class="btn main">Créer mon espace</a>
+      </article>
+      <article class="plan best rv">
+        <span class="tagbest">Le plus choisi</span>
+        <h3>Prestige</h3>
+        <div class="price">149 €<small> /mois</small></div>
+        <p class="sub" style="font-size:15px">Pour les clubs avec une équipe commerciale.</p>
+        <ul>
+          <li>Tout le plan Club</li>
+          <li>Managers, liens personnels et commissions</li>
+          <li>Objectifs et tarifs par soirée</li>
+          <li>Fidélité, classement et Top 3</li>
+          <li>Personnalisation complète du widget</li>
+        </ul>
+        <a href="/inscription" class="btn main">Créer mon espace</a>
+      </article>
+    </div>
+    <div class="orga rv">
+      <b style="color:var(--text);font-family:Unbounded,sans-serif">Organisateur de soirées</b>
+      <span>Vous louez un lieu pour vos soirées à thème ? Tarif à la soirée, billets et carrés dans le même lien.</span>
+      <a href="/inscription" class="btn sm">Nous écrire</a>
     </div>
   </div>
 </section>
 
-<!-- FAQ -->
 <section id="faq">
   <div class="wrap">
-    <div class="eyebrow rv">FAQ</div>
-    <h2 class="rv">Les questions qu'on nous pose.</h2>
+    <div class="eyebrow rv">Questions</div>
+    <h2 class="rv">Ce qu'on nous demande.</h2>
     <div class="faq">
-      <div class="q rv"><h4>Comment j'installe Tablo ?</h4><p>Une ligne de code à coller sur votre site (WordPress, Wix, Webflow, sur mesure). Sans site : un lien pour la bio Instagram et un QR code pour les flyers.</p></div>
-      <div class="q rv"><h4>Je peux vendre seulement des entrées ?</h4><p>Oui. La billetterie marche seule ou avec les carrés : tarifs early, avant minuit, avec ou sans conso, places limitées. Aucune commission Tablo sur les billets, comme pour les carrés (seuls les frais bancaires du paiement s'appliquent).</p></div>
-      <div class="q rv"><h4>Combien de temps pour être en ligne ?</h4><p>L'onboarding vous guide en 11 étapes. Comptez une soirée pour publier un premier widget.</p></div>
-      <div class="q rv"><h4>Vous prenez une commission ?</h4><p>Non. Vous payez l'abonnement, l'argent des clients arrive sur votre compte via Stripe. Seuls les frais bancaires s'appliquent.</p></div>
-      <div class="q rv"><h4>Et si la cagnotte n'est pas complète ?</h4><p>L'organisateur a déjà payé l'acompte de sa catégorie. La veille au soir, le reste est débité sur sa carte, avec un rappel avant.</p></div>
-      <div class="q rv"><h4>Mes managers gardent leurs clients ?</h4><p>Oui. Chacun a son lien et ses packages, les réservations lui sont attribuées et ses commissions calculées automatiquement.</p></div>
-      <div class="q rv"><h4>J'organise des soirées dans des clubs que je loue, c'est pour moi ?</h4><p>Oui. Vous créez la page de votre soirée, importez le plan du lieu, vendez billets et carrés, et réglez d'avance le partage avec le club.</p></div>
-      <div class="q rv"><h4>Le thème change à chaque soirée ?</h4><p>Oui : chaque soirée a ses couleurs, sa police, ses visuels et ses shows, sans toucher à vos réservations ni à votre plan.</p></div>
-      <div class="q rv"><h4>Ça marche pour un beach club ?</h4><p>Oui : transats, cabanas, carrés au bord de la piscine. Plan, photos et DA s'adaptent à votre lieu.</p></div>
+      <details class="rv"><summary>Combien de temps pour être en ligne ?</summary><p>Une soirée de travail. Vous créez vos catégories, placez vos carrés sur une photo de votre plan, chargez votre carte des bouteilles, puis collez une ligne de code sur votre site. Si vous n'avez pas de site, le lien et le QR code suffisent.</p></details>
+      <details class="rv"><summary>Vous prenez une commission sur les réservations ?</summary><p>Non. Vous payez l'abonnement, rien d'autre. L'argent des clients arrive sur le compte du club ; seuls les frais bancaires du paiement s'appliquent, comme pour un terminal.</p></details>
+      <details class="rv"><summary>Et si un client ne vient pas ?</summary><p>L'acompte est encaissé à la réservation et sa carte reste en garantie. Vous fixez le pourcentage par catégorie, et votre politique d'annulation s'affiche dans le widget.</p></details>
+      <details class="rv"><summary>Mes serveurs doivent installer quelque chose ?</summary><p>Non. Ils ouvrent un lien sur leur téléphone et voient les envois de la soirée, avec « Je prends » puis « Servi ». Le videur scanne les QR codes depuis le même espace.</p></details>
+      <details class="rv"><summary>Je peux garder une bouteille pour un client ?</summary><p>Oui. Une bouteille entamée part au garage avec un code. Le client le saisit la fois suivante et la récupère, à condition d'en racheter le nombre que vous avez fixé.</p></details>
     </div>
   </div>
 </section>
 
-
 <section class="final">
-  <h2 class="rv"><span class="chrome">Prochaine soirée,</span><br><span class="holo">complet en ligne.</span></h2>
-  <p class="sub rv" style="margin:0 auto 34px">Une démo de 20 minutes avec votre plan et vos bouteilles.</p>
-  <div class="ctas rv"><a href="/inscription" class="btn holob">Créer l'espace de mon club</a></div>
+  <div class="wrap">
+    <h2 class="rv">Votre prochain samedi, vendu d'avance.</h2>
+    <p class="sub rv" style="margin:0 auto 28px">Créez votre espace, placez vos carrés, collez une ligne sur votre site.</p>
+    <div class="ctas rv">
+      <a href="/inscription" class="btn main">Créer l'espace de mon club</a>
+      <a href="#demo" class="btn">Revoir la démo</a>
+    </div>
+  </div>
 </section>
 </main>
-<footer><span class="disp" style="font-weight:800;color:#bbb">tablo</span><span>L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</span></footer>
+
+<footer>
+  <div class="wrap">
+    <span>© Tablo — réservation de carrés VIP et billetterie pour la nuit.</span>
+    <span><a href="/connexion">Connexion</a> · <a href="/demo">Démo complète</a></span>
+  </div>
+</footer>
 
 <script>
-// Reflets de boule à facettes qui traversent la page
-const cv=document.getElementById('lights'),c=cv.getContext('2d');let W,H,D=[];const COLS=['#ff5fa2','#a970ff','#4fd8ff','#b6ff6a','#ffffff'];
-function rs(){const d=devicePixelRatio||1;W=cv.width=innerWidth*d;H=cv.height=innerHeight*d;cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
-  D=Array.from({length:Math.round(innerWidth/38)},()=>({x:Math.random()*W,y:Math.random()*H,r:(Math.random()*2.5+1)*d,vx:(Math.random()*.5+.15)*d,c:COLS[Math.random()*5|0],p:Math.random()*6.28}))}
-rs();addEventListener('resize',rs);
-(function f(){c.clearRect(0,0,W,H);for(const s of D){s.x+=s.vx;s.p+=.03;if(s.x>W+10){s.x=-10;s.y=Math.random()*H}
-  c.globalAlpha=.18+.3*Math.abs(Math.sin(s.p));c.fillStyle=s.c;c.beginPath();c.arc(s.x,s.y,s.r,0,6.28);c.fill()}requestAnimationFrame(f)})();
+(()=>{
+ /* apparition au défilement */
+ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+ document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%3)*60+'ms';io.observe(el)});
 
-// Rotation des facettes
-const tl=document.querySelectorAll('.tl');let bx=0;(function sp(){bx=(bx+.2)%9;tl.forEach(t=>t.setAttribute('transform',`translate(${bx} 0)`));requestAnimationFrame(sp)})();
-
-// Piste de danse
-const fl=document.getElementById('floor');if(fl)for(let i=0;i<70;i++)fl.appendChild(document.createElement('i'));
-const T=[...fl.children],FC=['#ff5fa2','#a970ff','#4fd8ff','#b6ff6a','#ffd25f'];
-setInterval(()=>{T.forEach(t=>{if(Math.random()<.22){const k=FC[Math.random()*5|0];t.style.background=k;t.style.boxShadow=`0 0 24px ${k}`}else{t.style.background='';t.style.boxShadow=''}})},420);
-
-// Ticker
-const items=['Parade de sparklers','Magnum','Cagnotte entre amis','Danseurs disco','Plan 3D','Acompte garanti','Pancarte perso','Top 3 du mois','App serveur','Beach club'];
-const tk=document.getElementById('tick'),h=items.map((x,i)=>`<span class="${i%2?'chrome':'holo'}">${x}</span><em>✦</em>`).join('');tk.innerHTML=h+h;
-
-// Téléphone sticky
-const sts=[...document.querySelectorAll('.st')],scr=[...document.querySelectorAll('.scr')];
-const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=+e.target.dataset.s;sts.forEach((s,j)=>s.classList.toggle('on',j===i));scr.forEach((s,j)=>s.classList.toggle('on',j===i))}}),{rootMargin:'-45% 0px -45% 0px'});
-sts.forEach(s=>so.observe(s));sts[0].classList.add('on');
-
-// Sparklers
-function spk(el,n){for(let i=0;i<n;i++){const s=document.createElement('i');s.className='spk';s.style.left=(12+i*(76/(n-1)))+'%';s.style.height=(60+Math.random()*40)+'px';el.appendChild(s)}}
-spk(document.getElementById('prev'),5);spk(document.getElementById('spk'),4);
-
-// QR
-const qr=document.getElementById('qr');for(let i=0;i<81;i++){const x=i%9,y=i/9|0,cor=(x<3&&y<3)||(x>5&&y<3)||(x<3&&y>5);const q=document.createElement('i');if(!cor&&Math.random()<.45)q.className='w';qr.appendChild(q)}
-
-// Mini plan
-const mp=document.getElementById('mini');for(let i=0;i<12;i++)mp.appendChild(document.createElement('i'));
-setInterval(()=>{const k=[...mp.children];k.forEach(x=>x.classList.remove('hot'));k[Math.random()*12|0].classList.add('hot')},1100);
-
-
-// Public cible (hero)
-const AUD=["Tablo s'installe sur votre site en une ligne. Vos clients choisissent leur carré, leurs bouteilles et leur show, puis paient entre amis. Vous, vous encaissez.",
-"Transats, cabanas et carrés au bord de l'eau, réservés et payés en ligne avant d'arriver. Une offre à la saison, sans commission.",
-"Vous louez un club pour vos soirées à thème ? Une page à votre DA, billets et carrés dans le même lien, vos ambassadeurs suivis en direct."];
-const al=document.getElementById('audlead');
-document.querySelectorAll('.aud button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.aud button').forEach(x=>x.classList.toggle('on',x===b));al.style.opacity=0;setTimeout(()=>{al.textContent=AUD[+b.dataset.aud];al.style.opacity=1},200)}));
-
-// Thèmes de soirée
-const TH=[
- {n:'Bal masqué',d:'Velours, or et plumes',sw:'linear-gradient(135deg,#0d1240,#c9a24a)',t:'Nuit Vénitienne',k:'Samedi · bal masqué',dt:'Sam. 19 déc. · 23 h · dress code : masque',font:"Cinzel,Georgia,serif",size:'44px',bg:'radial-gradient(ellipse at 50% 0%,#283080,#0c0f33 70%)',ink:'#e9e4ff',acc:'#e2b860',btn:'#1a1306',card:'rgba(255,255,255,.07)',rad:'4px',glow:'0 0 30px rgba(226,184,96,.45)',p1:'35 €',p2:'dès 1 200 €',show:'Show inclus : danseurs masqués',stg:'ORCHESTRE',tags:['Masque obligatoire','Dîner + club','Parade de sparklers'],
-  deco:'<g fill="none" stroke="#e2b860" stroke-width="1.2" opacity=".55"><path d="M40 200 Q120 120 200 200 Q280 120 360 200"/><path d="M80 40 l10 18 10-18 M300 40 l10 18 10-18"/></g><g fill="#e2b860" opacity=".8"><path d="M200 18 l7 12 -7 12 -7 -12z"/><circle cx="60" cy="60" r="2"/><circle cx="340" cy="70" r="2"/><circle cx="120" cy="110" r="1.5"/><circle cx="290" cy="120" r="1.5"/></g>'},
- {n:'Jungle botanique',d:'Feuillages, néons verts',sw:'linear-gradient(135deg,#06331f,#58e08a)',t:'Jungle Nocturne',k:'Vendredi · immersion végétale',dt:'Ven. 9 janv. · 23 h 30 · afro house',font:"Fraunces,Georgia,serif",size:'46px',bg:'radial-gradient(ellipse at 30% 0%,#0f5a36,#04170e 70%)',ink:'#e6fff0',acc:'#7dffa8',btn:'#03170c',card:'rgba(125,255,168,.08)',rad:'999px',glow:'0 0 30px rgba(125,255,168,.4)',p1:'20 €',p2:'dès 700 €',show:'Show inclus : performeurs lianes',stg:'DJ BOOTH',tags:['Décor végétal','Fumée lourde','Percussions live'],
-  deco:'<g fill="#1f8f57" opacity=".55"><path d="M0 0 C60 30 70 90 20 140 C40 80 20 40 0 30Z"/><path d="M400 0 C340 40 330 100 380 150 C360 90 380 50 400 40Z"/><path d="M0 260 C50 200 110 210 140 260Z"/><path d="M400 260 C350 205 290 215 260 260Z"/></g><g fill="#7dffa8" opacity=".5"><circle cx="90" cy="70" r="2"/><circle cx="320" cy="90" r="2"/><circle cx="200" cy="30" r="1.5"/></g>'},
- {n:'Disco',d:'Paillettes et boules à facettes',sw:'linear-gradient(135deg,#2a1a4a,#ff5fa2,#4fd8ff)',t:'Saturday Glitter',k:'Samedi · disco funk',dt:'Sam. 23 janv. · 23 h · tenue pailletée',font:"Monoton,Unbounded,sans-serif",size:'40px',bg:'radial-gradient(ellipse at 50% 0%,#3b1d6e,#0b0716 70%)',ink:'#f6eeff',acc:'#ff5fa2',btn:'#fff',card:'rgba(255,255,255,.07)',rad:'14px',glow:'0 0 24px rgba(255,95,162,.6)',p1:'18 €',p2:'dès 600 €',show:'Show inclus : danseurs disco',stg:'PISTE LED',tags:['Danseurs boule à facettes','Canon à confettis','Funk et house'],
-  deco:'<g opacity=".9"><line x1="362" y1="0" x2="362" y2="22" stroke="#aaa" stroke-width="1"/><circle cx="362" cy="40" r="18" fill="#c8cadb"/><g stroke="#55586b" stroke-width="1" opacity=".6"><line x1="344" y1="40" x2="380" y2="40"/><line x1="362" y1="22" x2="362" y2="58"/><path d="M349 28 Q362 40 349 52 M375 28 Q362 40 375 52" fill="none"/></g><line x1="38" y1="0" x2="38" y2="16" stroke="#aaa" stroke-width="1"/><circle cx="38" cy="28" r="12" fill="#c8cadb" opacity=".8"/></g><g fill="#fff"><circle cx="70" cy="120" r="2.5" opacity=".7"/><circle cx="330" cy="150" r="2.5" opacity=".7"/><circle cx="110" cy="200" r="2" opacity=".6"/><circle cx="290" cy="40" r="2" opacity=".6"/></g><g fill="#4fd8ff" opacity=".6"><circle cx="40" cy="60" r="3"/><circle cx="360" cy="220" r="3"/></g>'},
- {n:'Pool party',d:'Soleil, eau turquoise',sw:'linear-gradient(135deg,#ffb45f,#2bd4c4)',t:'SUNSET SPLASH',k:'Dimanche · bord de piscine',dt:'Dim. 5 juil. · 16 h → 2 h · maillot conseillé',font:"Bungee,Unbounded,sans-serif",size:'40px',bg:'linear-gradient(180deg,#ffb45f 0%,#ff7aa8 40%,#1fa5b5 100%)',ink:'#08202a',acc:'#ffffff',btn:'#0a6b78',card:'rgba(255,255,255,.4)',rad:'18px',glow:'0 3px 0 #0a6b78',p1:'15 €',p2:'dès 450 €',show:'Show inclus : jet de mousse',stg:'PISCINE',tags:['Cabanas','Transats VIP','Coucher de soleil'],
-  deco:'<circle cx="372" cy="26" r="22" fill="#fff3b0" opacity=".85"/><path d="M0 220 Q50 205 100 220 T200 220 T300 220 T400 220 V260 H0Z" fill="#fff" opacity=".3"/><path d="M0 238 Q50 225 100 238 T200 238 T300 238 T400 238 V260 H0Z" fill="#fff" opacity=".35"/>'}
-];
-const tl2=document.getElementById('thlist'),ev=document.getElementById('evpage');
-TH.forEach((t,i)=>{const b=document.createElement('button');b.className='thb'+(i?'':' on');b.innerHTML=`<i style="background:${t.sw}"></i><span>${t.n}<small>${t.d}</small></span>`;b.onclick=()=>setTh(i);tl2.appendChild(b)});
-function setTh(i){const t=TH[i];[...tl2.children].forEach((b,j)=>b.classList.toggle('on',j===i));
- const st=ev.style;st.setProperty('--ebg',t.bg);st.setProperty('--eink',t.ink);st.setProperty('--eacc',t.acc);st.setProperty('--ebtn',t.btn);st.setProperty('--ecard',t.card);st.setProperty('--erad',t.rad);st.setProperty('--efont',t.font);st.setProperty('--esize',t.size);st.setProperty('--eglow',t.glow);
- document.querySelector('.evplan').style.setProperty('--eacc',t.acc==='#ffffff'?'#2bd4c4':t.acc);document.querySelector('.evplan').style.setProperty('--ebtn',t.acc==='#ffffff'?'#04252b':t.btn);
- document.getElementById('evtitle').textContent=t.t;document.getElementById('evkick').textContent=t.k;document.getElementById('evdate').textContent=t.dt;
- document.getElementById('evp1').textContent=t.p1;document.getElementById('evp2').textContent=t.p2;document.getElementById('evshow').textContent=t.show;document.getElementById('evstg').textContent=t.stg;
- document.getElementById('evdeco').innerHTML=t.deco;document.getElementById('evtags').innerHTML=t.tags.map(x=>`<span>${x}</span>`).join('')}
-setTh(0);
-let thAuto=setInterval(()=>{const i=([...tl2.children].findIndex(b=>b.classList.contains('on'))+1)%TH.length;setTh(i)},4200);
-tl2.addEventListener('click',()=>clearInterval(thAuto));
-
-// Apparition
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
-document.querySelectorAll('.rv').forEach(e=>io.observe(e));
-</script>
-
-<script>
-(()=>{const f=document.getElementById('liveW');if(!f)return;
- const st={tablo:1,venue:'club',amb:'tablo'};
- const send=d=>{Object.assign(st,d);f.contentWindow&&f.contentWindow.postMessage(Object.assign({tablo:1},d),'*')};
- const on=(box,el)=>box.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));
- const tA=document.getElementById('tAmb'),tC=document.getElementById('tCol'),tB=document.getElementById('tBtn'),tV=document.getElementById('tVen');
- const amb=k=>{on(tA,tA.querySelector(`[data-amb="${k}"]`));tC.querySelectorAll('button').forEach(b=>b.classList.remove('on'));tB.querySelectorAll('button').forEach(b=>b.classList.remove('on'));send({amb:k})};
- const ven=v=>{on(tV,tV.querySelector(`[data-v="${v}"]`));send({venue:v})};
- tA.addEventListener('click',e=>{const b=e.target.closest('button');if(b)amb(b.dataset.amb)});
- tC.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;on(tC,b);send({accent:b.dataset.c})});
- tB.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;on(tB,b);send({btn:b.dataset.btn})});
- const tM=document.getElementById('tMode');const mode=m=>{on(tM,tM.querySelector(`[data-mode="${m}"]`));send({mode:m})};
- tM.addEventListener('click',e=>{const b=e.target.closest('button');if(b)mode(b.dataset.mode)});
- document.querySelectorAll('[data-try-tix]').forEach(a=>a.addEventListener('click',()=>mode('tix')));
- tV.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ven(b.dataset.v);amb(b.dataset.v==='beach'?'pool':'tablo')});
- // « Vous êtes » du héros : adapte aussi la démo
- document.querySelectorAll('.aud button').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.aud;if(k==='1'){ven('beach');amb('pool')}else{ven('club');amb(k==='2'?'masque':'tablo')}}));
-})();
-</script>
-
-<script>
-(()=>{const bar=document.getElementById('tourbar'),tip=document.getElementById('tip'),f=document.getElementById('liveW');
- if(!bar||!f)return;
- const TXT={0:"Touchez un carré libre sur le plan : le client voit la catégorie, le minimum et les shows offerts.",
- 1:"Les bouteilles de votre carte, avec vos photos et vos formats. La barre indique ce qui reste pour atteindre le minimum.",
- 2:"Une pancarte à son prénom, un show de votre catalogue : c'est là que le panier monte.",
- 3:"Tout payer, payer l'acompte et compléter sur place, ou ouvrir une cagnotte entre amis.",
- tix:"Et sans carré : l'entrée seule, moins chère avant minuit, avec ou sans conso."};
- const send=d=>f.contentWindow&&f.contentWindow.postMessage(Object.assign({tablo:1},d),'*');
- bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ /* visite guidée de la démo */
+ const f=document.getElementById('liveW'),bar=document.getElementById('chapters'),tip=document.getElementById('tip'),skin=document.getElementById('skin');
+ const send=d=>f&&f.contentWindow&&f.contentWindow.postMessage(Object.assign({tablo:1},d),'*');
+ const TXT={0:"Touchez un carré libre : le client voit la catégorie, le minimum et les shows offerts.",
+  1:"Vos bouteilles, vos formats, vos photos. La barre montre ce qui reste pour atteindre le minimum.",
+  2:"Une pancarte au prénom, un show de votre catalogue : c'est là que le panier monte.",
+  3:"Tout payer, l'acompte et le reste sur place, ou une cagnotte entre amis.",
+  tix:"Et sans carré : l'entrée seule, moins chère avant minuit, avec ou sans conso."};
+ bar&&bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
   bar.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
   const k=b.dataset.tour;
-  tip.style.opacity=0;setTimeout(()=>{tip.querySelector('span').textContent=TXT[k]||'';tip.style.opacity=1},160);
+  tip.style.opacity=0;setTimeout(()=>{tip.querySelector('span').textContent=TXT[k]||'';tip.style.opacity=1},150);
   if(k==='tix')send({mode:'tix'});else send({mode:'vip',tour:+k});
  });
-})();
-</script>
+ skin&&skin.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.amb){skin.querySelectorAll('.amb').forEach(x=>x.classList.toggle('on',x===b));send({venue:b.dataset.amb==='pool'?'beach':'club',amb:b.dataset.amb})}
+  else if(b.dataset.c){skin.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b));send({accent:b.dataset.c})}
+ });
 
-<script>
-(()=>{const tabs=document.querySelector('.apptabs');if(!tabs)return;
- tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ /* onglets de l'espace club */
+ const tabs=document.querySelector('.apptabs');
+ tabs&&tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
   tabs.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('.appview').forEach(v=>v.classList.toggle('on',v.dataset.view===b.dataset.app));
  });
-})();
-</script>
 
-<script>
-(()=>{const ids=['cT','cP','cS','cN','cA','cE'];const el={};ids.forEach(i=>el[i]=document.getElementById(i));
- if(!el.cT)return;
- const fmt=n=>Math.round(n).toLocaleString('fr-FR')+' €';
- function calc(){
-  const t=+el.cT.value||0,p=+el.cP.value||0,s=+el.cS.value||0,n=Math.min(100,+el.cN.value||0)/100,a=Math.min(100,+el.cA.value||0)/100,e=+el.cE.value||0;
-  const ca=t*p*s + e*12*s;
-  const perdu=t*p*s*n, recup=perdu*a;
-  document.getElementById('rCA').textContent=fmt(ca);
-  document.getElementById('rNo').textContent=fmt(recup);
-  document.getElementById('rNet').textContent=fmt(Math.max(0,recup-79));
- }
- ids.forEach(i=>el[i].addEventListener('input',calc));calc();
+ /* calcul rapide */
+ const ids=['cT','cP','cS','cN'],el={};ids.forEach(i=>el[i]=document.getElementById(i));
+ if(el.cT){const calc=()=>{
+   const t=+el.cT.value||0,p=+el.cP.value||0,s=+el.cS.value||0,n=Math.min(100,+el.cN.value||0)/100;
+   document.getElementById('rNo').textContent=String(Math.round(t*p*s*n*0.3)).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €';
+  };ids.forEach(i=>el[i].addEventListener('input',calc));calc();}
 })();
 </script>
 </body>
