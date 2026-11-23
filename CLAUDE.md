@@ -109,3 +109,12 @@ Les réservations et les billets payants restent en « à payer » tant que Stri
 - `20261123170000_revente_billets` (TicketStatus TRANSFERRED/RETURNED, réglages de revente sur Venue, Ticket.fromTicketId)
 
 À appliquer avec `npx prisma migrate deploy`.
+
+## Vue 3D du plan
+`src/app/w/[slug]/Plan3D.tsx` : pas de bibliothèque 3D, uniquement du CSS 3D. La scène est `rotateX(planTilt) rotateZ(rot)`. Chaque carré est un cuboïde : la face du dessus est `translateZ(z)`, les quatre murs ont `transform-origin: 0 0` et `translateZ(z) rotateX(-90deg)` (plus `rotateY(-90deg)` pour les côtés). Les dimensions sont calculées en pixels depuis un ResizeObserver, pas en pourcentages, pour que les murs tombent juste. `TableCategory.color` et `elevation` pilotent la couleur et la hauteur, `VenueTable.photoUrl` la photo affichée à la sélection, `Venue.tour3dUrl` une vraie visite externe.
+
+## Facturation
+`src/lib/billing.ts` : `gateFor(venue, eventId)` décide si le public peut réserver. Elle est appelée dans le widget **et** dans `reserve.ts` / `tickets.ts` — ne jamais se contenter de griser un bouton. `closeTrialIfOver` passe le club en `LOCKED` le lendemain 8 h de sa soirée d'essai.
+
+## Tunnel d'inscription
+Les réglages pris sur la page d'accueil voyagent ainsi : URL `/inscription?club=…&site=…` → champs cachés `look_*` du formulaire (`AuthForm`) → cookie `tablo_look` posé **dans l'action `signup`** (jamais pendant le rendu d'une page) → `readLook()` dans `createVenue`.
