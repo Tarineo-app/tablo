@@ -6,6 +6,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { MANAGE, requireMembership, requireUser } from "@/lib/auth";
 import { toCents } from "@/lib/money";
+import { forgetLook, readLook, themeFromLook } from "@/lib/look";
 import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme } from "@/lib/theme";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
@@ -26,6 +27,7 @@ export async function createVenue(_: ActionState, form: FormData): Promise<Actio
   const parsed = VenueSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { name, city, kind } = parsed.data;
+  const look = await readLook();
 
   let slug = slugify(name);
   for (let i = 2; await db.venue.findUnique({ where: { slug } }); i++) slug = `${slugify(name)}-${i}`;
@@ -38,12 +40,13 @@ export async function createVenue(_: ActionState, form: FormData): Promise<Actio
   await db.venue.create({
     data: {
       name, city: city || null, kind, slug,
-      theme: defaultTheme(kind),
+      theme: themeFromLook(kind, look),
       rules: kind === "beach" ? "18 ans et plus. Maillot accepté jusqu'à 20 h, tenue de soirée ensuite." : "18 ans et plus. Tenue correcte exigée.",
       memberships: { create: { userId: user.id, role: "OWNER" } },
       categories: { create: cats.map(([n, dep, inc, min], i) => ({ name: n as string, depositPct: dep as number, includedShows: inc as number, minSpendCents: (min as number) * 100, sortOrder: i })) },
     },
   });
+  await forgetLook();
   redirect("/app");
 }
 

@@ -1078,6 +1078,7 @@ if(EMB){
   if(d.amb&&AMB[d.amb])setAmb(d.amb);
   if(d.accent){VEN().theme.accent=d.accent;VEN().theme.grad=d.grad||''}
   if(d.btn)VEN().theme.btn=d.btn;
+  if(typeof d.name==='string'){const v=VEN(),w=d.name.trim().slice(0,28).split(/\s+/);v.a=w.length>1?w.slice(0,-1).join(' '):(w[0]||'');v.b=w.length>1?w[w.length-1]:'';v.theme.logo=null}
   if(d.mode&&d.mode!==S.mode)setMode(d.mode);
   if(typeof d.tour==='number')tour(d.tour);
  };

@@ -40,10 +40,7 @@ nav .links a:hover{color:#fff}
 
 /* Héros */
 .hero{padding:146px 0 0;text-align:center;position:relative;overflow:hidden}
-.hero .ball{position:absolute;width:clamp(90px,11vw,160px);opacity:.5;pointer-events:none}
-.hero .ball.l{left:3%;top:120px}
-.hero .ball.r{right:3%;top:210px}
-@media(max-width:900px){.hero .ball{display:none}}
+@media(max-width:900px){}
 .badge{display:inline-flex;align-items:center;gap:10px;padding:7px 8px 7px 7px;border-radius:999px;border:1px solid var(--line);background:#0d0d11;font-size:13.5px;color:#cfcdd9;margin-bottom:26px}
 .badge b{font:800 10.5px Manrope,system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:var(--holo);background-size:200% 100%;color:#0a0a0c;animation:hs 7s linear infinite}
 h1{font:900 clamp(38px,7vw,82px)/.98 Unbounded,system-ui,sans-serif;letter-spacing:-.035em;margin:0 0 20px}
@@ -171,79 +168,113 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .rv{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}*{animation:none!important}}
+
+/* Scène : la fenêtre du navigateur et le site du club */
+.hero{padding:132px 0 0;text-align:center;position:relative}
+.stage{margin-top:52px;padding-bottom:10px}
+.browser{border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden;background:#0b0b0e;box-shadow:0 40px 120px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
+.chromebar{display:flex;align-items:center;gap:14px;padding:10px 14px;background:#141418;border-bottom:1px solid rgba(255,255,255,.08)}
+.chromebar .dots{display:flex;gap:7px}
+.chromebar .dots i{width:11px;height:11px;border-radius:50%;background:#2e2e36}
+.chromebar .dots i:first-child{background:#ff5f57}
+.chromebar .dots i:nth-child(2){background:#febc2e}
+.chromebar .dots i:nth-child(3){background:#28c840}
+.url{flex:1;max-width:320px;margin:0 auto;padding:5px 14px;border-radius:7px;background:#0b0b0e;color:#8e8c99;font:600 12.5px Manrope,system-ui,sans-serif;text-align:center;border:1px solid rgba(255,255,255,.06)}
+.viewport{position:relative;display:grid;grid-template-columns:1fr minmax(0,560px);min-height:620px;text-align:left}
+.site{position:relative;overflow:hidden;background:#07070a}
+.sitenav{display:flex;align-items:center;gap:22px;padding:18px 26px;font:600 12.5px Manrope,system-ui,sans-serif;color:#9a97a6;border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:2}
+.sitenav b{font:700 15px/1 "Cinzel",Georgia,serif;letter-spacing:.16em;color:#fff;margin-right:auto;white-space:nowrap}
+.sitenav em{font-style:normal;font-weight:700;color:#0b0b0e;background:#fff;border-radius:999px;padding:7px 15px}
+@media(max-width:1100px){.sitenav span{display:none}}
+.sitehero{position:relative;z-index:2;padding:min(9vw,74px) 26px;display:grid;gap:12px;align-content:center;min-height:460px}
+.sitehero .kicker{font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#b9b6c6}
+.sitehero h3{font:400 clamp(38px,5.4vw,76px)/.95 "Cinzel",Georgia,serif;letter-spacing:.02em;color:#fff;margin:0;text-transform:uppercase}
+.sitehero p{margin:0;color:#8e8c99;font-size:14.5px}
+.site::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(60% 50% at 22% 28%,rgba(120,90,200,.34),transparent 70%),
+  radial-gradient(50% 44% at 78% 72%,rgba(200,120,90,.22),transparent 70%),
+  linear-gradient(180deg,#0a0a10,#060608);}
+.site::after{content:"";position:absolute;inset:0;opacity:.35;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);background-size:3px 3px;mix-blend-mode:overlay}
+.sidepanel{border-left:1px solid rgba(255,255,255,.1);background:#060607;box-shadow:-30px 0 60px rgba(0,0,0,.55)}
+.sidepanel iframe{display:block;width:100%;height:100%;min-height:620px;border:0}
+.stagenote{text-align:center;color:var(--mute);font-size:14px;margin:18px 0 20px}
+@media(max-width:980px){.viewport{grid-template-columns:1fr}.site{display:none}.sidepanel{border-left:0;box-shadow:none}.sidepanel iframe{min-height:640px}}
+
+/* Constructeur */
+.builder{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;margin-top:34px;align-items:start}
+.bpreview{display:grid;gap:12px;justify-items:center;position:sticky;top:92px}
+.bpreview small{color:var(--mute);font-size:12.5px;text-align:center;max-width:260px;line-height:1.5}
+.phone{position:relative;width:300px;height:620px;border-radius:42px;padding:10px;background:linear-gradient(160deg,#33333c,#0d0d11 42%,#2b2b33);box-shadow:0 34px 80px rgba(0,0,0,.75),inset 0 0 0 1px rgba(255,255,255,.08)}
+.phone .screen{position:relative;width:280px;height:600px;border-radius:33px;overflow:hidden;background:#060607}
+.phone .notch{position:absolute;left:50%;top:9px;transform:translateX(-50%);width:76px;height:19px;border-radius:999px;background:#08080a;z-index:3;box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+.phone iframe{position:absolute;left:0;top:34px;width:390px;height:736px;border:0;background:#060607;transform:scale(.7179);transform-origin:top left}
+.bnext{grid-column:1 / -1}
+.bcontrols{border:1px solid var(--line);border-radius:22px;background:var(--card);padding:26px;display:grid;gap:20px}
+.bfield{display:grid;gap:9px;font:700 12px Manrope,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.bfield input{min-height:50px;border-radius:13px;border:1px solid var(--line);background:#0c0c0f;color:var(--text);padding:0 16px;font:600 16px Manrope,system-ui,sans-serif;letter-spacing:0;text-transform:none}
+.bfield input:focus{outline:2px solid #a970ff;outline-offset:1px}
+.brow{display:flex;gap:7px;flex-wrap:wrap}
+.brow button{min-height:40px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#c9c7d4;font:700 13.5px Manrope,system-ui,sans-serif;letter-spacing:0;text-transform:none;cursor:pointer;transition:.15s}
+.brow button:hover{border-color:rgba(255,255,255,.3)}
+.brow button.on{background:#fff;color:#08080a;border-color:#fff}
+.brow.sw button{width:38px;height:38px;min-height:0;padding:0;border-radius:50%;border:2px solid rgba(255,255,255,.14)}
+.brow.sw button.on{outline:2px solid #fff;outline-offset:2px}
+.bnext{border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,rgba(169,112,255,.1),transparent 60%),var(--card);padding:26px;display:grid;gap:14px;align-content:start}
+.bnext p{margin:0;color:var(--mute);font-size:15px;line-height:1.6}
+.bsteps{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:14.5px;color:#cfcdd9}
+.bsteps li{display:flex;gap:10px}
+.bsteps b{color:var(--mute)}
+.bnext small{color:var(--mute);font-size:12.5px;line-height:1.5}
+@media(max-width:900px){.builder{grid-template-columns:1fr}.bpreview{position:static}.bnext{grid-column:auto}}
 </style></head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-<defs>
-  <radialGradient id="shade" cx="36%" cy="30%" r="72%"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#000" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>
-  <pattern id="tiles" width="9" height="9" patternUnits="userSpaceOnUse">
-    <rect width="9" height="9" fill="#55586b"/><rect x=".6" y=".6" width="7.8" height="7.8" fill="#c8cadb"/>
-    <rect x=".6" y=".6" width="3.9" height="3.9" fill="#f5f6fc"/><rect x="4.5" y="4.5" width="3.9" height="3.9" fill="#9a9db3"/>
-    <rect x="4.5" y=".6" width="3.9" height="3.9" fill="#d9c9ff" opacity=".6"/>
-  </pattern>
-  <linearGradient id="silk" x1="0" x2="1"><stop offset="0" stop-color="#7d8098"/><stop offset=".4" stop-color="#f3f4fa"/><stop offset=".65" stop-color="#cdd0e0"/><stop offset="1" stop-color="#6f7290"/></linearGradient>
-  <pattern id="sequin" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="url(#silk)"/><circle cx="3.5" cy="3.5" r="1.4" fill="#fff" opacity=".6"/></pattern>
-  <clipPath id="hc"><circle cx="100" cy="62" r="38"/></clipPath>
-  <symbol id="guy" viewBox="0 0 200 330">
-    <g class="bob">
-      <path d="M80 210 L74 300 L92 300 L100 228 L108 300 L126 300 L120 210 Z" fill="url(#sequin)"/>
-      <path d="M70 300 h26 v10 h-30 q-2-6 4-10z M104 300 h26 q6 4 4 10 h-30z" fill="#16161c"/>
-      <g class="armL"><path d="M76 116 Q50 120 40 86 L30 52 L42 48 L54 84 Q62 104 80 104 Z" fill="url(#sequin)"/><circle cx="35" cy="46" r="8" fill="#16161c"/></g>
-      <g class="armR"><path d="M124 116 Q150 120 160 86 L170 52 L158 48 L146 84 Q138 104 120 104 Z" fill="url(#sequin)"/><circle cx="165" cy="46" r="8" fill="#16161c"/></g>
-      <path d="M70 104 Q100 92 130 104 L126 214 L74 214 Z" fill="url(#sequin)"/>
-      <path d="M92 104 L100 160 L108 104 Z" fill="#16161c"/>
-      <path d="M93 106 L100 113 L107 106 L107 116 L100 113 L93 116Z" fill="#ff5fa2"/>
-      <g class="head">
-        <rect x="94" y="96" width="12" height="8" fill="#444"/>
-        <g clip-path="url(#hc)"><rect class="tl" x="58" y="22" width="90" height="80" fill="url(#tiles)"/><circle cx="100" cy="62" r="38" fill="url(#shade)"/></g>
-        <circle cx="100" cy="62" r="38" fill="none" stroke="#33354a" stroke-width="1.5"/>
-        <ellipse cx="86" cy="46" rx="11" ry="7" fill="#fff" opacity=".55"/>
-        <path class="twk" fill="#fff" d="M84 40 l2 6 6 2 -6 2 -2 6 -2-6 -6-2 6-2z"/>
-        <path class="twk" style="animation-delay:-.8s" fill="#fff" d="M120 72 l1.5 4.5 4.5 1.5 -4.5 1.5 -1.5 4.5 -1.5-4.5 -4.5-1.5 4.5-1.5z"/>
-      </g>
-    </g>
-  </symbol>
-  <symbol id="ball" viewBox="0 0 120 120">
-    <clipPath id="bc"><circle cx="60" cy="60" r="56"/></clipPath>
-    <g clip-path="url(#bc)"><rect class="tl" x="-20" y="0" width="200" height="120" fill="url(#tiles)"/><circle cx="60" cy="60" r="56" fill="url(#shade)"/></g>
-    <ellipse cx="42" cy="38" rx="16" ry="10" fill="#fff" opacity=".5"/>
-    <path class="twk" fill="#fff" d="M38 30 l3 9 9 3 -9 3 -3 9 -3-9 -9-3 9-3z"/>
-    <path class="twk" style="animation-delay:-.7s" fill="#fff" d="M84 78 l2 6 6 2 -6 2 -2 6 -2-6 -6-2 6-2z"/>
-  </symbol>
-</defs>
-</svg>
+
 
 <nav>
   <a href="#" class="logo"><span class="dot"></span>tablo</a>
   <div class="links">
-    <a href="#demo">La démo</a>
-    <a href="#espace-club">Espace club</a>
-    <a href="#tarifs">Tarifs</a>
+    <a href="#demo">La réservation</a>
+    <a href="#espace-club">Côté club</a>
+    <a href="#construire">À mes couleurs</a>
     <a href="/connexion">Connexion</a>
   </div>
-  <a href="/inscription" class="btn main sm">Créer mon espace</a>
+  <a href="/inscription" class="btn main sm" id="nCta">Construire mon espace</a>
 </nav>
 
 <main>
 <header class="hero">
-  <svg class="ball l" viewBox="0 0 120 120" aria-hidden="true"><use href="#ball"/></svg>
-  <svg class="ball r" viewBox="0 0 120 120" aria-hidden="true"><use href="#ball"/></svg>
   <div class="wrap">
-    <span class="badge"><b>Nouveau</b> Carrés VIP, billetterie et cagnotte, au même endroit</span>
-    <h1>Vos carrés se vendent<br><span class="holo">sur votre site.</span></h1>
-    <p class="lead">Le client choisit son carré sur le plan, ses bouteilles et son show, puis paie l'acompte. Vous ouvrez le samedi avec la soirée déjà vendue.</p>
+    <span class="badge"><b>Pour les clubs et beach clubs</b></span>
+    <h1>La réservation de vos carrés,<br>directement sur votre site.</h1>
+    <p class="lead">Un bouton sur votre site, et le client réserve son carré, choisit ses bouteilles, son show, puis paie l'acompte. Sans vous appeler, sans commission.</p>
     <div class="ctas">
-      <a href="/inscription" class="btn main">Créer l'espace de mon club</a>
-      <a href="#demo" class="btn">Essayer la démo</a>
+      <a href="#construire" class="btn main">Voir ce que ça donnerait chez moi</a>
+      <a href="#demo" class="btn">Essayer la réservation</a>
     </div>
     <div class="proofs">
-      <span><i>✓</i> 0 % de commission</span>
-      <span><i>✓</i> Installé en une ligne sur votre site</span>
-      <span><i>✓</i> Sans engagement</span>
+      <span><i>✓</i> Zéro commission sur vos ventes</span>
+      <span><i>✓</i> Une ligne à coller sur votre site</span>
+      <span><i>✓</i> Rien à installer pour votre équipe</span>
     </div>
+  </div>
 
-    <div class="demo" id="demo">
-      <div class="demohead"><span class="rec"></span>En direct : la vraie fenêtre de réservation, telle que la voient vos clients.</div>
+  <div class="stage" id="demo">
+    <div class="wrap">
+      <div class="browser">
+        <div class="chromebar"><span class="dots"><i></i><i></i><i></i></span><span class="url">levelours.fr</span></div>
+        <div class="viewport">
+          <div class="site" id="site">
+            <div class="sitenav"><b id="siteName">LE VELOURS</b><span>Le club</span><span>Soirées</span><span>Galerie</span><span>Accès</span><em>Réserver</em></div>
+            <div class="sitehero">
+              <span class="kicker">Samedi 28 novembre</span>
+              <h3 id="siteEvent">VELVET GOLD</h3>
+              <p>Minuit — 6 h · Dress code soigné</p>
+            </div>
+          </div>
+          <div class="sidepanel"><iframe id="liveW" src="demo.html?embed=1" title="Fenêtre de réservation Tablo" loading="eager"></iframe></div>
+        </div>
+      </div>
+      <p class="stagenote">Ce panneau, c'est Tablo. Il s'ouvre sur votre site, à vos couleurs. Essayez-le, c'est le vrai.</p>
       <div class="chapters" id="chapters" role="tablist" aria-label="Visite guidée">
         <button class="on" data-tour="0">1 · Le carré</button>
         <button data-tour="1">2 · Les bouteilles</button>
@@ -252,20 +283,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         <button data-tour="tix">5 · L'entrée</button>
       </div>
       <div class="tip" id="tip"><i></i><span>Touchez un carré libre : le client voit la catégorie, le minimum et les shows offerts.</span></div>
-      <div class="frame"><iframe id="liveW" src="demo.html?embed=1" title="Démo de réservation Tablo" loading="eager"></iframe></div>
-      <div class="skin" id="skin">
-        <span>À vos couleurs :</span>
-        <button class="amb on" data-amb="tablo">Club</button>
-        <button class="amb" data-amb="masque">Bal masqué</button>
-        <button class="amb" data-amb="jungle">Jungle</button>
-        <button class="amb" data-amb="disco">Disco</button>
-        <button class="amb" data-amb="pool">Beach club</button>
-        <button style="background:#ffffff" data-c="#ffffff" aria-label="Blanc"></button>
-        <button style="background:#e2b860" data-c="#e2b860" aria-label="Or"></button>
-        <button style="background:#ff5fa2" data-c="#ff5fa2" aria-label="Rose"></button>
-        <button style="background:#4fd8ff" data-c="#4fd8ff" aria-label="Bleu"></button>
-        <button style="background:#7dffa8" data-c="#7dffa8" aria-label="Vert"></button>
-      </div>
     </div>
   </div>
 </header>
@@ -391,53 +408,77 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </div>
 </section>
 
-<section id="tarifs">
+<section id="construire">
   <div class="wrap">
-    <div class="eyebrow rv">Tarifs</div>
-    <h2 class="rv">Un abonnement. Zéro commission.</h2>
-    <p class="sub rv">Faites le calcul avec vos chiffres : c'est l'acompte seul qui paie l'abonnement.</p>
+    <div class="eyebrow rv">Votre interface</div>
+    <h2 class="rv">Mettez-la à votre nom, tout de suite.</h2>
+    <p class="sub rv">Changez le nom, l'ambiance et la couleur : la fenêtre du haut de page change en direct. C'est exactement ce que verront vos clients.</p>
 
-    <div class="calcmini rv">
-      <label>Carrés par soirée<input type="number" id="cT" value="8" min="0" max="200"></label>
-      <label>Panier moyen (€)<input type="number" id="cP" value="900" min="0" step="50"></label>
-      <label>Soirées par mois<input type="number" id="cS" value="8" min="1" max="31"></label>
-      <label>Absents (%)<input type="number" id="cN" value="10" min="0" max="60"></label>
-      <div class="res"><span>Récupéré chaque mois grâce à l'acompte de 30 %</span><b id="rNo" class="holo">—</b></div>
-    </div>
+    <div class="builder rv">
+      <div class="bcontrols">
+        <label class="bfield">Le nom de votre établissement
+          <input id="bName" maxlength="28" placeholder="Le Velours" autocomplete="organization">
+        </label>
+        <label class="bfield">Votre soirée du samedi
+          <input id="bEvent" maxlength="24" placeholder="Velvet Gold">
+        </label>
+        <div class="bfield">Le type de lieu
+          <div class="brow" id="bKind">
+            <button class="on" data-kind="club">Club</button>
+            <button data-kind="beach">Beach club</button>
+          </div>
+        </div>
+        <div class="bfield">L'ambiance
+          <div class="brow" id="bAmb">
+            <button class="on" data-amb="tablo">Sobre</button>
+            <button data-amb="masque">Bal masqué</button>
+            <button data-amb="jungle">Jungle</button>
+            <button data-amb="disco">Disco</button>
+            <button data-amb="chic">Chic clair</button>
+          </div>
+        </div>
+        <div class="bfield">Votre couleur
+          <div class="brow sw" id="bCol">
+            <button style="background:#ffffff" data-c="#ffffff" aria-label="Blanc"></button>
+            <button style="background:#e2b860" data-c="#e2b860" aria-label="Or"></button>
+            <button style="background:#ff5fa2" data-c="#ff5fa2" aria-label="Rose"></button>
+            <button style="background:#a970ff" data-c="#a970ff" aria-label="Violet"></button>
+            <button style="background:#4fd8ff" data-c="#4fd8ff" aria-label="Bleu"></button>
+            <button style="background:#7dffa8" data-c="#7dffa8" aria-label="Vert"></button>
+            <button style="background:#ff3b3b" data-c="#ff3b3b" aria-label="Rouge"></button>
+          </div>
+        </div>
+        <div class="bfield">La forme des boutons
+          <div class="brow" id="bBtn">
+            <button class="on" data-btn="pill">Pilule</button>
+            <button data-btn="round">Arrondis</button>
+            <button data-btn="square">Carrés</button>
+          </div>
+        </div>
+      </div>
 
-    <div class="plans">
-      <article class="plan rv">
-        <h3>Club</h3>
-        <div class="price">79 €<small> /mois</small></div>
-        <p class="sub" style="font-size:15px">Pour lancer la réservation en ligne.</p>
-        <ul>
-          <li>Widget, lien bio et QR code</li>
-          <li>Plan des carrés, bouteilles, shows et pancarte</li>
-          <li>Acompte, cagnotte et espèces</li>
-          <li>Billetterie, revente et contrôle à l'entrée</li>
-          <li>App serveur et fichier clients</li>
-        </ul>
-        <a href="/inscription" class="btn main">Créer mon espace</a>
-      </article>
-      <article class="plan best rv">
-        <span class="tagbest">Le plus choisi</span>
-        <h3>Prestige</h3>
-        <div class="price">149 €<small> /mois</small></div>
-        <p class="sub" style="font-size:15px">Pour les clubs avec une équipe commerciale.</p>
-        <ul>
-          <li>Tout le plan Club</li>
-          <li>Managers, liens personnels et commissions</li>
-          <li>Objectifs et tarifs par soirée</li>
-          <li>Fidélité, classement et Top 3</li>
-          <li>Personnalisation complète du widget</li>
-        </ul>
-        <a href="/inscription" class="btn main">Créer mon espace</a>
-      </article>
-    </div>
-    <div class="orga rv">
-      <b style="color:var(--text);font-family:Unbounded,sans-serif">Organisateur de soirées</b>
-      <span>Vous louez un lieu pour vos soirées à thème ? Tarif à la soirée, billets et carrés dans le même lien.</span>
-      <a href="/inscription" class="btn sm">Nous écrire</a>
+      <aside class="bpreview">
+        <div class="phone">
+          <div class="screen">
+            <span class="notch"></span>
+            <iframe id="liveM" src="demo.html?embed=1" title="Aperçu sur téléphone" loading="lazy" scrolling="no"></iframe>
+          </div>
+        </div>
+        <small>Sur le téléphone de vos clients, c'est là que tout se passe.</small>
+      </aside>
+
+      <aside class="bnext">
+        <h3>La suite, c'est votre plan</h3>
+        <p>Vous placez vos carrés sur une photo de votre salle, vous chargez votre carte des bouteilles, et vous collez une ligne sur votre site. Comptez une soirée.</p>
+        <ol class="bsteps">
+          <li><b>1.</b> Vos catégories et vos minimums</li>
+          <li><b>2.</b> Vos carrés sur le plan</li>
+          <li><b>3.</b> Vos bouteilles et vos shows</li>
+          <li><b>4.</b> Le code à coller, ou le lien pour la bio</li>
+        </ol>
+        <a href="/inscription" class="btn main" id="bCta">Continuer avec ces réglages</a>
+        <small>Gratuit pour construire votre espace. Vous ne payez qu'au moment d'ouvrir les réservations.</small>
+      </aside>
     </div>
   </div>
 </section>
@@ -448,7 +489,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     <h2 class="rv">Ce qu'on nous demande.</h2>
     <div class="faq">
       <details class="rv"><summary>Combien de temps pour être en ligne ?</summary><p>Une soirée de travail. Vous créez vos catégories, placez vos carrés sur une photo de votre plan, chargez votre carte des bouteilles, puis collez une ligne de code sur votre site. Si vous n'avez pas de site, le lien et le QR code suffisent.</p></details>
-      <details class="rv"><summary>Vous prenez une commission sur les réservations ?</summary><p>Non. Vous payez l'abonnement, rien d'autre. L'argent des clients arrive sur le compte du club ; seuls les frais bancaires du paiement s'appliquent, comme pour un terminal.</p></details>
+      <details class="rv"><summary>Vous prenez une commission sur les réservations ?</summary><p>Non, jamais. L'argent des clients arrive sur le compte du club ; seuls les frais bancaires du paiement s'appliquent, comme pour un terminal. Vous payez un abonnement mensuel, sans engagement, et vous le découvrez au moment de mettre vos réservations en ligne.</p></details>
       <details class="rv"><summary>Et si un client ne vient pas ?</summary><p>L'acompte est encaissé à la réservation et sa carte reste en garantie. Vous fixez le pourcentage par catégorie, et votre politique d'annulation s'affiche dans le widget.</p></details>
       <details class="rv"><summary>Mes serveurs doivent installer quelque chose ?</summary><p>Non. Ils ouvrent un lien sur leur téléphone et voient les envois de la soirée, avec « Je prends » puis « Servi ». Le videur scanne les QR codes depuis le même espace.</p></details>
       <details class="rv"><summary>Je peux garder une bouteille pour un client ?</summary><p>Oui. Une bouteille entamée part au garage avec un code. Le client le saisit la fois suivante et la récupère, à condition d'en racheter le nombre que vous avez fixé.</p></details>
@@ -459,10 +500,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <section class="final">
   <div class="wrap">
     <h2 class="rv">Votre prochain samedi, vendu d'avance.</h2>
-    <p class="sub rv" style="margin:0 auto 28px">Créez votre espace, placez vos carrés, collez une ligne sur votre site.</p>
+    <p class="sub rv" style="margin:0 auto 28px">Construisez votre espace, placez vos carrés, collez une ligne sur votre site. Vous voyez le résultat avant de décider.</p>
     <div class="ctas rv">
-      <a href="/inscription" class="btn main">Créer l'espace de mon club</a>
-      <a href="#demo" class="btn">Revoir la démo</a>
+      <a href="/inscription" class="btn main" id="fCta">Construire mon espace</a>
+      <a href="#construire" class="btn">Le mettre à mes couleurs</a>
     </div>
   </div>
 </section>
@@ -481,9 +522,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
  document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%3)*60+'ms';io.observe(el)});
 
- /* visite guidée de la démo */
- const f=document.getElementById('liveW'),bar=document.getElementById('chapters'),tip=document.getElementById('tip'),skin=document.getElementById('skin');
- const send=d=>f&&f.contentWindow&&f.contentWindow.postMessage(Object.assign({tablo:1},d),'*');
+ /* visite guidée de la réservation */
+ const f=document.getElementById('liveW'),bar=document.getElementById('chapters'),tip=document.getElementById('tip');
+ const frames=()=>[f,document.getElementById('liveM')].filter(Boolean);
+ const send=d=>frames().forEach(x=>x.contentWindow&&x.contentWindow.postMessage(Object.assign({tablo:1},d),'*'));
+ const sendTo=(el,d)=>el&&el.contentWindow&&el.contentWindow.postMessage(Object.assign({tablo:1},d),'*');
  const TXT={0:"Touchez un carré libre : le client voit la catégorie, le minimum et les shows offerts.",
   1:"Vos bouteilles, vos formats, vos photos. La barre montre ce qui reste pour atteindre le minimum.",
   2:"Une pancarte au prénom, un show de votre catalogue : c'est là que le panier monte.",
@@ -493,12 +536,38 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   bar.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
   const k=b.dataset.tour;
   tip.style.opacity=0;setTimeout(()=>{tip.querySelector('span').textContent=TXT[k]||'';tip.style.opacity=1},150);
-  if(k==='tix')send({mode:'tix'});else send({mode:'vip',tour:+k});
+  if(k==='tix')sendTo(f,{mode:'tix'});else sendTo(f,{mode:'vip',tour:+k});
  });
- skin&&skin.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  if(b.dataset.amb){skin.querySelectorAll('.amb').forEach(x=>x.classList.toggle('on',x===b));send({venue:b.dataset.amb==='pool'?'beach':'club',amb:b.dataset.amb})}
-  else if(b.dataset.c){skin.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b));send({accent:b.dataset.c})}
- });
+
+ /* constructeur : le prospect met la fenêtre à son nom, et ses choix suivent jusqu'à l'inscription */
+ const look={name:'',event:'',kind:'club',amb:'tablo',accent:'',btn:'pill'};
+ const siteName=document.getElementById('siteName'),siteEvent=document.getElementById('siteEvent');
+ const ctas=['nCta','bCta','fCta'].map(i=>document.getElementById(i)).filter(Boolean);
+ const refreshCtas=()=>{const q=new URLSearchParams();
+   if(look.name)q.set('club',look.name);
+   q.set('kind',look.kind);q.set('amb',look.amb);
+   if(look.accent)q.set('couleur',look.accent);
+   if(look.btn!=='pill')q.set('boutons',look.btn);
+   ctas.forEach(a=>a.href='/inscription?'+q.toString());
+ };
+ const pick=(box,el,key,val)=>{box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===el));look[key]=val;refreshCtas()};
+ const bName=document.getElementById('bName'),bEvent=document.getElementById('bEvent');
+ bName&&bName.addEventListener('input',()=>{const v=bName.value.trim();look.name=v;
+   if(siteName)siteName.textContent=(v||'Le Velours').toUpperCase();
+   send({name:v||'Le Velours'});refreshCtas()});
+ bEvent&&bEvent.addEventListener('input',()=>{look.event=bEvent.value.trim();if(siteEvent)siteEvent.textContent=(look.event||'Velvet Gold').toUpperCase()});
+ const bKind=document.getElementById('bKind'),bAmb=document.getElementById('bAmb'),bCol=document.getElementById('bCol'),bBtn=document.getElementById('bBtn');
+ bKind&&bKind.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+   pick(bKind,b,'kind',b.dataset.kind);
+   const amb=b.dataset.kind==='beach'?'pool':'tablo';
+   look.amb=amb;bAmb&&bAmb.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.amb===amb));
+   send({venue:b.dataset.kind,amb,name:look.name||'Le Velours'});refreshCtas()});
+ bAmb&&bAmb.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bAmb,b,'amb',b.dataset.amb);send({amb:b.dataset.amb})});
+ bCol&&bCol.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bCol,b,'accent',b.dataset.c);send({accent:b.dataset.c})});
+ bBtn&&bBtn.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bBtn,b,'btn',b.dataset.btn);send({btn:b.dataset.btn})});
+ refreshCtas();
+ const m=document.getElementById('liveM');
+ m&&m.addEventListener('load',()=>setTimeout(()=>sendTo(m,{venue:look.kind,amb:look.amb,accent:look.accent||undefined,btn:look.btn,name:look.name||undefined}),400));
 
  /* onglets de l'espace club */
  const tabs=document.querySelector('.apptabs');
@@ -507,12 +576,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   document.querySelectorAll('.appview').forEach(v=>v.classList.toggle('on',v.dataset.view===b.dataset.app));
  });
 
- /* calcul rapide */
- const ids=['cT','cP','cS','cN'],el={};ids.forEach(i=>el[i]=document.getElementById(i));
- if(el.cT){const calc=()=>{
-   const t=+el.cT.value||0,p=+el.cP.value||0,s=+el.cS.value||0,n=Math.min(100,+el.cN.value||0)/100;
-   document.getElementById('rNo').textContent=String(Math.round(t*p*s*n*0.3)).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €';
-  };ids.forEach(i=>el[i].addEventListener('input',calc));calc();}
 })();
 </script>
 </body>

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { parseLook, rememberLook } from "@/lib/look";
 import { rateLimit } from "@/lib/ratelimit";
 import { createSession, deleteSession } from "@/lib/session";
 
@@ -23,6 +24,8 @@ export async function signup(_: FormState, form: FormData): Promise<FormState> {
   if (tooMany) return { error: tooMany };
   if (await db.user.findUnique({ where: { email } })) return { error: "Un compte existe déjà avec cet email." };
   const user = await db.user.create({ data: { name, email, passwordHash: await bcrypt.hash(password, 10) } });
+  // Ce que le prospect a réglé sur la page d'accueil suit jusqu'à la création de son club.
+  await rememberLook(parseLook(Object.fromEntries([...form.entries()].filter(([k]) => k.startsWith("look_")).map(([k, v]) => [k.slice(5), String(v)]))));
   await createSession(user.id);
   redirect("/app/nouveau-club");
 }
