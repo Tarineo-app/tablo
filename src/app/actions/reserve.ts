@@ -1,0 +1,95 @@
+"use server";
+
+import { randomBytes } from "node:crypto";
+import { z } from "zod";
+import { db } from "@/lib/db";
+import { depositCents, priceShows } from "@/lib/pricing";
+
+const Input = z.object({
+  slug: z.string().min(1),
+  eventId: z.string().min(1),
+  tableId: z.string().min(1),
+  guests: z.number().int().min(1).max(100),
+  items: z.array(z.object({ sizeId: z.string().min(1), flavor: z.string().max(40).nullable(), quantity: z.number().int().min(1).max(50) })).min(1, "Choisissez au moins une bouteille.").max(40),
+  showIds: z.array(z.string()).max(20),
+  signText: z.string().trim().max(40).nullable(),
+  payMode: z.enum(["FULL", "POOL", "CASH"]),
+  name: z.string().trim().min(2, "Indiquez votre nom.").max(80),
+  email: z.string().trim().toLowerCase().email("Email invalide."),
+  phone: z.string().trim().min(6, "Téléphone invalide.").max(30),
+  managerCode: z.string().max(40).nullable(),
+});
+
+export type ReserveResult = { error: string } | { token: string };
+
+/** Crée la réservation. Tous les montants sont recalculés ici : le navigateur ne fait que proposer. */
+export async function createReservation(raw: z.infer<typeof Input>): Promise<ReserveResult> {
+  const p = Input.safeParse(raw);
+  if (!p.success) return { error: p.error.issues[0].message };
+  const d = p.data;
+
+  const venue = await db.venue.findUnique({ where: { slug: d.slug } });
+  if (!venue) return { error: "Établissement introuvable." };
+  if (!venue.payModes.includes(d.payMode)) return { error: "Ce mode de paiement n'est pas proposé par le club." };
+
+  const [event, table] = await Promise.all([
+    db.event.findFirst({ where: { id: d.eventId, venueId: venue.id, isOpen: true }, include: { prices: { where: { tableId: d.tableId } } } }),
+    db.venueTable.findFirst({ where: { id: d.tableId, venueId: venue.id, active: true }, include: { category: true } }),
+  ]);
+  if (!event || event.date.getTime() < Date.now() - 12 * 3600e3) return { error: "Cette soirée n'est plus ouverte à la réservation." };
+  if (!table) return { error: "Ce carré n'existe plus." };
+  if (d.guests > table.capacity) return { error: `Ce carré accueille ${table.capacity} personnes maximum.` };
+
+  // Bouteilles : on relit les prix en base.
+  const sizes = await db.bottleSize.findMany({ where: { id: { in: d.items.map((i) => i.sizeId) }, bottle: { venueId: venue.id, active: true } }, include: { bottle: true } });
+  const sizeById = new Map(sizes.map((s) => [s.id, s]));
+  let bottlesCents = 0;
+  for (const it of d.items) {
+    const s = sizeById.get(it.sizeId);
+    if (!s) return { error: "Une bouteille n'est plus disponible." };
+    if (s.stock !== null && s.stock < it.quantity) return { error: `Plus assez de stock pour ${s.bottle.name} ${s.label}.` };
+    if (it.flavor && !s.bottle.flavors.includes(it.flavor)) return { error: `Goût inconnu pour ${s.bottle.name}.` };
+    bottlesCents += s.priceCents * it.quantity;
+  }
+  const minCents = event.prices[0]?.minSpendCents ?? table.minSpendCents ?? table.category.minSpendCents;
+  if (bottlesCents < minCents) return { error: `Le minimum de ce carré est de ${minCents / 100} € de bouteilles.` };
+
+  // Shows : offerts selon la catégorie, le reste est payant.
+  const shows = await db.show.findMany({ where: { id: { in: d.showIds }, venueId: venue.id, active: true }, include: { categories: { select: { id: true } } } });
+  if (shows.length !== new Set(d.showIds).size) return { error: "Un show n'est plus disponible." };
+  const priced = priceShows(shows.map((s) => ({ id: s.id, priceCents: s.priceCents, categoryIds: s.categories.map((c) => c.id) })), table.categoryId, table.category.includedShows);
+  const showsCents = priced.reduce((a, s) => a + s.priceCents, 0);
+  const total = bottlesCents + showsCents;
+  const deposit = d.payMode === "FULL" ? total : depositCents(total, table.category.depositPct);
+
+  const manager = d.managerCode ? await db.membership.findFirst({ where: { managerCode: d.managerCode, venueId: venue.id, role: "MANAGER" } }) : null;
+  const token = randomBytes(12).toString("base64url");
+
+  try {
+    await db.$transaction(async (tx) => {
+      // Vérification au dernier moment, dans la transaction : un carré, une réservation par soirée.
+      const taken = await tx.reservation.count({ where: { eventId: event.id, tableId: table.id, status: { notIn: ["CANCELLED"] } } });
+      if (taken) throw new Error("TAKEN");
+      const r = await tx.reservation.create({
+        data: {
+          venueId: venue.id, eventId: event.id, tableId: table.id, managerId: manager?.id ?? null,
+          status: "DRAFT", payMode: d.payMode, guests: d.guests,
+          organizerName: d.name, organizerEmail: d.email, organizerPhone: d.phone,
+          signText: d.signText || null, totalCents: total, depositCents: deposit, qrToken: token,
+          poolToken: d.payMode === "POOL" ? randomBytes(12).toString("base64url") : null,
+          shows: { create: priced.map((s) => ({ showId: s.id, included: s.included, priceCents: s.priceCents })) },
+        },
+      });
+      await tx.order.create({
+        data: {
+          venueId: venue.id, reservationId: r.id, number: 1,
+          items: { create: d.items.map((it) => ({ bottleSizeId: it.sizeId, flavor: it.flavor, quantity: it.quantity, unitCents: sizeById.get(it.sizeId)!.priceCents })) },
+        },
+      });
+    });
+  } catch (e) {
+    if (e instanceof Error && e.message === "TAKEN") return { error: "Ce carré vient d'être réservé par quelqu'un d'autre. Choisissez-en un autre." };
+    throw e;
+  }
+  return { token };
+}

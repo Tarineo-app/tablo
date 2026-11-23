@@ -1,0 +1,72 @@
+// Données de démo : le club fictif « Le Velours » (Rouen) avec un compte propriétaire.
+// Lancer avec : npx prisma db seed
+import "dotenv/config";
+import bcrypt from "bcryptjs";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { defaultTheme } from "../src/lib/theme";
+
+const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
+
+async function main() {
+  const email = "demo@tablo.club";
+  if (await db.venue.findUnique({ where: { slug: "le-velours" } })) {
+    console.log("Le Velours existe déjà, rien à faire.");
+    return;
+  }
+  const user = await db.user.upsert({ where: { email }, update: {}, create: { email, name: "Démo Tablo", passwordHash: await bcrypt.hash("tablo-demo", 10) } });
+  const venue = await db.venue.create({
+    data: {
+      slug: "le-velours", name: "Le Velours", city: "Rouen", kind: "club", theme: defaultTheme("club"),
+      rules: "Soirée Velvet : tenue chic exigée, 18 ans et plus. Au-delà de 20 personnes, appelez-nous.",
+      memberships: { create: [{ userId: user.id, role: "OWNER" }] },
+    },
+  });
+  const cat = async (name: string, depositPct: number, includedShows: number, min: number, sortOrder: number) =>
+    db.tableCategory.create({ data: { venueId: venue.id, name, depositPct, includedShows, minSpendCents: min * 100, sortOrder } });
+  const prestige = await cat("Prestige", 50, 3, 1500, 0);
+  const scene = await cat("Scène", 30, 2, 800, 1);
+  const lounge = await cat("Lounge", 20, 1, 400, 2);
+  const haute = await cat("Table haute", 0, 0, 150, 3);
+
+  const T = (name: string, c: { id: string }, capacity: number, x: number, y: number, w: number, h: number, min?: number) =>
+    ({ venueId: venue.id, name, categoryId: c.id, capacity, x, y, w, h, minSpendCents: min ? min * 100 : null });
+  await db.venueTable.createMany({
+    data: [
+      T("Impérial", prestige, 12, 6, 8, 22, 16, 2000), T("Royal", prestige, 10, 72, 8, 22, 16),
+      T("Scène 1", scene, 8, 34, 8, 14, 12), T("Scène 2", scene, 8, 52, 8, 14, 12),
+      T("Lounge 1", lounge, 6, 6, 40, 14, 14), T("Lounge 2", lounge, 6, 6, 62, 14, 14), T("Lounge 3", lounge, 6, 80, 40, 14, 14), T("Lounge 4", lounge, 6, 80, 62, 14, 14),
+      T("Haute 1", haute, 4, 30, 82, 10, 10), T("Haute 2", haute, 4, 60, 82, 10, 10),
+    ],
+  });
+
+  const bottle = (name: string, type: string, sizes: [string, string, number][], flavors: string[] = []) =>
+    db.bottle.create({ data: { venueId: venue.id, name, type, flavors, sizes: { create: sizes.map(([label, volume, eur]) => ({ label, volume, priceCents: eur * 100 })) } } });
+  await bottle("Champagne Brut", "Champagne", [["Classique", "75 cl", 180], ["Magnum", "1,5 L", 380], ["Jéroboam", "3 L", 900]]);
+  await bottle("Champagne Rosé", "Champagne", [["Classique", "75 cl", 240], ["Magnum", "1,5 L", 520]]);
+  await bottle("Champagne Prestige", "Champagne", [["Classique", "75 cl", 450], ["Magnum", "1,5 L", 980]]);
+  await bottle("Vodka premium", "Vodka", [["Classique", "70 cl", 200], ["Magnum", "1,75 L", 420]], ["Original", "Pêche", "Ananas", "Fruits rouges"]);
+  await bottle("Tequila añejo", "Tequila", [["Classique", "70 cl", 320]]);
+  await bottle("Whisky 12 ans", "Whisky", [["Classique", "70 cl", 220]]);
+
+  const show = (name: string, description: string, price: number, cats: { id: string }[], isSign = false) =>
+    db.show.create({ data: { venueId: venue.id, name, description, priceCents: price * 100, isSign, categories: { connect: cats.map((c) => ({ id: c.id })) } } });
+  await show("Pancarte personnalisée", "La pancarte du club avec votre texte", 0, [prestige, scene, lounge, haute], true);
+  await show("Parade de sparklers", "6 sparklers apportés à la table avec la bouteille", 80, [prestige, scene, lounge]);
+  await show("Danseurs boule à facettes", "3 danseurs disco à votre table, 5 minutes", 150, [prestige, scene]);
+  await show("Mallette lumineuse", "Bouteille servie dans une mallette LED avec fumée", 120, [prestige]);
+  await show("Dédicace du DJ", "Votre prénom annoncé au micro", 50, [prestige, scene, lounge]);
+  await show("Canon à confettis", "Explosion de confettis au-dessus du carré", 90, []);
+
+  const next = new Date();
+  const dates: [number, string][] = [[5, "Afro Night"], [6, "Velvet Gold"], [6, "Nuit Vénitienne"]];
+  for (const [weekday, name] of dates) {
+    const d = new Date(next);
+    d.setUTCDate(d.getUTCDate() + ((weekday - d.getUTCDay() + 7) % 7 || 7) + (name === "Nuit Vénitienne" ? 7 : 0));
+    d.setUTCHours(12, 0, 0, 0);
+    await db.event.create({ data: { venueId: venue.id, date: d, name } });
+  }
+  console.log("Le Velours créé. Connexion : demo@tablo.club / tablo-demo · Widget : /w/le-velours");
+}
+
+main().finally(() => db.$disconnect());

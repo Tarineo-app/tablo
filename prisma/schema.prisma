@@ -1,0 +1,284 @@
+// Tablo — schéma de départ du MVP. Montants en centimes (Int).
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  DIRECTOR
+  MANAGER
+  SERVER
+  BARMAN
+}
+
+enum PayMode {
+  FULL
+  POOL // cagnotte
+  CASH
+}
+
+enum ReservationStatus {
+  DRAFT
+  PENDING_PAYMENT
+  CONFIRMED
+  FULLY_PAID
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  PAYMENT_ISSUE
+}
+
+enum OrderStatus {
+  NEW
+  TAKEN
+  SERVED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String?
+  passwordHash String?
+  createdAt    DateTime     @default(now())
+  memberships  Membership[]
+}
+
+model Venue {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  name             String
+  city             String?
+  kind             String    @default("club") // club | beach
+  logoUrl          String?
+  theme            Json? // { color, background, font, buttonRadius }
+  rules            String? // âge minimum, tenue…
+  cancelPolicy     String?
+  planImageUrl     String?
+  payModes         PayMode[] @default([FULL, POOL, CASH])
+  poolDeadlineHour Int       @default(18) // la veille, heure locale
+  stripeAccountId  String? // Stripe Connect Express
+  stripeCustomerId String? // abonnement Tablo
+  plan             String? // CLUB | PRESTIGE
+  createdAt        DateTime  @default(now())
+
+  memberships  Membership[]
+  categories   TableCategory[]
+  tables       VenueTable[]
+  bottles      Bottle[]
+  shows        Show[]
+  events       Event[]
+  reservations Reservation[]
+  orders       Order[]
+}
+
+model Membership {
+  id            String   @id @default(cuid())
+  userId        String
+  venueId       String
+  role          Role
+  managerCode   String?  @unique // lien perso du manager commercial
+  commissionPct Int? // fixé par le directeur
+  createdAt     DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue        Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  reservations Reservation[] @relation("ManagerReservations")
+  ordersTaken  Order[]       @relation("ServerOrders")
+
+  @@unique([userId, venueId])
+}
+
+model TableCategory {
+  id            String       @id @default(cuid())
+  venueId       String
+  name          String // Prestige, Scène, Lounge…
+  depositPct    Int          @default(0) // 0 à 100
+  includedShows Int          @default(0)
+  minSpendCents Int          @default(0)
+  sortOrder     Int          @default(0)
+  venue         Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  tables        VenueTable[]
+  eligibleShows Show[]       @relation("CategoryShows")
+}
+
+model VenueTable {
+  id            String         @id @default(cuid())
+  venueId       String
+  categoryId    String
+  name          String // « Impérial », « S1 »
+  capacity      Int
+  minSpendCents Int? // surcharge la catégorie
+  photoUrl      String?
+  // position sur le plan 2D, en % de l'image (0 à 100)
+  x             Float
+  y             Float
+  w             Float
+  h             Float
+  active        Boolean        @default(true)
+  venue         Venue          @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  category      TableCategory  @relation(fields: [categoryId], references: [id])
+  eventPrices   EventTablePrice[]
+  reservations  Reservation[]
+}
+
+model Event {
+  id        String            @id @default(cuid())
+  venueId   String
+  date      DateTime // date de la soirée (Europe/Paris)
+  name      String?
+  isOpen    Boolean           @default(true)
+  venue     Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  prices    EventTablePrice[]
+  reservations Reservation[]
+
+  @@unique([venueId, date])
+}
+
+model EventTablePrice {
+  id            String     @id @default(cuid())
+  eventId       String
+  tableId       String
+  minSpendCents Int
+  event         Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  table         VenueTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, tableId])
+}
+
+model Bottle {
+  id       String       @id @default(cuid())
+  venueId  String
+  name     String
+  type     String? // champagne, vodka…
+  flavors  String[] // goûts éventuels
+  photoUrl String?
+  active   Boolean      @default(true)
+  venue    Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  sizes    BottleSize[]
+}
+
+model BottleSize {
+  id         String      @id @default(cuid())
+  bottleId   String
+  label      String // Classique, Magnum, Jéroboam…
+  volume     String // 75 cl, 1,5 L
+  priceCents Int
+  stock      Int? // null = illimité
+  bottle     Bottle      @relation(fields: [bottleId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+}
+
+model Show {
+  id          String          @id @default(cuid())
+  venueId     String
+  name        String
+  description String?
+  priceCents  Int
+  mediaUrl    String? // photo ou vidéo d'aperçu
+  isSign      Boolean         @default(false) // la pancarte du club
+  active      Boolean         @default(true)
+  venue       Venue           @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  categories  TableCategory[] @relation("CategoryShows")
+  reservationShows ReservationShow[]
+}
+
+model Reservation {
+  id             String            @id @default(cuid())
+  venueId        String
+  eventId        String
+  tableId        String
+  managerId      String? // Membership du manager commercial
+  status         ReservationStatus @default(DRAFT)
+  payMode        PayMode
+  guests         Int
+  organizerName  String
+  organizerEmail String
+  organizerPhone String
+  signText       String?
+  totalCents     Int               @default(0)
+  depositCents   Int               @default(0)
+  paidCents      Int               @default(0)
+  poolToken      String?           @unique // lien de cagnotte /c/[token]
+  poolDeadline   DateTime?
+  stripeCustomerId      String? // client Stripe de l'organisateur (sur le compte connecté)
+  stripePaymentMethodId String? // carte enregistrée en garantie
+  qrToken        String            @unique @default(cuid())
+  createdAt      DateTime          @default(now())
+
+  venue         Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  event         Event             @relation(fields: [eventId], references: [id])
+  table         VenueTable        @relation(fields: [tableId], references: [id])
+  manager       Membership?       @relation("ManagerReservations", fields: [managerId], references: [id])
+  shows         ReservationShow[]
+  orders        Order[]
+  contributions Contribution[]
+
+  @@index([venueId, eventId])
+}
+
+model ReservationShow {
+  id            String      @id @default(cuid())
+  reservationId String
+  showId        String
+  included      Boolean     @default(false)
+  priceCents    Int // 0 si inclus
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  show          Show        @relation(fields: [showId], references: [id])
+}
+
+model Contribution {
+  id                    String        @id @default(cuid())
+  reservationId         String
+  name                  String
+  email                 String?
+  amountCents           Int
+  isOrganizer           Boolean       @default(false)
+  status                PaymentStatus @default(PENDING)
+  stripePaymentIntentId String?       @unique
+  createdAt             DateTime      @default(now())
+  reservation           Reservation   @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+}
+
+// Envoi n°1, n°2, n°3… pendant la soirée
+model Order {
+  id            String      @id @default(cuid())
+  venueId       String
+  reservationId String
+  number        Int
+  status        OrderStatus @default(NEW)
+  cashDueCents  Int         @default(0) // espèces à encaisser à table
+  takenById     String?
+  createdAt     DateTime    @default(now())
+  servedAt      DateTime?
+  venue         Venue       @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  takenBy       Membership? @relation("ServerOrders", fields: [takenById], references: [id])
+  items         OrderItem[]
+
+  @@unique([reservationId, number])
+}
+
+model OrderItem {
+  id           String     @id @default(cuid())
+  orderId      String
+  bottleSizeId String
+  flavor       String?
+  quantity     Int
+  unitCents    Int
+  order        Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  bottleSize   BottleSize @relation(fields: [bottleSizeId], references: [id])
+}

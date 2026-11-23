@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tablo — Vendez la nuit, carré par carré</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;600;700;800&family=Cinzel:wght@600;700&family=Fraunces:ital,wght@1,600;1,800&family=Monoton&family=Bungee&display=swap">
+<style>
+:root{--bg:#060607;--bg2:#0f0f12;--card:#121216;--line:rgba(255,255,255,.09);--text:#f3f2f7;--mute:#8e8c99;
+  --holo:linear-gradient(110deg,#ff5fa2 0%,#a970ff 30%,#4fd8ff 60%,#b6ff6a 85%,#ff5fa2 100%);
+  --chrome:linear-gradient(180deg,#ffffff 0%,#d9dbe4 28%,#7d8094 50%,#f4f5fa 64%,#a3a6b8 82%,#ffffff 100%)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.disp{font-family:Unbounded,system-ui,sans-serif}
+.chrome{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent}
+.holo{background:var(--holo);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hs 6s linear infinite}
+@keyframes hs{to{background-position:-200% 0}}
+#lights{position:fixed;inset:0;z-index:0;pointer-events:none;mix-blend-mode:screen}
+nav,main,footer{position:relative;z-index:1}
+
+nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:30;width:min(1120px,calc(100% - 28px));display:flex;align-items:center;justify-content:space-between;
+  padding:10px 10px 10px 24px;border-radius:999px;background:rgba(18,18,22,.7);backdrop-filter:blur(14px);border:1px solid var(--line)}
+.logo{font:900 20px Unbounded,sans-serif;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.logo .dot{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9ea1b5 45%,#3a3c4a);box-shadow:0 0 12px rgba(169,112,255,.6)}
+.links{display:flex;gap:28px;font-size:14px;font-weight:600;color:#c9c7d4}
+.links a:hover{color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 24px;border-radius:999px;font:700 14px Manrope,sans-serif;cursor:pointer;border:0;transition:.2s}
+.btn.main{background:#fff;color:#08080a}
+.btn.main:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(169,112,255,.35)}
+.btn.out{border:1px solid rgba(255,255,255,.22);color:#fff}
+.btn.out:hover{border-color:#fff}
+.btn.holob{position:relative;background:#0b0b0e;color:#fff}
+.btn.holob::before{content:"";position:absolute;inset:-1.5px;border-radius:inherit;background:var(--holo);z-index:-1;background-size:200%;animation:hs 4s linear infinite}
+
+/* HERO */
+.hero{min-height:100vh;padding:140px 24px 0;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:#cfcdd9;background:rgba(255,255,255,.03)}
+.pill b{background:var(--holo);color:#08080a;font-size:11px;padding:4px 10px;border-radius:999px;letter-spacing:.04em}
+h1{font:900 clamp(46px,8.4vw,128px)/.95 Unbounded,sans-serif;letter-spacing:-.03em;margin:28px 0 22px;max-width:1150px}
+.lead{max-width:600px;color:#b3b1bf;font-size:18px;line-height:1.65;margin:0 auto 34px}
+.ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.heroball{position:absolute;top:84px;width:150px;left:7%;animation:sw 6s ease-in-out infinite;transform-origin:50% -60px}
+.heroball.r{left:auto;right:8%;width:100px;top:120px;animation-delay:-3s}
+@keyframes sw{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.rope{width:1.5px;height:90px;margin:0 auto -2px;background:linear-gradient(transparent,#aaa)}
+.floorwrap{position:relative;width:min(1100px,100%);height:330px;margin-top:40px;perspective:700px}
+.floor{position:absolute;left:50%;bottom:-70px;width:1200px;margin-left:-600px;display:grid;grid-template-columns:repeat(14,1fr);gap:6px;transform:rotateX(62deg);transform-origin:50% 100%}
+.floor i{aspect-ratio:1;border-radius:4px;background:#141419;border:1px solid #1e1e26;transition:background .35s,box-shadow .35s}
+.crew{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;align-items:flex-end;gap:3vw}
+.crew svg{width:min(150px,20vw)}
+.crew svg.big{width:min(185px,24vw)}
+
+/* AUDIENCE SWITCH */
+.aud{display:inline-flex;gap:4px;padding:5px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);margin:-4px 0 22px;flex-wrap:wrap;justify-content:center}
+.aud button{min-height:40px;padding:0 18px;border-radius:999px;border:0;background:none;color:#bdbbc9;font:700 14px Manrope,system-ui,sans-serif;cursor:pointer;transition:.2s}
+.aud button:hover{color:#fff}
+.aud button.on{background:#fff;color:#08080a}
+#audlead{min-height:3.3em;transition:opacity .25s}
+
+/* POUR QUI */
+.who{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
+.wc{position:relative;border-radius:28px;overflow:hidden;min-height:400px;display:flex;flex-direction:column;justify-content:flex-end;padding:30px;border:1px solid var(--line);text-decoration:none;transition:.3s}
+.wc:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.25)}
+.wc .art{position:absolute;inset:0;z-index:0}
+.wc::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(6,6,7,.92) 85%);z-index:1}
+.wc>*:not(.art){position:relative;z-index:2}
+.wc small{font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#cfcdd9}
+.wc h3{font:800 26px/1.08 Unbounded,system-ui,sans-serif;margin:10px 0 10px;letter-spacing:-.02em}
+.wc p{margin:0;color:#b9b7c6;font-size:15px;line-height:1.6}
+.wc .go{margin-top:18px;font-weight:800;font-size:14px}
+
+/* THEMES */
+#themes{overflow:hidden}
+.thgrid{display:grid;grid-template-columns:330px 1fr;gap:50px;align-items:center;margin-top:56px}
+.thlist{display:grid;gap:10px}
+.thb{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font:700 15px Manrope,system-ui,sans-serif;transition:.2s;min-height:48px}
+.thb:hover{border-color:rgba(255,255,255,.25)}
+.thb.on{border-color:#fff;background:#18181e}
+.thb i{width:34px;height:34px;border-radius:10px;flex:none}
+.thb small{display:block;color:var(--mute);font-weight:600;font-size:12px;margin-top:2px}
+.evstage{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
+.evpage{border-radius:28px;overflow:hidden;border:1px solid var(--line);background:var(--ebg);color:var(--eink);transition:background .5s,color .5s;position:relative;min-height:520px;display:flex;flex-direction:column}
+.evhead{padding:34px 28px 24px;position:relative;text-align:center;flex:none}
+.evdeco{position:absolute;inset:0;pointer-events:none;opacity:.9}
+.evkick{font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;opacity:.8;position:relative}
+.evtitle{font-family:var(--efont);font-size:var(--esize);line-height:1;margin:14px 0 10px;color:var(--eacc);position:relative;text-shadow:var(--eglow);transition:color .5s}
+.evdate{font:600 14px Manrope,system-ui,sans-serif;opacity:.85;position:relative}
+.evbody{padding:0 22px 22px;display:grid;gap:10px;flex:1;align-content:end}
+.evrow{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:16px;background:var(--ecard);font:600 14px Manrope,system-ui,sans-serif;transition:background .5s}
+.evrow b{font-family:Unbounded,system-ui,sans-serif;font-size:13px}
+.evbtn{height:52px;border-radius:var(--erad);background:var(--eacc);color:var(--ebtn);display:grid;place-items:center;font:800 14px Manrope,system-ui,sans-serif;letter-spacing:.04em;transition:background .5s,border-radius .5s}
+.evplan{border-radius:28px;border:1px solid var(--line);background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px}
+.evplan .ph{display:flex;justify-content:space-between;font:800 14px Unbounded,system-ui,sans-serif}
+.evplan .ph small{font:600 12px Manrope,system-ui,sans-serif;color:var(--mute)}
+.mp{flex:1;border-radius:18px;background:#15151b;position:relative;min-height:300px;border:1px solid var(--line)}
+.mp .stg{position:absolute;left:50%;top:16px;transform:translateX(-50%);font:700 10px Manrope,system-ui,sans-serif;letter-spacing:.2em;color:var(--mute);border:1px dashed #333;padding:8px 30px;border-radius:10px}
+.mp .t{position:absolute;border-radius:10px;background:#22222b;border:1px solid #2e2e38;display:grid;place-items:center;font:700 10px Manrope,system-ui,sans-serif;color:#aaa;transition:.5s}
+.mp .t.hot{background:var(--eacc);color:var(--ebtn);border-color:transparent;box-shadow:0 0 26px var(--eacc)}
+.mp .t.x{opacity:.35}
+.tick2{display:flex;gap:8px;flex-wrap:wrap}
+.tick2 span{padding:8px 12px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:#cfcdd9}
+
+/* ORGANISATEURS */
+.org{display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;margin-top:20px}
+.org ul{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:18px}
+.org li{display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:start}
+.org li .n{width:44px;height:44px;border-radius:14px;background:#17171d;border:1px solid var(--line);display:grid;place-items:center;font:800 14px Unbounded,system-ui,sans-serif}
+.org li b{display:block;font:700 17px Unbounded,system-ui,sans-serif;margin-bottom:6px;letter-spacing:-.01em}
+.org li p{margin:0;color:var(--mute);line-height:1.6;font-size:15px}
+.dash{border-radius:28px;background:var(--card);border:1px solid var(--line);padding:24px;display:grid;gap:14px;box-shadow:0 40px 100px rgba(0,0,0,.5)}
+.dash .top{display:flex;justify-content:space-between;align-items:center}
+.dash .top b{font:800 16px Unbounded,system-ui,sans-serif}
+.dash .live{font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.12em;padding:6px 10px;border-radius:999px;background:rgba(182,255,106,.12);color:#b6ff6a}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{border-radius:16px;background:#18181f;padding:14px}
+.kpi small{color:var(--mute);font-size:12px;font-weight:600}
+.kpi div{font:800 22px Unbounded,system-ui,sans-serif;margin-top:6px;letter-spacing:-.02em}
+.bars{display:grid;gap:8px}
+.bars div{display:grid;grid-template-columns:110px 1fr 44px;gap:10px;align-items:center;font-size:13px}
+.bars i{height:8px;border-radius:9px;background:#1e1e26;overflow:hidden;display:block}
+.bars i::after{content:"";display:block;height:100%;width:var(--w);background:var(--holo)}
+.bars span{text-align:right;color:var(--mute);font-weight:700}
+.split{border-radius:16px;background:#18181f;padding:14px;display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.split b{font-family:Unbounded,system-ui,sans-serif}
+
+/* TICKER */
+.ticker{border-block:1px solid var(--line);background:#0b0b0e;overflow:hidden;white-space:nowrap;padding:20px 0;position:relative;z-index:2}
+.ticker div{display:inline-block;animation:tk 30s linear infinite;font:600 22px Unbounded,sans-serif;letter-spacing:-.01em}
+.ticker span{margin:0 26px}.ticker em{font-style:normal;margin:0 6px;opacity:.9}
+@keyframes tk{to{transform:translateX(-50%)}}
+
+section{padding:130px 24px;position:relative}
+.wrap{max-width:1140px;margin:0 auto}
+.eyebrow{font:700 12px Manrope,system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--holo)}
+h2{font:800 clamp(34px,4.8vw,64px)/1.02 Unbounded,sans-serif;letter-spacing:-.03em;margin:18px 0 18px;max-width:800px}
+.sub{color:var(--mute);font-size:17px;line-height:1.7;max-width:560px;margin:0}
+
+/* HOW: sticky phone */
+.how{display:grid;grid-template-columns:1fr 380px;gap:80px;margin-top:60px}
+.steps .st{min-height:62vh;display:flex;flex-direction:column;justify-content:center;opacity:.28;transition:.4s}
+.steps .st.on{opacity:1}
+.st .n{font:800 14px Unbounded,system-ui,sans-serif;color:var(--mute);margin-bottom:14px}
+.st.on .n{color:#fff}
+.st h3{font:700 clamp(26px,2.8vw,38px)/1.1 Unbounded,sans-serif;margin:0 0 14px;letter-spacing:-.02em}
+.st p{color:var(--mute);font-size:17px;line-height:1.7;max-width:460px;margin:0}
+.phonecol{position:relative}
+.phone{position:sticky;top:calc(50vh - 330px);width:340px;height:660px;border-radius:48px;background:#000;padding:12px;box-shadow:0 0 0 1.5px #3a3a44,0 0 0 9px #16161b,0 40px 100px rgba(0,0,0,.7),0 0 120px rgba(169,112,255,.18)}
+.scr{position:absolute;inset:12px;border-radius:38px;background:#0d0d11;overflow:hidden;opacity:0;transform:scale(.97);transition:.45s;padding:54px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.scr.on{opacity:1;transform:none}
+.notch{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:96px;height:26px;border-radius:20px;background:#000;z-index:3}
+.sh{display:flex;justify-content:space-between;align-items:center;font:800 14px Unbounded,system-ui,sans-serif}
+.sh small{font:600 11px Manrope,system-ui,sans-serif;color:var(--mute)}
+.plan{flex:1;border-radius:20px;background:#15151b;border:1px solid var(--line);position:relative}
+.plan .dj{position:absolute;left:50%;top:14px;transform:translateX(-50%);font:700 10px Manrope,system-ui,sans-serif;letter-spacing:.2em;color:var(--mute);border:1px dashed #333;padding:8px 26px;border-radius:10px}
+.plan .c{position:absolute;width:62px;height:44px;border-radius:12px;background:#1f1f27;border:1px solid #2c2c36;font:700 10px Manrope,system-ui,sans-serif;display:grid;place-items:center;color:#aaa}
+.plan .c.sel{background:#fff;color:#000;box-shadow:0 0 30px rgba(169,112,255,.8);border:0}
+.plan .c.x{opacity:.35;text-decoration:line-through}
+.row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#15151b;border:1px solid var(--line);font-size:13px}
+.row .b{width:26px;height:58px;flex:none;border-radius:7px 7px 5px 5px;background:linear-gradient(90deg,#2a2a32,#6d6f80 40%,#2a2a32);position:relative}
+.row .b::before{content:"";position:absolute;top:-10px;left:9px;width:8px;height:14px;border-radius:3px;background:#c9a45a}
+.row b{display:block;font-size:13px}.row small{color:var(--mute)}
+.row .pr{margin-left:auto;font:700 13px Unbounded,system-ui,sans-serif}
+.qty{display:flex;gap:6px;align-items:center;font-weight:800}.qty i{font-style:normal;width:26px;height:26px;border-radius:50%;border:1px solid #333;display:grid;place-items:center}
+.prev{height:250px;border-radius:20px;background:radial-gradient(ellipse at 50% 100%,#3b1d5e,#0b0b10 70%);position:relative;overflow:hidden}
+.spk{position:absolute;bottom:40px;width:3px;height:80px;background:linear-gradient(transparent,#ffd38a);border-radius:2px}
+.spk::before{content:"";position:absolute;top:-6px;left:-7px;width:17px;height:17px;border-radius:50%;background:radial-gradient(#fff,#ffcf6b 40%,transparent 70%);animation:fl .25s infinite alternate}
+@keyframes fl{to{transform:scale(1.5);opacity:.6}}
+.prev .lbl{position:absolute;left:14px;bottom:12px;font:700 12px Manrope,system-ui,sans-serif}
+.bar{height:10px;border-radius:9px;background:#1d1d24;overflow:hidden}.bar i{display:block;height:100%;width:72%;background:var(--holo)}
+.av{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#15151b;font-size:13px}
+.av span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#000;font-size:12px}
+.av b{margin-left:auto}
+.big{font:800 34px Unbounded,system-ui,sans-serif;letter-spacing:-.02em}
+.ok{width:86px;height:86px;border-radius:50%;margin:20px auto 6px;background:var(--holo);display:grid;place-items:center;font-size:40px;color:#000}
+.qr{width:150px;height:150px;margin:10px auto;border-radius:16px;background:#fff;padding:10px;display:grid;grid-template-columns:repeat(9,1fr);gap:2px}
+.qr i{background:#000;border-radius:1px}.qr i.w{background:#fff}
+.pbtn{margin-top:auto;height:50px;border-radius:16px;background:#fff;color:#000;display:grid;place-items:center;font-weight:800;font-size:14px}
+
+/* BENTO */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(220px,auto);gap:16px;margin-top:60px}
+.tile{grid-column:span 2;border-radius:28px;background:var(--card);border:1px solid var(--line);padding:30px;position:relative;overflow:hidden;transition:.3s}
+.tile:hover{border-color:rgba(255,255,255,.22);transform:translateY(-4px)}
+.tile.w3{grid-column:span 3}.tile.w4{grid-column:span 4}
+.tile h3{font:700 22px/1.15 Unbounded,sans-serif;margin:0 0 10px;letter-spacing:-.02em}
+.tile p{color:var(--mute);margin:0;line-height:1.6;font-size:15px;max-width:420px}
+.tile .tag{display:inline-block;font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#08080a;background:#fff;padding:5px 10px;border-radius:999px;margin-bottom:18px}
+.tile.glow::after{content:"";position:absolute;width:300px;height:300px;right:-80px;bottom:-120px;border-radius:50%;background:var(--holo);filter:blur(70px);opacity:.35}
+.miniplan{position:absolute;right:28px;top:28px;bottom:28px;width:44%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-content:center}
+.miniplan i{height:44px;border-radius:10px;background:#1c1c23;border:1px solid #2a2a33;transition:.25s;cursor:pointer}
+.miniplan i:hover,.miniplan i.hot{background:#fff;box-shadow:0 0 24px rgba(169,112,255,.7)}
+.stat{font:900 56px Unbounded,system-ui,sans-serif;letter-spacing:-.04em;margin-top:18px}
+.lb{margin-top:18px;display:grid;gap:8px}
+.lb div{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#191920;font-size:14px}
+.lb div b{font-family:Unbounded;width:22px}.lb div span{margin-left:auto;color:var(--mute);font-size:13px}
+.notif{margin-top:18px;padding:14px;border-radius:16px;background:#191920;display:flex;gap:12px;align-items:center;font-size:14px;animation:pop 3s ease-in-out infinite}
+.notif .i{width:36px;height:36px;border-radius:10px;background:var(--holo);flex:none}
+@keyframes pop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.swatches{display:flex;gap:10px;margin-top:20px}.swatches i{width:40px;height:40px;border-radius:12px;border:1px solid var(--line)}
+
+/* DISCO */
+#shows{text-align:center;overflow:hidden}
+#shows h2,#shows .sub{margin-left:auto;margin-right:auto}
+#shows .eyebrow{justify-content:center}
+.showgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:56px;text-align:left}
+.sc{border-radius:22px;background:var(--card);border:1px solid var(--line);overflow:hidden}
+.sc .v{height:170px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#2b1747,#0b0b10 70%)}
+.sc .t{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.sc .t span{font:700 13px Unbounded,system-ui,sans-serif;color:var(--mute)}
+.sc .v svg{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);height:160px}
+
+/* PRICING */
+.prices{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:56px}
+.price{border-radius:30px;background:var(--card);border:1px solid var(--line);padding:38px;position:relative}
+.price.best{background:linear-gradient(#121216,#121216) padding-box,var(--holo) border-box;border:1.5px solid transparent}
+.price h3{font:700 20px Unbounded,system-ui,sans-serif;margin:0}
+.price .amt{font:900 64px Unbounded,system-ui,sans-serif;letter-spacing:-.04em;margin:18px 0 4px}
+.price .amt span{font:600 16px Manrope,system-ui,sans-serif;color:var(--mute);letter-spacing:0}
+.price .nt{color:var(--mute);margin-bottom:26px}
+.price ul{list-style:none;padding:0;margin:0 0 30px;display:grid;gap:12px}
+.price li{display:flex;gap:12px;font-size:15px}
+.price li::before{content:"";flex:none;width:18px;height:18px;margin-top:2px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12l4 4 8-8' stroke='%23000' stroke-width='3' fill='none'/%3E%3C/svg%3E") center/12px no-repeat}
+.price .btn{width:100%}
+.badge{position:absolute;top:24px;right:24px;font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:999px;background:var(--holo);color:#000}
+
+/* FAQ */
+.q:is(a):hover{border-color:rgba(255,255,255,.3)}
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:56px}
+.q{border-radius:22px;background:var(--card);border:1px solid var(--line);padding:26px 28px}
+.q h4{font:700 17px/1.35 Unbounded,sans-serif;margin:0 0 10px;letter-spacing:-.01em}
+.q p{margin:0;color:var(--mute);line-height:1.65;font-size:15px}
+
+.final{text-align:center;padding:150px 24px 130px;overflow:hidden}
+.final h2{margin:0 auto 18px;max-width:900px;font-size:clamp(40px,6.4vw,90px)}
+footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-content:space-between;color:#6a6875;font-size:13px}
+
+/* disco character anim */
+.dz .bob{animation:bob .9s ease-in-out infinite}
+.dz .armL{animation:armL .9s ease-in-out infinite;transform-origin:72px 118px}
+.dz .armR{animation:armR .9s ease-in-out infinite;transform-origin:128px 118px}
+.dz .head{animation:tilt 1.8s ease-in-out infinite;transform-origin:100px 92px}
+.dz.alt .bob,.dz.alt .armL,.dz.alt .armR{animation-delay:-.45s}
+.dz.slow .bob,.dz.slow .armL,.dz.slow .armR{animation-duration:1.15s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes armL{0%,100%{transform:rotate(0)}50%{transform:rotate(-24deg)}}
+@keyframes armR{0%,100%{transform:rotate(0)}50%{transform:rotate(24deg)}}
+@keyframes tilt{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+.twk{animation:twk 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes twk{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1)}}
+
+.rv{opacity:0;transform:translateY(26px);transition:.9s cubic-bezier(.2,.7,.2,1)}.rv.in{opacity:1;transform:none}
+
+@media (max-width:980px){
+  .who,.evstage{grid-template-columns:1fr}.thgrid,.org{grid-template-columns:1fr;gap:30px}.wc{min-height:320px}
+  .links{display:none}
+  .how{grid-template-columns:1fr}.phonecol{display:none}.steps .st{min-height:auto;padding:28px 0;opacity:1}
+  .bento{grid-template-columns:1fr 1fr}.tile,.tile.w3,.tile.w4{grid-column:span 2}
+  .showgrid{grid-template-columns:1fr 1fr}.prices,.faq{grid-template-columns:1fr}
+  .heroball{width:90px}.heroball.r{display:none}
+  .miniplan{position:static;width:100%;margin-top:20px}.tile p[style]{max-width:none!important}
+}
+@media (max-width:980px){#projet .faq{grid-template-columns:1fr!important}}
+@media (max-width:560px){.nav-cta{display:none}nav{padding:12px 20px}.showgrid{grid-template-columns:1fr}footer{flex-direction:column;gap:8px;text-align:center}.floorwrap{height:240px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="lights"></canvas>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <radialGradient id="shade" cx="36%" cy="30%" r="72%"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#000" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></radialGradient>
+  <pattern id="tiles" width="9" height="9" patternUnits="userSpaceOnUse">
+    <rect width="9" height="9" fill="#55586b"/><rect x=".6" y=".6" width="7.8" height="7.8" fill="#c8cadb"/>
+    <rect x=".6" y=".6" width="3.9" height="3.9" fill="#f5f6fc"/><rect x="4.5" y="4.5" width="3.9" height="3.9" fill="#9a9db3"/>
+    <rect x="4.5" y=".6" width="3.9" height="3.9" fill="#d9c9ff" opacity=".6"/>
+  </pattern>
+  <linearGradient id="silk" x1="0" x2="1"><stop offset="0" stop-color="#7d8098"/><stop offset=".4" stop-color="#f3f4fa"/><stop offset=".65" stop-color="#cdd0e0"/><stop offset="1" stop-color="#6f7290"/></linearGradient>
+  <pattern id="sequin" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="url(#silk)"/><circle cx="3.5" cy="3.5" r="1.4" fill="#fff" opacity=".6"/></pattern>
+  <clipPath id="hc"><circle cx="100" cy="62" r="38"/></clipPath>
+  <symbol id="guy" viewBox="0 0 200 330">
+    <g class="bob">
+      <path d="M80 210 L74 300 L92 300 L100 228 L108 300 L126 300 L120 210 Z" fill="url(#sequin)"/>
+      <path d="M70 300 h26 v10 h-30 q-2-6 4-10z M104 300 h26 q6 4 4 10 h-30z" fill="#16161c"/>
+      <g class="armL"><path d="M76 116 Q50 120 40 86 L30 52 L42 48 L54 84 Q62 104 80 104 Z" fill="url(#sequin)"/><circle cx="35" cy="46" r="8" fill="#16161c"/></g>
+      <g class="armR"><path d="M124 116 Q150 120 160 86 L170 52 L158 48 L146 84 Q138 104 120 104 Z" fill="url(#sequin)"/><circle cx="165" cy="46" r="8" fill="#16161c"/></g>
+      <path d="M70 104 Q100 92 130 104 L126 214 L74 214 Z" fill="url(#sequin)"/>
+      <path d="M92 104 L100 160 L108 104 Z" fill="#16161c"/>
+      <path d="M93 106 L100 113 L107 106 L107 116 L100 113 L93 116Z" fill="#ff5fa2"/>
+      <g class="head">
+        <rect x="94" y="96" width="12" height="8" fill="#444"/>
+        <g clip-path="url(#hc)"><rect class="tl" x="58" y="22" width="90" height="80" fill="url(#tiles)"/><circle cx="100" cy="62" r="38" fill="url(#shade)"/></g>
+        <circle cx="100" cy="62" r="38" fill="none" stroke="#33354a" stroke-width="1.5"/>
+        <ellipse cx="86" cy="46" rx="11" ry="7" fill="#fff" opacity=".55"/>
+        <path class="twk" fill="#fff" d="M84 40 l2 6 6 2 -6 2 -2 6 -2-6 -6-2 6-2z"/>
+        <path class="twk" style="animation-delay:-.8s" fill="#fff" d="M120 72 l1.5 4.5 4.5 1.5 -4.5 1.5 -1.5 4.5 -1.5-4.5 -4.5-1.5 4.5-1.5z"/>
+      </g>
+    </g>
+  </symbol>
+  <symbol id="ball" viewBox="0 0 120 120">
+    <clipPath id="bc"><circle cx="60" cy="60" r="56"/></clipPath>
+    <g clip-path="url(#bc)"><rect class="tl" x="-20" y="0" width="200" height="120" fill="url(#tiles)"/><circle cx="60" cy="60" r="56" fill="url(#shade)"/></g>
+    <ellipse cx="42" cy="38" rx="16" ry="10" fill="#fff" opacity=".5"/>
+    <path class="twk" fill="#fff" d="M38 30 l3 9 9 3 -9 3 -3 9 -3-9 -9-3 9-3z"/>
+    <path class="twk" style="animation-delay:-.7s" fill="#fff" d="M84 78 l2 6 6 2 -6 2 -2 6 -2-6 -6-2 6-2z"/>
+  </symbol>
+</defs>
+</svg>
+
+<nav>
+  <a href="#" class="logo"><span class="dot"></span>tablo</a>
+  <div class="links"><a href="#comment">Comment ça marche</a><a href="#pour-qui">Pour qui</a><a href="#themes">Soirées à thème</a><a href="#fonctions">Fonctions</a><a href="#shows">Shows</a><a href="#tarifs">Tarifs</a><a href="#faq">FAQ</a><a href="/connexion">Connexion</a></div>
+  <a href="/w/le-velours" class="btn main nav-cta">Essayer la démo ↗</a>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="heroball"><div class="rope"></div><svg viewBox="0 0 120 120"><use href="#ball"/></svg></div>
+  <div class="heroball r"><div class="rope"></div><svg viewBox="0 0 120 120"><use href="#ball"/></svg></div>
+  <div class="pill"><b>NOUVEAU</b>Carrés VIP et soirées à thème, réservés en ligne</div>
+  <h1><span class="chrome">Vendez la nuit,</span><br><span class="holo">carré par carré.</span></h1>
+  <div class="aud" role="tablist" aria-label="Vous êtes"><button class="on" data-aud="0">Un club</button><button data-aud="1">Un beach club</button><button data-aud="2">Un organisateur de soirées</button></div>
+  <p class="lead" id="audlead">Tablo s'installe sur votre site en une ligne. Vos clients choisissent leur carré, leurs bouteilles et leur show, puis paient entre amis. Vous, vous encaissez.</p>
+  <div class="ctas"><a href="/w/le-velours" class="btn main">Essayer la démo ↗</a><a href="#comment" class="btn out">Voir comment ça marche</a></div>
+  <div class="floorwrap">
+    <div class="floor" id="floor"></div>
+    <div class="crew">
+      <svg class="dz" viewBox="0 0 200 330" aria-hidden="true"><use href="#guy"/></svg>
+      <svg class="dz alt big" viewBox="0 0 200 330" aria-hidden="true"><use href="#guy"/></svg>
+      <svg class="dz slow" viewBox="0 0 200 330" aria-hidden="true" style="transform:scaleX(-1)"><use href="#guy"/></svg>
+    </div>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true"><div id="tick"></div></div>
+
+
+<!-- POUR QUI -->
+<section id="pour-qui">
+  <div class="wrap">
+    <div class="eyebrow rv">Pour qui</div>
+    <h2 class="rv">Trois façons de vendre la nuit.</h2>
+    <p class="sub rv">Le même outil, que vous teniez le lieu ou que vous le louiez pour une soirée.</p>
+    <div class="who">
+      <a class="wc rv" href="#comment"><div class="art" style="background:radial-gradient(circle at 70% 25%,#6b3fd1 0%,#2a1660 35%,#0b0b10 75%)"><svg viewBox="0 0 120 120" style="position:absolute;right:26px;top:26px;width:110px"><use href="#ball"/></svg></div>
+        <small>Clubs et discothèques</small><h3>Vos carrés vendus avant minuit.</h3><p>Plan du club, bouteilles, pancartes et shows. Acompte garanti, managers commerciaux et app serveur.</p><span class="go holo">Voir le parcours →</span></a>
+      <a class="wc rv" href="#fonctions"><div class="art" style="background:linear-gradient(180deg,#ff8a5f 0%,#ff5fa2 30%,#4b2a8a 58%,#0b0b10 82%)"><svg viewBox="0 0 400 300" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><circle cx="200" cy="150" r="60" fill="#ffd25f" opacity=".85"/><path d="M0 170 Q50 160 100 170 T200 170 T300 170 T400 170 V300 H0Z" fill="#2bd4c4" opacity=".35"/><path d="M0 190 Q50 180 100 190 T200 190 T300 190 T400 190 V300 H0Z" fill="#1a8f9e" opacity=".45"/></svg></div>
+        <small>Beach clubs et rooftops</small><h3>Transats, cabanas et carrés au soleil.</h3><p>Réservation à la journée ou au coucher du soleil, minimum par zone, offre adaptée à la saison.</p><span class="go holo">Voir les fonctions →</span></a>
+      <a class="wc rv" href="#organisateurs"><div class="art" style="background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.35),transparent 45%),radial-gradient(circle at 20% 70%,#0f7a4a,transparent 45%),radial-gradient(circle at 85% 60%,#c9a24a,transparent 40%),#0b0b10"></div>
+        <small>Organisateurs de soirées</small><h3>Vos soirées à thème, dans n'importe quel club.</h3><p>Une page à la DA de votre soirée, billets et carrés dans le même lien, ventes de vos ambassadeurs en direct.</p><span class="go holo">Pour les organisateurs →</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT -->
+<section id="comment">
+  <div class="wrap">
+    <div class="eyebrow rv">Comment ça marche</div>
+    <h2 class="rv">Du swipe au seau à glace, en cinq étapes.</h2>
+    <div class="how">
+      <div class="steps">
+        <div class="st" data-s="0"><div class="n">01</div><h3>Le client choisit son carré sur le plan</h3><p>Plan de votre club, photo réelle et vue 360° de chaque carré. Les carrés déjà pris sont grisés, les prix s'affichent selon la soirée.</p></div>
+        <div class="st" data-s="1"><div class="n">02</div><h3>Il compose sa commande</h3><p>Vos bouteilles en photo, avec formats et goûts. Le minimum du carré se remplit sous ses yeux, l'upsell se fait tout seul.</p></div>
+        <div class="st" data-s="2"><div class="n">03</div><h3>Il voit le show avant de l'acheter</h3><p>Parade de sparklers, danseurs boule à facettes, pancarte avec son texte : chaque show a son aperçu.</p></div>
+        <div class="st" data-s="3"><div class="n">04</div><h3>Ses amis paient leur part</h3><p>L'organisateur règle l'acompte de la catégorie, partage un lien, chacun met ce qu'il veut. Sa carte garantit le reste.</p></div>
+        <div class="st" data-s="4"><div class="n">05</div><h3>Le soir même, tout est prêt</h3><p>QR code à l'entrée, envoi n°1 sur l'app du serveur, points de fidélité crédités après la soirée.</p></div>
+      </div>
+      <div class="phonecol"><div class="phone">
+        <div class="notch"></div>
+        <div class="scr on">
+          <div class="sh">Choisir un carré<small>Sam. 28 nov.</small></div>
+          <div class="plan">
+            <div class="dj">DJ BOOTH</div>
+            <div class="c" style="left:18px;top:80px">S1</div><div class="c x" style="left:94px;top:80px">S2</div><div class="c" style="left:170px;top:80px">S3</div><div class="c" style="left:246px;top:80px;width:40px">S4</div>
+            <div class="c sel" style="left:40px;top:180px;width:110px;height:70px">IMPÉRIAL<br>1 500 €</div><div class="c" style="left:168px;top:180px;width:110px;height:70px">ROYAL</div>
+            <div class="c" style="left:18px;top:300px">L1</div><div class="c x" style="left:94px;top:300px">L2</div><div class="c" style="left:170px;top:300px">L3</div><div class="c" style="left:246px;top:300px;width:40px">L4</div>
+          </div>
+          <div class="pbtn">Continuer · Impérial</div>
+        </div>
+        <div class="scr">
+          <div class="sh">Bouteilles<small>min. 1 500 €</small></div>
+          <div class="row"><div class="b"></div><div><b>Champagne Brut</b><small>Magnum 1,5 L</small></div><div class="qty"><i>−</i>2<i>+</i></div></div>
+          <div class="row"><div class="b" style="background:linear-gradient(90deg,#1c2a3a,#5a7da0 40%,#1c2a3a)"></div><div><b>Vodka premium</b><small>70 cl · goût original</small></div><div class="qty"><i>−</i>1<i>+</i></div></div>
+          <div class="row"><div class="b" style="background:linear-gradient(90deg,#3a2a12,#c99a4c 40%,#3a2a12)"></div><div><b>Tequila añejo</b><small>70 cl</small></div><div class="qty"><i>−</i>0<i>+</i></div></div>
+          <div class="sh" style="font-size:12px;margin-top:6px">Minimum atteint<small>1 620 €</small></div>
+          <div class="bar"><i style="width:100%"></i></div>
+          <div class="pbtn">Continuer</div>
+        </div>
+        <div class="scr">
+          <div class="sh">Shows<small>1 inclus</small></div>
+          <div class="prev" id="prev"><div class="lbl">Parade de sparklers · aperçu</div></div>
+          <div class="row"><div><b>Parade de sparklers</b><small>Inclus avec Impérial</small></div><div class="pr">0 €</div></div>
+          <div class="row"><div><b>Danseurs boule à facettes</b><small>3 danseurs, 5 min</small></div><div class="pr">150 €</div></div>
+          <div class="pbtn">Continuer</div>
+        </div>
+        <div class="scr">
+          <div class="sh">Cagnotte<small>Impérial · 8 pers.</small></div>
+          <div class="big">1 290 €<small style="font:600 14px Manrope,system-ui,sans-serif;color:var(--mute)"> / 1 800 €</small></div>
+          <div class="bar"><i></i></div>
+          <div class="av"><span style="background:#ff8fbf">S</span>Sarah (organisatrice)<b>900 €</b></div>
+          <div class="av"><span style="background:#b9a0ff">Y</span>Yanis<b>200 €</b></div>
+          <div class="av"><span style="background:#8fe6ff">I</span>Inès<b>110 €</b></div>
+          <div class="av"><span style="background:#cfff9a">M</span>Mehdi<b>80 €</b></div>
+          <div class="pbtn">Partager le lien</div>
+        </div>
+        <div class="scr" style="text-align:center">
+          <div class="ok">✓</div>
+          <div class="big" style="font-size:24px">C'est réservé</div>
+          <div style="color:var(--mute);font-size:13px">Impérial · samedi 28 nov. · 23 h</div>
+          <div class="qr" id="qr"></div>
+          <div class="row" style="text-align:left"><div><b>+ 3 600 points</b><small>×2 organisatrice · Top 3 en vue</small></div></div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- THEMES -->
+<section id="themes">
+  <div class="wrap">
+    <div class="eyebrow rv">Soirées à thème</div>
+    <h2 class="rv">Une soirée, une DA. Le widget suit.</h2>
+    <p class="sub rv">Bal masqué, jungle, disco ou pool party : chaque soirée a sa page, ses couleurs, sa police et ses shows. Choisissez un thème pour voir.</p>
+    <div class="thgrid">
+      <div class="thlist" id="thlist"></div>
+      <div class="evstage">
+        <div class="evpage" id="evpage">
+          <div class="evhead"><svg class="evdeco" id="evdeco" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice"></svg>
+            <div class="evkick" id="evkick">Samedi · soirée à thème</div>
+            <div class="evtitle" id="evtitle">Nuit Vénitienne</div>
+            <div class="evdate" id="evdate">Sam. 19 déc. · 23 h · dress code : masque</div></div>
+          <div class="evbody">
+            <div class="evrow"><span>Entrée</span><b id="evp1">25 €</b></div>
+            <div class="evrow"><span>Carré Prestige · 8 pers.</span><b id="evp2">dès 900 €</b></div>
+            <div class="evrow"><span id="evshow">Show inclus : parade de sparklers</span><b>✦</b></div>
+            <div class="evbtn" id="evbtn">Réserver un carré</div>
+          </div>
+        </div>
+        <div class="evplan">
+          <div class="ph">Plan de la soirée<small id="evvenue">Club partenaire</small></div>
+          <div class="mp"><div class="stg" id="evstg">SCÈNE</div>
+            <div class="t" style="left:8%;top:22%;width:24%;height:15%">S1</div><div class="t x" style="left:38%;top:22%;width:24%;height:15%">S2</div><div class="t" style="left:68%;top:22%;width:24%;height:15%">S3</div>
+            <div class="t hot" style="left:14%;top:46%;width:34%;height:20%">PRESTIGE</div><div class="t" style="left:52%;top:46%;width:34%;height:20%">ROYAL</div>
+            <div class="t" style="left:8%;top:74%;width:24%;height:14%">L1</div><div class="t" style="left:38%;top:74%;width:24%;height:14%">L2</div><div class="t x" style="left:68%;top:74%;width:24%;height:14%">L3</div>
+          </div>
+          <div class="tick2" id="evtags"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORGANISATEURS -->
+<section id="organisateurs">
+  <div class="wrap org">
+    <div>
+      <div class="eyebrow rv">Organisateurs</div>
+      <h2 class="rv">Vous louez le lieu. Tablo vend la soirée.</h2>
+      <p class="sub rv">Pour les collectifs et agences qui créent des soirées à thème dans des clubs, des hangars ou des rooftops.</p>
+      <ul>
+        <li class="rv"><span class="n">01</span><div><b>Une page à la DA de votre soirée</b><p>Votre affiche, vos couleurs, votre police. Un lien pour Instagram, un QR code pour les flyers.</p></div></li>
+        <li class="rv"><span class="n">02</span><div><b>Billets et carrés dans le même lien</b><p>Importez le plan du lieu en photo, placez les carrés, vendez les entrées et les tables au même endroit.</p></div></li>
+        <li class="rv"><span class="n">03</span><div><b>Vos ambassadeurs, suivis en direct</b><p>Un lien par ambassadeur, ses ventes et sa récompense calculées toutes seules.</p></div></li>
+        <li class="rv"><span class="n">04</span><div><b>Le partage avec le club, réglé d'avance</b><p>Billetterie pour vous, bouteilles pour le club, ou le pourcentage que vous avez négocié : chacun voit sa part.</p></div></li>
+      </ul>
+    </div>
+    <div class="dash rv">
+      <div class="top"><b>Jungle Nocturne</b><span class="live">EN VENTE</span></div>
+      <div class="kpis"><div class="kpi"><small>Billets</small><div>412</div></div><div class="kpi"><small>Carrés</small><div>11 / 14</div></div><div class="kpi"><small>Ventes</small><div class="holo">18,4 k€</div></div></div>
+      <div class="bars"><div>Léa (ambassadrice)<i style="--w:88%"></i><span>96</span></div><div>Karim<i style="--w:64%"></i><span>71</span></div><div>Inès<i style="--w:41%"></i><span>45</span></div><div>Instagram direct<i style="--w:100%"></i><span>200</span></div></div>
+      <div class="split"><span>Votre part · billetterie</span><b>10 300 €</b></div>
+      <div class="split"><span>Part du club · bouteilles</span><b>8 100 €</b></div>
+      <p style="margin:0;color:var(--mute);font-size:12px">Exemple fictif, pour illustrer le tableau de bord.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BENTO -->
+<section id="fonctions">
+  <div class="wrap">
+    <div class="eyebrow rv">Fonctions</div>
+    <h2 class="rv">Tout le club dans une seule app.</h2>
+    <p class="sub rv">Le widget pour vos clients. L'espace gérant pour la direction, les managers commerciaux, les serveurs et les barmans.</p>
+    <div class="bento">
+      <div class="tile w4 rv"><span class="tag">Plan</span><h3>Votre club en 3D,<br>chaque carré en photo.</h3><p style="max-width:46%">Importez votre plan, placez vos carrés, ajoutez photos et vues 360°. Le client sait exactement où il sera.</p>
+        <div class="miniplan" id="mini"></div></div>
+      <div class="tile w2 glow rv"><span class="tag">Paiement</span><h3>Acompte garanti</h3><p>Pourcentage obligatoire par catégorie de carré. Cagnotte, paiement complet ou espèces.</p><div class="stat holo">0 %</div><p>de commission sur vos réservations.</p></div>
+      <div class="tile w2 rv"><span class="tag">Équipe</span><h3>App serveur</h3><p>Chaque envoi arrive sur le bon téléphone.</p><div class="notif"><div class="i"></div><div><b>Envoi n°2 · Impérial</b><br><span style="color:var(--mute);font-size:13px">2 magnums · sparklers</span></div></div></div>
+      <div class="tile w2 rv"><span class="tag">Fidélité</span><h3>Top 3 du mois</h3><div class="lb"><div><b>1</b>Sarah B.<span>bouteille offerte</span></div><div><b>2</b>Karim D.<span>show offert</span></div><div><b>3</b>Léa M.<span>upgrade</span></div></div></div>
+      <div class="tile w2 rv"><span class="tag">Commercial</span><h3>Managers</h3><p>Liens perso, packages à leurs prix, commandes à table, objectifs et commissions en direct.</p></div>
+      <div class="tile w3 rv"><span class="tag">Bouteilles</span><h3>Photos officielles, fond détouré.</h3><p>Formats de 75 cl au Mathusalem, goûts, stock. Importez une photo, le fond disparaît tout seul.</p></div>
+      <div class="tile w3 glow rv"><span class="tag">Marque</span><h3>À votre image, chaque soirée.</h3><p>Logo, couleurs, polices, boutons. Bal masqué en décembre, pool party en juillet.</p><div class="swatches"><i style="background:#0b0c2a"></i><i style="background:#e2b860"></i><i style="background:#2bd4c4"></i><i style="background:#ff7a3d"></i><i style="background:#fff"></i></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWS -->
+<section id="shows">
+  <div class="wrap">
+    <div class="eyebrow rv">Shows</div>
+    <h2 class="rv">Le show, ça se voit avant de s'acheter.</h2>
+    <p class="sub rv">Vos photos, vos vidéos, ou un visuel créé par l'IA dans la DA de la soirée. Des shows inclus par catégorie, le reste en upsell.</p>
+    <div class="showgrid">
+      <div class="sc rv"><div class="v"><svg class="dz" viewBox="0 0 200 330"><use href="#guy"/></svg></div><div class="t">Danseurs disco<span>150 €</span></div></div>
+      <div class="sc rv"><div class="v" id="spk"></div><div class="t">Parade de sparklers<span>80 €</span></div></div>
+      <div class="sc rv"><div class="v" style="display:grid;place-items:center"><div style="font:900 22px Unbounded,system-ui,sans-serif;padding:16px 20px;border:2px solid #fff;border-radius:12px;box-shadow:0 0 30px rgba(255,95,162,.6),inset 0 0 20px rgba(255,95,162,.4)" class="holo">HAPPY BDAY</div></div><div class="t">Pancarte personnalisée<span>incluse</span></div></div>
+      <div class="sc rv"><div class="v" style="display:grid;place-items:center"><svg viewBox="0 0 120 120" style="position:static;transform:none;height:120px;animation:sw 4s ease-in-out infinite"><use href="#ball"/></svg></div><div class="t">Boule à facettes XXL<span>120 €</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section id="tarifs">
+  <div class="wrap">
+    <div class="eyebrow rv">Tarifs</div>
+    <h2 class="rv">Un abonnement. Zéro commission.</h2>
+    <p class="sub rv">Sans engagement. L'argent des réservations arrive directement sur le compte de l'établissement.</p>
+    <div class="prices">
+      <div class="price rv"><h3>Club</h3><div class="amt">79 €<span> /mois</span></div><div class="nt">Pour lancer la réservation en ligne.</div>
+        <ul><li>Widget, lien bio et QR code</li><li>Plan interactif et photos des carrés</li><li>Bouteilles, pancartes et shows</li><li>Cagnotte, acompte et espèces</li><li>App serveur</li></ul><a href="/inscription" class="btn out">Créer mon espace</a></div>
+      <div class="price best rv"><span class="badge">Le plus choisi</span><h3>Prestige</h3><div class="amt">149 €<span> /mois</span></div><div class="nt">Pour les clubs avec une équipe commerciale.</div>
+        <ul><li>Tout le plan Club</li><li>Plan 3D et vues 360°</li><li>Managers, packages et commissions</li><li>Objectifs et tarifs par soirée</li><li>Fidélité, classement et Top 3</li><li>Personnalisation complète et shows IA</li></ul><a href="/inscription" class="btn main">Créer mon espace</a></div>
+      <div class="price rv"><h3>Organisateur</h3><div class="amt" style="font-size:44px">À la soirée</div><div class="nt">Pour les soirées à thème dans des lieux loués.</div>
+        <ul><li>Page de soirée à votre DA</li><li>Billets et carrés dans le même lien</li><li>Plan du lieu importé en photo</li><li>Liens ambassadeurs et ventes en direct</li><li>Partage des recettes avec le club</li></ul><a href="#faq" class="btn out">Nous contacter</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="eyebrow rv">FAQ</div>
+    <h2 class="rv">Les questions qu'on nous pose.</h2>
+    <div class="faq">
+      <div class="q rv"><h4>Comment j'installe Tablo ?</h4><p>Une ligne de code à coller sur votre site (WordPress, Wix, Webflow, sur mesure). Sans site : un lien pour la bio Instagram et un QR code pour les flyers.</p></div>
+      <div class="q rv"><h4>Combien de temps pour être en ligne ?</h4><p>L'onboarding vous guide en 11 étapes. Comptez une soirée pour publier un premier widget.</p></div>
+      <div class="q rv"><h4>Vous prenez une commission ?</h4><p>Non. Vous payez l'abonnement, l'argent des clients arrive sur votre compte via Stripe. Seuls les frais bancaires s'appliquent.</p></div>
+      <div class="q rv"><h4>Et si la cagnotte n'est pas complète ?</h4><p>L'organisateur a déjà payé l'acompte de sa catégorie. La veille au soir, le reste est débité sur sa carte, avec un rappel avant.</p></div>
+      <div class="q rv"><h4>Mes managers gardent leurs clients ?</h4><p>Oui. Chacun a son lien et ses packages, les réservations lui sont attribuées et ses commissions calculées automatiquement.</p></div>
+      <div class="q rv"><h4>J'organise des soirées dans des clubs que je loue, c'est pour moi ?</h4><p>Oui. Vous créez la page de votre soirée, importez le plan du lieu, vendez billets et carrés, et réglez d'avance le partage avec le club.</p></div>
+      <div class="q rv"><h4>Le thème change à chaque soirée ?</h4><p>Oui : chaque soirée a ses couleurs, sa police, ses visuels et ses shows, sans toucher à vos réservations ni à votre plan.</p></div>
+      <div class="q rv"><h4>Ça marche pour un beach club ?</h4><p>Oui : transats, cabanas, carrés au bord de la piscine. Plan, photos et DA s'adaptent à votre lieu.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="final">
+  <h2 class="rv"><span class="chrome">Prochaine soirée,</span><br><span class="holo">complet en ligne.</span></h2>
+  <p class="sub rv" style="margin:0 auto 34px">Une démo de 20 minutes avec votre plan et vos bouteilles.</p>
+  <div class="ctas rv"><a href="/inscription" class="btn holob">Créer l'espace de mon club</a></div>
+</section>
+</main>
+<footer><span class="disp" style="font-weight:800;color:#bbb">tablo</span><span>L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</span></footer>
+
+<script>
+// Reflets de boule à facettes qui traversent la page
+const cv=document.getElementById('lights'),c=cv.getContext('2d');let W,H,D=[];const COLS=['#ff5fa2','#a970ff','#4fd8ff','#b6ff6a','#ffffff'];
+function rs(){const d=devicePixelRatio||1;W=cv.width=innerWidth*d;H=cv.height=innerHeight*d;cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
+  D=Array.from({length:Math.round(innerWidth/38)},()=>({x:Math.random()*W,y:Math.random()*H,r:(Math.random()*2.5+1)*d,vx:(Math.random()*.5+.15)*d,c:COLS[Math.random()*5|0],p:Math.random()*6.28}))}
+rs();addEventListener('resize',rs);
+(function f(){c.clearRect(0,0,W,H);for(const s of D){s.x+=s.vx;s.p+=.03;if(s.x>W+10){s.x=-10;s.y=Math.random()*H}
+  c.globalAlpha=.18+.3*Math.abs(Math.sin(s.p));c.fillStyle=s.c;c.beginPath();c.arc(s.x,s.y,s.r,0,6.28);c.fill()}requestAnimationFrame(f)})();
+
+// Rotation des facettes
+const tl=document.querySelectorAll('.tl');let bx=0;(function sp(){bx=(bx+.2)%9;tl.forEach(t=>t.setAttribute('transform',`translate(${bx} 0)`));requestAnimationFrame(sp)})();
+
+// Piste de danse
+const fl=document.getElementById('floor');for(let i=0;i<70;i++)fl.appendChild(document.createElement('i'));
+const T=[...fl.children],FC=['#ff5fa2','#a970ff','#4fd8ff','#b6ff6a','#ffd25f'];
+setInterval(()=>{T.forEach(t=>{if(Math.random()<.22){const k=FC[Math.random()*5|0];t.style.background=k;t.style.boxShadow=`0 0 24px ${k}`}else{t.style.background='';t.style.boxShadow=''}})},420);
+
+// Ticker
+const items=['Parade de sparklers','Magnum','Cagnotte entre amis','Danseurs disco','Plan 3D','Acompte garanti','Pancarte perso','Top 3 du mois','App serveur','Beach club'];
+const tk=document.getElementById('tick'),h=items.map((x,i)=>`<span class="${i%2?'chrome':'holo'}">${x}</span><em>✦</em>`).join('');tk.innerHTML=h+h;
+
+// Téléphone sticky
+const sts=[...document.querySelectorAll('.st')],scr=[...document.querySelectorAll('.scr')];
+const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=+e.target.dataset.s;sts.forEach((s,j)=>s.classList.toggle('on',j===i));scr.forEach((s,j)=>s.classList.toggle('on',j===i))}}),{rootMargin:'-45% 0px -45% 0px'});
+sts.forEach(s=>so.observe(s));sts[0].classList.add('on');
+
+// Sparklers
+function spk(el,n){for(let i=0;i<n;i++){const s=document.createElement('i');s.className='spk';s.style.left=(12+i*(76/(n-1)))+'%';s.style.height=(60+Math.random()*40)+'px';el.appendChild(s)}}
+spk(document.getElementById('prev'),5);spk(document.getElementById('spk'),4);
+
+// QR
+const qr=document.getElementById('qr');for(let i=0;i<81;i++){const x=i%9,y=i/9|0,cor=(x<3&&y<3)||(x>5&&y<3)||(x<3&&y>5);const q=document.createElement('i');if(!cor&&Math.random()<.45)q.className='w';qr.appendChild(q)}
+
+// Mini plan
+const mp=document.getElementById('mini');for(let i=0;i<12;i++)mp.appendChild(document.createElement('i'));
+setInterval(()=>{const k=[...mp.children];k.forEach(x=>x.classList.remove('hot'));k[Math.random()*12|0].classList.add('hot')},1100);
+
+
+// Public cible (hero)
+const AUD=["Tablo s'installe sur votre site en une ligne. Vos clients choisissent leur carré, leurs bouteilles et leur show, puis paient entre amis. Vous, vous encaissez.",
+"Transats, cabanas et carrés au bord de l'eau, réservés et payés en ligne avant d'arriver. Une offre à la saison, sans commission.",
+"Vous louez un club pour vos soirées à thème ? Une page à votre DA, billets et carrés dans le même lien, vos ambassadeurs suivis en direct."];
+const al=document.getElementById('audlead');
+document.querySelectorAll('.aud button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.aud button').forEach(x=>x.classList.toggle('on',x===b));al.style.opacity=0;setTimeout(()=>{al.textContent=AUD[+b.dataset.aud];al.style.opacity=1},200)}));
+
+// Thèmes de soirée
+const TH=[
+ {n:'Bal masqué',d:'Velours, or et plumes',sw:'linear-gradient(135deg,#0d1240,#c9a24a)',t:'Nuit Vénitienne',k:'Samedi · bal masqué',dt:'Sam. 19 déc. · 23 h · dress code : masque',font:"Cinzel,Georgia,serif",size:'44px',bg:'radial-gradient(ellipse at 50% 0%,#283080,#0c0f33 70%)',ink:'#e9e4ff',acc:'#e2b860',btn:'#1a1306',card:'rgba(255,255,255,.07)',rad:'4px',glow:'0 0 30px rgba(226,184,96,.45)',p1:'35 €',p2:'dès 1 200 €',show:'Show inclus : danseurs masqués',stg:'ORCHESTRE',tags:['Masque obligatoire','Dîner + club','Parade de sparklers'],
+  deco:'<g fill="none" stroke="#e2b860" stroke-width="1.2" opacity=".55"><path d="M40 200 Q120 120 200 200 Q280 120 360 200"/><path d="M80 40 l10 18 10-18 M300 40 l10 18 10-18"/></g><g fill="#e2b860" opacity=".8"><path d="M200 18 l7 12 -7 12 -7 -12z"/><circle cx="60" cy="60" r="2"/><circle cx="340" cy="70" r="2"/><circle cx="120" cy="110" r="1.5"/><circle cx="290" cy="120" r="1.5"/></g>'},
+ {n:'Jungle botanique',d:'Feuillages, néons verts',sw:'linear-gradient(135deg,#06331f,#58e08a)',t:'Jungle Nocturne',k:'Vendredi · immersion végétale',dt:'Ven. 9 janv. · 23 h 30 · afro house',font:"Fraunces,Georgia,serif",size:'46px',bg:'radial-gradient(ellipse at 30% 0%,#0f5a36,#04170e 70%)',ink:'#e6fff0',acc:'#7dffa8',btn:'#03170c',card:'rgba(125,255,168,.08)',rad:'999px',glow:'0 0 30px rgba(125,255,168,.4)',p1:'20 €',p2:'dès 700 €',show:'Show inclus : performeurs lianes',stg:'DJ BOOTH',tags:['Décor végétal','Fumée lourde','Percussions live'],
+  deco:'<g fill="#1f8f57" opacity=".55"><path d="M0 0 C60 30 70 90 20 140 C40 80 20 40 0 30Z"/><path d="M400 0 C340 40 330 100 380 150 C360 90 380 50 400 40Z"/><path d="M0 260 C50 200 110 210 140 260Z"/><path d="M400 260 C350 205 290 215 260 260Z"/></g><g fill="#7dffa8" opacity=".5"><circle cx="90" cy="70" r="2"/><circle cx="320" cy="90" r="2"/><circle cx="200" cy="30" r="1.5"/></g>'},
+ {n:'Disco',d:'Paillettes et boules à facettes',sw:'linear-gradient(135deg,#2a1a4a,#ff5fa2,#4fd8ff)',t:'Saturday Glitter',k:'Samedi · disco funk',dt:'Sam. 23 janv. · 23 h · tenue pailletée',font:"Monoton,Unbounded,sans-serif",size:'40px',bg:'radial-gradient(ellipse at 50% 0%,#3b1d6e,#0b0716 70%)',ink:'#f6eeff',acc:'#ff5fa2',btn:'#fff',card:'rgba(255,255,255,.07)',rad:'14px',glow:'0 0 24px rgba(255,95,162,.6)',p1:'18 €',p2:'dès 600 €',show:'Show inclus : danseurs disco',stg:'PISTE LED',tags:['Danseurs boule à facettes','Canon à confettis','Funk et house'],
+  deco:'<g opacity=".9"><line x1="362" y1="0" x2="362" y2="22" stroke="#aaa" stroke-width="1"/><circle cx="362" cy="40" r="18" fill="#c8cadb"/><g stroke="#55586b" stroke-width="1" opacity=".6"><line x1="344" y1="40" x2="380" y2="40"/><line x1="362" y1="22" x2="362" y2="58"/><path d="M349 28 Q362 40 349 52 M375 28 Q362 40 375 52" fill="none"/></g><line x1="38" y1="0" x2="38" y2="16" stroke="#aaa" stroke-width="1"/><circle cx="38" cy="28" r="12" fill="#c8cadb" opacity=".8"/></g><g fill="#fff"><circle cx="70" cy="120" r="2.5" opacity=".7"/><circle cx="330" cy="150" r="2.5" opacity=".7"/><circle cx="110" cy="200" r="2" opacity=".6"/><circle cx="290" cy="40" r="2" opacity=".6"/></g><g fill="#4fd8ff" opacity=".6"><circle cx="40" cy="60" r="3"/><circle cx="360" cy="220" r="3"/></g>'},
+ {n:'Pool party',d:'Soleil, eau turquoise',sw:'linear-gradient(135deg,#ffb45f,#2bd4c4)',t:'SUNSET SPLASH',k:'Dimanche · bord de piscine',dt:'Dim. 5 juil. · 16 h → 2 h · maillot conseillé',font:"Bungee,Unbounded,sans-serif",size:'40px',bg:'linear-gradient(180deg,#ffb45f 0%,#ff7aa8 40%,#1fa5b5 100%)',ink:'#08202a',acc:'#ffffff',btn:'#0a6b78',card:'rgba(255,255,255,.4)',rad:'18px',glow:'0 3px 0 #0a6b78',p1:'15 €',p2:'dès 450 €',show:'Show inclus : jet de mousse',stg:'PISCINE',tags:['Cabanas','Transats VIP','Coucher de soleil'],
+  deco:'<circle cx="372" cy="26" r="22" fill="#fff3b0" opacity=".85"/><path d="M0 220 Q50 205 100 220 T200 220 T300 220 T400 220 V260 H0Z" fill="#fff" opacity=".3"/><path d="M0 238 Q50 225 100 238 T200 238 T300 238 T400 238 V260 H0Z" fill="#fff" opacity=".35"/>'}
+];
+const tl2=document.getElementById('thlist'),ev=document.getElementById('evpage');
+TH.forEach((t,i)=>{const b=document.createElement('button');b.className='thb'+(i?'':' on');b.innerHTML=`<i style="background:${t.sw}"></i><span>${t.n}<small>${t.d}</small></span>`;b.onclick=()=>setTh(i);tl2.appendChild(b)});
+function setTh(i){const t=TH[i];[...tl2.children].forEach((b,j)=>b.classList.toggle('on',j===i));
+ const st=ev.style;st.setProperty('--ebg',t.bg);st.setProperty('--eink',t.ink);st.setProperty('--eacc',t.acc);st.setProperty('--ebtn',t.btn);st.setProperty('--ecard',t.card);st.setProperty('--erad',t.rad);st.setProperty('--efont',t.font);st.setProperty('--esize',t.size);st.setProperty('--eglow',t.glow);
+ document.querySelector('.evplan').style.setProperty('--eacc',t.acc==='#ffffff'?'#2bd4c4':t.acc);document.querySelector('.evplan').style.setProperty('--ebtn',t.acc==='#ffffff'?'#04252b':t.btn);
+ document.getElementById('evtitle').textContent=t.t;document.getElementById('evkick').textContent=t.k;document.getElementById('evdate').textContent=t.dt;
+ document.getElementById('evp1').textContent=t.p1;document.getElementById('evp2').textContent=t.p2;document.getElementById('evshow').textContent=t.show;document.getElementById('evstg').textContent=t.stg;
+ document.getElementById('evdeco').innerHTML=t.deco;document.getElementById('evtags').innerHTML=t.tags.map(x=>`<span>${x}</span>`).join('')}
+setTh(0);
+let thAuto=setInterval(()=>{const i=([...tl2.children].findIndex(b=>b.classList.contains('on'))+1)%TH.length;setTh(i)},4200);
+tl2.addEventListener('click',()=>clearInterval(thAuto));
+
+// Apparition
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(e=>io.observe(e));
+</script>
+</body>
+</html>
