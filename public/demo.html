@@ -326,6 +326,7 @@ input[type=range]{accent-color:var(--c);width:160px}
 .mode{text-align:left;border:1px solid var(--line);background:var(--p2);border-radius:16px;padding:16px;min-height:44px}
 .mode b{display:block;font-size:16px;margin-bottom:4px}
 .mode span{color:var(--mute);font-size:14px}
+.mode.on span{color:var(--ink)}
 .mode.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,transparent)}
 .pot{display:grid;gap:8px;margin:14px 0}
 .pp{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--inp,#0f0b14);border-radius:12px;border:1px solid var(--line);animation:pop .4s}
@@ -371,7 +372,7 @@ input[type=range]{accent-color:var(--c);width:160px}
 @media (max-width:620px){.emb .steps button:not(.on){display:none}.emb .steps{flex:none}}
 
 .mh .modes{flex:none;display:inline-flex;flex-direction:row;align-items:stretch}.mh .modes button{display:inline-flex;align-items:center;white-space:nowrap;min-height:34px;padding:4px 12px;font-size:13px;width:auto}
-.modes button.on{background:var(--cb,var(--c));color:var(--btx)}
+.mh .modes button.on{background:var(--cb,var(--c));color:var(--btx)}
 .tix .steps{display:none}
 .tiers{display:grid;gap:8px;margin:8px 0 18px}
 .tier{display:grid;grid-template-columns:78px 1fr auto;gap:14px;align-items:center;text-align:left;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--p2);color:var(--ink);font:inherit;cursor:pointer;transition:.15s}

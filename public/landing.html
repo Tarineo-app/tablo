@@ -169,36 +169,84 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}*{animation:none!important}}
 
-/* Scène : la fenêtre du navigateur et le site du club */
-.hero{padding:132px 0 0;text-align:center;position:relative}
-.stage{margin-top:52px;padding-bottom:10px}
-.browser{border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden;background:#0b0b0e;box-shadow:0 40px 120px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.03)}
-.chromebar{display:flex;align-items:center;gap:14px;padding:10px 14px;background:#141418;border-bottom:1px solid rgba(255,255,255,.08)}
+/* Trame : la fenêtre quitte le site, se présente, puis y revient */
+.hero{padding:128px 0 72px;text-align:center;position:relative}
+.story{position:relative;height:480vh}
+.storyInner{position:sticky;top:0;height:100vh;display:grid;place-items:center;overflow:hidden}
+.lightbg{position:absolute;inset:0;background:linear-gradient(170deg,#eceefb 0%,#dde2f6 55%,#cfd6ef 100%);opacity:0;transition:opacity .75s ease}
+.story.float .lightbg{opacity:1}
+
+.copy{position:absolute;left:max(24px,5vw);top:50%;transform:translateY(-50%);z-index:3;width:min(360px,30vw);opacity:0;pointer-events:none;transition:opacity .6s ease .15s,transform .6s ease .15s}
+.story.float .copy{opacity:1;pointer-events:auto}
+.storyTitle{font:900 clamp(28px,3.4vw,46px)/1.02 Unbounded,system-ui,sans-serif;letter-spacing:-.03em;color:#2b2fd6;margin:0 0 24px}
+.pills{display:grid;gap:11px;justify-items:start}
+.pills button{white-space:nowrap;border:1.6px solid #2b2fd6;color:#2b2fd6;background:transparent;border-radius:999px;padding:11px 22px;font:700 12.5px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;opacity:0;transform:translateY(10px);transition:opacity .45s,transform .45s,background .18s,color .18s}
+.pills button.show{opacity:1;transform:none}
+.pills button:hover,.pills button.on{background:#2b2fd6;color:#fff}
+.storyNote{margin:26px 0 0;color:#4a4e7a;font-size:14.5px;line-height:1.6;opacity:0;transition:opacity .5s .3s}
+.story.float .storyNote{opacity:1}
+
+.browser{position:relative;z-index:2;width:min(1120px,92vw);border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden;background:#0b0b0e;box-shadow:0 40px 120px rgba(0,0,0,.75);transition:transform .8s cubic-bezier(.4,0,.2,1),border-color .6s,background .6s,box-shadow .6s,width .8s cubic-bezier(.4,0,.2,1)}
+.chromebar{display:flex;align-items:center;gap:14px;padding:10px 14px;background:#141418;border-bottom:1px solid rgba(255,255,255,.08);transition:opacity .5s}
 .chromebar .dots{display:flex;gap:7px}
 .chromebar .dots i{width:11px;height:11px;border-radius:50%;background:#2e2e36}
 .chromebar .dots i:first-child{background:#ff5f57}
 .chromebar .dots i:nth-child(2){background:#febc2e}
 .chromebar .dots i:nth-child(3){background:#28c840}
 .url{flex:1;max-width:320px;margin:0 auto;padding:5px 14px;border-radius:7px;background:#0b0b0e;color:#8e8c99;font:600 12.5px Manrope,system-ui,sans-serif;text-align:center;border:1px solid rgba(255,255,255,.06)}
-.viewport{position:relative;display:grid;grid-template-columns:1fr minmax(0,560px);min-height:620px;text-align:left}
-.site{position:relative;overflow:hidden;background:#07070a}
+.viewport{position:relative;display:grid;grid-template-columns:1fr minmax(0,560px);height:min(640px,72vh);text-align:left;transition:grid-template-columns .8s cubic-bezier(.4,0,.2,1)}
+.site{position:relative;overflow:hidden;background:#07070a;transition:opacity .55s}
 .sitenav{display:flex;align-items:center;gap:22px;padding:18px 26px;font:600 12.5px Manrope,system-ui,sans-serif;color:#9a97a6;border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:2}
 .sitenav b{font:700 15px/1 "Cinzel",Georgia,serif;letter-spacing:.16em;color:#fff;margin-right:auto;white-space:nowrap}
 .sitenav em{font-style:normal;font-weight:700;color:#0b0b0e;background:#fff;border-radius:999px;padding:7px 15px}
-@media(max-width:1100px){.sitenav span{display:none}}
-.sitehero{position:relative;z-index:2;padding:min(9vw,74px) 26px;display:grid;gap:12px;align-content:center;min-height:460px}
+@media(max-width:1180px){.sitenav span{display:none}}
+.sitehero{position:relative;z-index:2;padding:min(7vw,60px) 26px;display:grid;gap:12px;align-content:center;height:calc(100% - 60px)}
 .sitehero .kicker{font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#b9b6c6}
-.sitehero h3{font:400 clamp(38px,5.4vw,76px)/.95 "Cinzel",Georgia,serif;letter-spacing:.02em;color:#fff;margin:0;text-transform:uppercase}
+.sitehero h3{font:400 clamp(34px,4.4vw,64px)/.95 "Cinzel",Georgia,serif;letter-spacing:.02em;color:#fff;margin:0;text-transform:uppercase}
 .sitehero p{margin:0;color:#8e8c99;font-size:14.5px}
-.site::before{content:"";position:absolute;inset:0;background:
-  radial-gradient(60% 50% at 22% 28%,rgba(120,90,200,.34),transparent 70%),
-  radial-gradient(50% 44% at 78% 72%,rgba(200,120,90,.22),transparent 70%),
-  linear-gradient(180deg,#0a0a10,#060608);}
-.site::after{content:"";position:absolute;inset:0;opacity:.35;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);background-size:3px 3px;mix-blend-mode:overlay}
-.sidepanel{border-left:1px solid rgba(255,255,255,.1);background:#060607;box-shadow:-30px 0 60px rgba(0,0,0,.55)}
-.sidepanel iframe{display:block;width:100%;height:100%;min-height:620px;border:0}
-.stagenote{text-align:center;color:var(--mute);font-size:14px;margin:18px 0 20px}
-@media(max-width:980px){.viewport{grid-template-columns:1fr}.site{display:none}.sidepanel{border-left:0;box-shadow:none}.sidepanel iframe{min-height:640px}}
+.site::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 22% 28%,rgba(120,90,200,.34),transparent 70%),radial-gradient(50% 44% at 78% 72%,rgba(200,120,90,.22),transparent 70%),linear-gradient(180deg,#0a0a10,#060608)}
+.site::after{content:"";position:absolute;inset:0;opacity:.3;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);background-size:3px 3px;mix-blend-mode:overlay}
+.sidepanel{position:relative;border-left:1px solid rgba(255,255,255,.1);background:#060607;box-shadow:-30px 0 60px rgba(0,0,0,.55);transition:border-radius .7s,box-shadow .7s,border-color .7s}
+.sidepanel iframe{display:block;width:100%;height:100%;border:0}
+
+/* état détaché */
+.story.float .browser{background:transparent;border-color:transparent;box-shadow:none;width:min(1120px,92vw);transform:translateX(min(30%,330px))}
+.story.float .chromebar{opacity:0}
+.story.float .site{opacity:0}
+.story.float .viewport{grid-template-columns:0fr minmax(0,440px)}
+.story.float .sidepanel{border-left:0;border-radius:22px;box-shadow:0 34px 90px rgba(43,47,214,.22),0 0 0 1px rgba(20,20,60,.08)}
+.story.float .sidepanel iframe{border-radius:22px}
+
+.scrollhint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:10px;font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);transition:opacity .4s}
+.scrollhint i{display:block;width:1px;height:22px;background:linear-gradient(180deg,currentColor,transparent);animation:sh 1.8s infinite}
+@keyframes sh{0%{transform:translateY(-6px);opacity:0}40%{opacity:1}100%{transform:translateY(8px);opacity:0}}
+.story.float .scrollhint{opacity:0}
+
+/* la barre du haut passe en clair pendant la présentation */
+nav.light{background:rgba(238,240,251,.82);border-bottom-color:rgba(20,20,60,.1)}
+nav.light .logo{color:#14143c}
+nav.light .dot{background:linear-gradient(180deg,#2b2fd6,#8b8ef0)}
+nav.light .links a{color:#4a4e7a}
+nav.light .links a:hover{color:#14143c}
+
+@media(max-width:980px){
+  .story{height:420vh}
+  .storyInner{display:grid;grid-template-rows:auto minmax(0,1fr);place-items:stretch;gap:12px;padding:74px max(16px,4vw) 18px}
+  .copy{position:static;transform:none;width:auto;max-width:none;text-align:center;opacity:1;pointer-events:auto;display:grid;gap:10px;justify-items:center;align-self:start}
+  .story:not(.float) .copy{opacity:0;pointer-events:none}
+  .storyTitle{font-size:clamp(20px,5.6vw,27px);margin:0}
+  .pills{display:flex;gap:8px;overflow-x:auto;max-width:100%;padding-bottom:4px;scrollbar-width:none;justify-content:flex-start}
+  .pills::-webkit-scrollbar{display:none}
+  .pills button{padding:8px 15px;font-size:11px;flex:none}
+  .storyNote{display:none}
+  .browser{width:100%;height:100%;display:flex;flex-direction:column}
+  .viewport{grid-template-columns:1fr;flex:1;min-height:0;height:auto}
+  .site{display:none}
+  .sidepanel{border-left:0;box-shadow:none}
+  .story.float .browser{transform:none}
+  .story.float .viewport{grid-template-columns:1fr}
+  .story.float .chromebar{display:none}
+}
 
 /* Constructeur */
 .builder{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;margin-top:34px;align-items:start}
@@ -257,35 +305,42 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <span><i>✓</i> Rien à installer pour votre équipe</span>
     </div>
   </div>
-
-  <div class="stage" id="demo">
-    <div class="wrap">
-      <div class="browser">
-        <div class="chromebar"><span class="dots"><i></i><i></i><i></i></span><span class="url">levelours.fr</span></div>
-        <div class="viewport">
-          <div class="site" id="site">
-            <div class="sitenav"><b id="siteName">LE VELOURS</b><span>Le club</span><span>Soirées</span><span>Galerie</span><span>Accès</span><em>Réserver</em></div>
-            <div class="sitehero">
-              <span class="kicker">Samedi 28 novembre</span>
-              <h3 id="siteEvent">VELVET GOLD</h3>
-              <p>Minuit — 6 h · Dress code soigné</p>
-            </div>
-          </div>
-          <div class="sidepanel"><iframe id="liveW" src="demo.html?embed=1" title="Fenêtre de réservation Tablo" loading="eager"></iframe></div>
-        </div>
-      </div>
-      <p class="stagenote">Ce panneau, c'est Tablo. Il s'ouvre sur votre site, à vos couleurs. Essayez-le, c'est le vrai.</p>
-      <div class="chapters" id="chapters" role="tablist" aria-label="Visite guidée">
-        <button class="on" data-tour="0">1 · Le carré</button>
-        <button data-tour="1">2 · Les bouteilles</button>
-        <button data-tour="2">3 · Shows et pancarte</button>
-        <button data-tour="3">4 · Payer entre amis</button>
-        <button data-tour="tix">5 · L'entrée</button>
-      </div>
-      <div class="tip" id="tip"><i></i><span>Touchez un carré libre : le client voit la catégorie, le minimum et les shows offerts.</span></div>
-    </div>
-  </div>
 </header>
+
+<section class="story" id="demo" aria-label="La fenêtre de réservation">
+  <div class="storyInner">
+    <div class="lightbg" aria-hidden="true"></div>
+
+    <div class="copy">
+      <h2 class="storyTitle">La fenêtre<br>de réservation</h2>
+      <div class="pills" id="pills">
+        <button data-s="1">Plan des carrés</button>
+        <button data-s="2">Vos bouteilles</button>
+        <button data-s="3">Shows et pancarte</button>
+        <button data-s="4">Cagnotte entre amis</button>
+        <button data-s="5">Billetterie</button>
+      </div>
+      <p class="storyNote">Elle vit sur votre site, à vos couleurs. Essayez-la, c'est la vraie.</p>
+    </div>
+
+    <div class="browser">
+      <div class="chromebar"><span class="dots"><i></i><i></i><i></i></span><span class="url">levelours.fr</span></div>
+      <div class="viewport">
+        <div class="site">
+          <div class="sitenav"><b id="siteName">LE VELOURS</b><span>Le club</span><span>Soirées</span><span>Galerie</span><span>Accès</span><em>Réserver</em></div>
+          <div class="sitehero">
+            <span class="kicker">Samedi 28 novembre</span>
+            <h3 id="siteEvent">VELVET GOLD</h3>
+            <p>Minuit — 6 h · Dress code soigné</p>
+          </div>
+        </div>
+        <div class="sidepanel"><iframe id="liveW" src="demo.html?embed=1" title="Fenêtre de réservation Tablo" loading="eager"></iframe></div>
+      </div>
+    </div>
+
+    <div class="scrollhint" id="scrollhint"><span>Faites défiler</span><i></i></div>
+  </div>
+</section>
 
 <section id="gains">
   <div class="wrap">
@@ -522,21 +577,56 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
  document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%3)*60+'ms';io.observe(el)});
 
- /* visite guidée de la réservation */
- const f=document.getElementById('liveW'),bar=document.getElementById('chapters'),tip=document.getElementById('tip');
+ /* trame pilotée par le défilement : la fenêtre se détache, se présente, puis revient */
+ const f=document.getElementById('liveW');
  const frames=()=>[f,document.getElementById('liveM')].filter(Boolean);
  const send=d=>frames().forEach(x=>x.contentWindow&&x.contentWindow.postMessage(Object.assign({tablo:1},d),'*'));
  const sendTo=(el,d)=>el&&el.contentWindow&&el.contentWindow.postMessage(Object.assign({tablo:1},d),'*');
- const TXT={0:"Touchez un carré libre : le client voit la catégorie, le minimum et les shows offerts.",
-  1:"Vos bouteilles, vos formats, vos photos. La barre montre ce qui reste pour atteindre le minimum.",
-  2:"Une pancarte au prénom, un show de votre catalogue : c'est là que le panier monte.",
-  3:"Tout payer, l'acompte et le reste sur place, ou une cagnotte entre amis.",
-  tix:"Et sans carré : l'entrée seule, moins chère avant minuit, avec ou sans conso."};
- bar&&bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  bar.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
-  const k=b.dataset.tour;
-  tip.style.opacity=0;setTimeout(()=>{tip.querySelector('span').textContent=TXT[k]||'';tip.style.opacity=1},150);
-  if(k==='tix')sendTo(f,{mode:'tix'});else sendTo(f,{mode:'vip',tour:+k});
+
+ const story=document.querySelector('.story'),pills=document.getElementById('pills'),nav=document.querySelector('nav');
+ // 0 et 6 : la fenêtre est sur le site du club. 1 à 5 : elle se présente seule.
+ const SCENES=[
+  {float:false,act:{mode:'vip',tour:0}},
+  {float:true, act:{mode:'vip',tour:0},pill:0},
+  {float:true, act:{mode:'vip',tour:1},pill:1},
+  {float:true, act:{mode:'vip',tour:2},pill:2},
+  {float:true, act:{mode:'vip',tour:3},pill:3},
+  {float:true, act:{mode:'tix'},        pill:4},
+  {float:false,act:{mode:'vip',tour:3}},
+ ];
+ let scene=-1,locked=false;
+ const pillBtns=pills?[...pills.querySelectorAll('button')]:[];
+
+ function goto(n,fromClick){
+  n=Math.max(0,Math.min(SCENES.length-1,n));
+  if(n===scene)return;
+  scene=n;const sc=SCENES[n];
+  story&&story.classList.toggle('float',sc.float);
+  nav&&nav.classList.toggle('light',sc.float);
+  pillBtns.forEach((b,i)=>{
+   b.classList.toggle('show',sc.float&&sc.pill!==undefined&&i<=sc.pill);
+   b.classList.toggle('on',sc.pill===i);
+  });
+  sendTo(f,sc.act);
+  if(fromClick)locked=false;
+ }
+
+ function onScroll(){
+  if(!story)return;
+  const r=story.getBoundingClientRect(),span=story.offsetHeight-window.innerHeight;
+  if(span<=0)return;
+  const p=Math.max(0,Math.min(1,-r.top/span));
+  goto(Math.round(p*(SCENES.length-1)));
+ }
+ if(story){
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('resize',onScroll);
+  onScroll();goto(0);
+ }
+ /* les étiquettes font aussi avancer la présentation */
+ pills&&pills.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!story)return;
+  const n=+b.dataset.s,span=story.offsetHeight-window.innerHeight;
+  scrollTo({top:story.offsetTop+span*(n/(SCENES.length-1)),behavior:'smooth'});
  });
 
  /* constructeur : le prospect met la fenêtre à son nom, et ses choix suivent jusqu'à l'inscription */
