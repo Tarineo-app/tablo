@@ -8,6 +8,7 @@ import { bottleCount, bottleOptionUnlocked, depositCents, priceShows } from "@/l
 import { themeVars } from "@/lib/theme";
 import type { WidgetData } from "@/lib/widget";
 import ModeTabs from "./ModeTabs";
+import Plan3D, { type Box } from "./Plan3D";
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: c % 100 ? 2 : 0 });
 const day = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/Paris" });
@@ -20,7 +21,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
   const { venue, categories, tables, bottles, shows, events } = data;
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [eventId, setEventId] = useState(events[0]?.id ?? "");
+  const [eventId, setEventId] = useState((events.find((e) => e.open) ?? events[0])?.id ?? "");
   const [guests, setGuests] = useState(6);
   const [tableId, setTableId] = useState<string | null>(null);
   const [lines, setLines] = useState<Record<string, Line>>({});
@@ -125,7 +126,13 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
               <>
                 <h2 style={{ fontSize: 16 }}>Soirée</h2>
                 <div className="w-dates">
-                  {events.map((e) => <button key={e.id} className={`w-opt ${e.id === eventId ? "on" : ""}`} onClick={() => { setEventId(e.id); setTableId(null); }}><b>{day(e.date)}</b><small>{e.name || "Soirée"}</small></button>)}
+                  {events.map((e) => (
+                    <button key={e.id} className={`w-opt ${e.id === eventId ? "on" : ""}`} disabled={!e.open}
+                      title={e.open ? undefined : e.closedNote ?? undefined}
+                      onClick={() => { setEventId(e.id); setTableId(null); }}>
+                      <b>{day(e.date)}</b><small>{!e.open ? "Bientôt" : e.name || "Soirée"}</small>
+                    </button>
+                  ))}
                 </div>
                 <h2 style={{ fontSize: 16 }}>Nombre de personnes</h2>
                 <div className="w-qty"><button onClick={() => setGuests(Math.max(1, guests - 1))} aria-label="Moins">−</button><b>{guests} pers.</b><button onClick={() => setGuests(Math.min(40, guests + 1))} aria-label="Plus">+</button></div>
@@ -138,19 +145,36 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
           <>
             <h1 className="w-title">Choisissez votre {venue.kind === "beach" ? "emplacement" : "carré"}</h1>
             <p className="w-sub">{event && day(event.date)} · {guests} personnes. Touchez un emplacement libre.</p>
-            <div className="w-plan" style={{ backgroundImage: venue.planImageUrl ? `url(${venue.planImageUrl})` : undefined }}>
-              {tables.map((t) => {
-                const taken = event?.taken.includes(t.id);
-                const small = guests > t.capacity;
-                return (
-                  <button key={t.id} className={`w-t ${t.id === tableId ? "on" : ""}`} disabled={taken || small}
-                    title={taken ? "Déjà réservé" : small ? `${t.capacity} pers. maximum` : undefined}
-                    style={{ left: `${t.x}%`, top: `${t.y}%`, width: `${t.w}%`, height: `${t.h}%` }} onClick={() => setTableId(t.id)}>
-                    <span>{t.name}<small>{taken ? "Réservé" : `min ${eur(event?.prices[t.id] ?? t.minSpendCents)}`}</small></span>
-                  </button>
-                );
-              })}
-            </div>
+            {venue.tour3dUrl && (
+              <a className="w-tour" href={venue.tour3dUrl} target="_blank" rel="noreferrer">Visiter la salle en 3D ↗</a>
+            )}
+            {venue.plan3d ? (
+              <Plan3D
+                planImageUrl={venue.planImageUrl} wallColor={venue.wallColor} tilt={venue.planTilt}
+                selected={tableId} onSelect={setTableId}
+                boxes={tables.map<Box>((t) => ({
+                  id: t.id, name: t.name,
+                  sub: event?.taken.includes(t.id) ? "Réservé" : `min ${eur(event?.prices[t.id] ?? t.minSpendCents)}`,
+                  x: t.x, y: t.y, w: t.w, h: t.h,
+                  elevation: t.elevation, color: t.color, photoUrl: t.photoUrl,
+                  taken: !!event?.taken.includes(t.id), small: guests > t.capacity,
+                }))}
+              />
+            ) : (
+              <div className="w-plan" style={{ backgroundImage: venue.planImageUrl ? `url(${venue.planImageUrl})` : undefined }}>
+                {tables.map((t) => {
+                  const taken = event?.taken.includes(t.id);
+                  const small = guests > t.capacity;
+                  return (
+                    <button key={t.id} className={`w-t ${t.id === tableId ? "on" : ""}`} disabled={taken || small}
+                      title={taken ? "Déjà réservé" : small ? `${t.capacity} pers. maximum` : undefined}
+                      style={{ left: `${t.x}%`, top: `${t.y}%`, width: `${t.w}%`, height: `${t.h}%` }} onClick={() => setTableId(t.id)}>
+                      <span>{t.name}<small>{taken ? "Réservé" : `min ${eur(event?.prices[t.id] ?? t.minSpendCents)}`}</small></span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             <div className="w-legend"><span>Libre</span><span>● Votre choix</span><span>▨ Indisponible ou trop petit</span></div>
             {table && cat && (
               <div className="w-info">

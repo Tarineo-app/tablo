@@ -7,6 +7,8 @@ import { eur } from "@/lib/money";
 import { isFloor } from "@/lib/roles";
 import ManagerHome from "./ManagerHome";
 import Tonight, { type FloorTable } from "./Tonight";
+import TrialBanner from "@/components/TrialBanner";
+import { closeTrialIfOver, trialReport } from "@/lib/billing";
 
 export const metadata = { title: "Ce soir · Tablo" };
 
@@ -15,6 +17,18 @@ const jour = (d: Date) => d.toLocaleDateString("fr-FR", { weekday: "long", day: 
 export default async function Page() {
   const { venue, membership } = await requireMembership();
   if (isFloor(membership.role)) redirect("/app/service");
+  await closeTrialIfOver(venue.id);
+  const v = await db.venue.findUniqueOrThrow({ where: { id: venue.id }, select: { billing: true, trialEventId: true } });
+  const trialEvent = v.trialEventId ? await db.event.findUnique({ where: { id: v.trialEventId }, select: { id: true, name: true, date: true } }) : null;
+  const banner = (
+    <TrialBanner
+      billing={v.billing}
+      trialEvent={trialEvent}
+      upcoming={v.billing === "SETUP" ? await db.event.findMany({ where: { venueId: venue.id, date: { gte: yesterday() } }, orderBy: { date: "asc" }, take: 6, select: { id: true, name: true, date: true } }) : []}
+      report={v.billing === "LOCKED" && v.trialEventId ? await trialReport(venue.id, v.trialEventId) : null}
+    />
+  );
+
   if (membership.role === "MANAGER") return <ManagerHome membershipId={membership.id} code={membership.managerCode} pct={membership.commissionPct ?? 0} slug={venue.slug} />;
 
   const event = await db.event.findFirst({ where: { venueId: venue.id, date: tonight() }, orderBy: { date: "asc" } });
@@ -27,6 +41,7 @@ export default async function Page() {
     ]);
     return (
       <>
+        {banner}
         <header>
           <h1>Pas de soirée <span className="holo">ce soir</span></h1>
           <p>{next ? <>Prochaine : <b style={{ color: "var(--text)", textTransform: "capitalize" }}>{jour(next.date)}</b>{next.name ? ` · ${next.name}` : ""}.</> : "Ajoutez une date dans Soirées et billetterie pour ouvrir les réservations."}</p>
@@ -79,6 +94,7 @@ export default async function Page() {
 
   return (
     <>
+      {banner}
       <header>
         <h1><span className="holo">{event.name || "Ce soir"}</span></h1>
         <p style={{ textTransform: "capitalize" }}>{jour(event.date)}</p>

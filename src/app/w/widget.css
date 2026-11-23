@@ -101,3 +101,34 @@
 .w-gicon { font-size: 20px; line-height: 1; }
 .w-ghost { background: transparent; color: var(--w-mute); border: 1px solid var(--w-line); min-height: 36px; padding: 0 12px; font-size: 13px; }
 .w-show:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Vue 3D du plan, construite depuis le plan 2D */
+.p3 { display: grid; gap: 10px; }
+.p3-view { position: relative; width: 100%; aspect-ratio: 16 / 10; perspective: 1500px; perspective-origin: 50% 46%; overflow: hidden; border-radius: 14px; }
+.p3-stage { position: absolute; inset: 10% 13%; transform-style: preserve-3d; transition: transform .45s cubic-bezier(.4, 0, .2, 1); }
+.p3-floor { position: absolute; inset: 0; border-radius: 10px; background: var(--w-panel2) center / cover no-repeat; box-shadow: 0 0 0 1px var(--w-line) inset, 0 40px 90px rgba(0, 0, 0, .5); }
+.p3-floor::after { content: ""; position: absolute; inset: 0; border-radius: 10px; background: radial-gradient(60% 50% at 50% 30%, color-mix(in srgb, var(--w-accent) 16%, transparent), transparent 70%); }
+.p3-box { position: absolute; transform-style: preserve-3d; --col: var(--w-accent); }
+.p3-box .f { position: absolute; left: 0; top: 0; display: block; transform-origin: 0 0; }
+.p3-box .top { transform-origin: 50% 50%; width: 100%; height: 100%; border-radius: 6px; border: 1.5px solid color-mix(in srgb, var(--col) 60%, transparent); background: color-mix(in srgb, var(--col) 20%, var(--w-panel)); color: var(--w-ink); font: 700 11px var(--w-font); cursor: pointer; display: grid; place-items: center; text-align: center; padding: 2px; }
+.p3-box .top b { display: block; font-weight: 800; letter-spacing: .01em; }
+.p3-box .top small { display: block; font-weight: 600; font-size: 9px; color: var(--w-mute); margin-top: 1px; }
+.p3-box .side { background: color-mix(in srgb, var(--col) 42%, #06060a); }
+.p3-box .side.dark { background: color-mix(in srgb, var(--col) 26%, #06060a); }
+.p3-box.on .top { background: var(--col); color: var(--w-on); border-color: transparent; box-shadow: 0 0 26px color-mix(in srgb, var(--col) 65%, transparent); }
+.p3-box.on .top small { color: var(--w-on); opacity: .85; }
+.p3-box.on .side { background: var(--col); }
+.p3-box.pris .top, .p3-box.petit .top { opacity: .4; cursor: not-allowed; background-image: repeating-linear-gradient(45deg, transparent 0 5px, rgba(140, 140, 150, .3) 5px 7px); }
+.p3-box.pris .side, .p3-box.petit .side { opacity: .4; }
+.p3-card { position: absolute; left: 50%; top: 0; width: 128px; margin-left: -64px; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--col); box-shadow: 0 18px 40px rgba(0, 0, 0, .65); background: var(--w-panel); pointer-events: none; }
+.p3-card img { display: block; width: 100%; height: 82px; object-fit: cover; }
+.p3-ctrl { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.p3-seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; border: 1px solid var(--w-line); background: var(--w-panel); }
+.p3-seg button { min-height: 34px; padding: 0 14px; border-radius: 999px; border: 0; background: transparent; color: var(--w-mute); font: 700 13px var(--w-font); cursor: pointer; }
+.p3-seg button.on { background: var(--w-btn); color: var(--w-on); }
+.p3-rot { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--w-mute); }
+.p3-rot input { accent-color: var(--w-accent); }
+
+.w-tour { display: inline-flex; align-items: center; gap: 6px; align-self: start; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--w-accent); color: var(--w-accent); font: 700 13px var(--w-font); text-decoration: none; }
+.w-tour:hover { background: color-mix(in srgb, var(--w-accent) 14%, transparent); }
+.w-opt:disabled { opacity: .42; cursor: not-allowed; }

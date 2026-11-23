@@ -286,6 +286,44 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .btrack{height:7px;border-radius:9px;background:#17171d;overflow:hidden}
 .btrack i{display:block;height:100%;width:0;border-radius:9px;background:var(--holo);background-size:200% 100%;animation:hs 7s linear infinite;transition:width .45s cubic-bezier(.4,0,.2,1)}
 
+
+/* Étape 2 : son vrai site avec l'extension posée dessus */
+#monsite{padding:90px 0 20px}
+.siteask{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:22px}
+.siteask input{flex:1;min-width:260px;height:56px;padding:0 18px;border-radius:14px;border:1px solid var(--line);background:#0e0e14;color:#fff;font:600 16px var(--f);outline:0}
+.siteask input:focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.siteask button{height:56px;padding:0 26px;white-space:nowrap}
+.sitenote{margin:10px 0 0;font-size:13.5px;color:var(--mute)}
+.sitenote.err{color:#ff8a8a}
+.sitestage{margin-top:28px;opacity:0;transform:translateY(16px);transition:.6s cubic-bezier(.3,0,.2,1)}
+.sitestage.in{opacity:1;transform:none}
+.sitewin{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#07070b;box-shadow:0 40px 110px rgba(0,0,0,.6)}
+.sitebar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#131319;border-bottom:1px solid var(--line)}
+.sitedots{display:flex;gap:6px}.sitedots i{width:10px;height:10px;border-radius:50%;background:#2c2c36}
+.siteurl{flex:1;height:28px;border-radius:999px;background:#0b0b10;border:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 12px;font-size:12.5px;color:#9aa0ad;min-width:0}
+.siteurl img{width:14px;height:14px;border-radius:3px;flex:none}
+.siteurl b{color:#e7e9ee;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sitebody{position:relative;display:grid;grid-template-columns:1fr 0fr;transition:grid-template-columns .7s cubic-bezier(.4,0,.2,1);height:clamp(380px,46vw,560px)}
+.sitebody.open{grid-template-columns:1fr minmax(0,400px)}
+.sitepage{position:relative;overflow:hidden;background:#0b0b10 center/cover no-repeat;display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(20px,3vw,40px)}
+.sitepage.bare{background:radial-gradient(100% 75% at 18% 8%,color-mix(in srgb,var(--sc,#ff5fa2) 62%,transparent),transparent 64%),linear-gradient(155deg,#1c1c26,#0a0a10)!important}
+.sitepage.bare::after{background:linear-gradient(180deg,rgba(6,6,10,.1),rgba(6,6,10,.62))}
+.sitepage.bare::before{content:"";position:absolute;left:0;right:0;top:0;height:58px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.07);z-index:1}
+.sitepage::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,6,10,.35),rgba(6,6,10,.9))}
+.sitepage>*{position:relative;z-index:1}
+.sitetag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#aeb4c0;margin:0 0 8px}
+.sitepage h3{margin:0;font-size:clamp(24px,3.4vw,40px);line-height:1.08;letter-spacing:-.02em}
+.sitepage p{margin:10px 0 0;color:#c3c8d2;font-size:14.5px;max-width:46ch;line-height:1.55}
+.sitecta{margin-top:20px;align-self:flex-start;border:0;cursor:pointer;color:#0b0b10;font:800 15px var(--f);padding:14px 26px;border-radius:999px;background:var(--accent);box-shadow:0 14px 36px color-mix(in srgb,var(--accent) 45%,transparent);transition:transform .2s}
+.sitecta:hover{transform:translateY(-2px)}
+.sitecta.pulse{animation:sitepulse 2.4s ease-in-out infinite}
+@keyframes sitepulse{0%,100%{box-shadow:0 14px 36px color-mix(in srgb,var(--accent) 40%,transparent)}50%{box-shadow:0 14px 48px color-mix(in srgb,var(--accent) 75%,transparent)}}
+.sitepanel{overflow:hidden;background:#07070b;border-left:1px solid var(--line)}
+.sitepanel iframe{width:100%;height:100%;border:0;display:block;min-width:360px}
+.siteafter{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:26px}
+.siteafter small{color:var(--mute);font-size:13.5px}
+@media(max-width:860px){.sitebody{height:auto;grid-template-columns:1fr}.sitebody.open{grid-template-columns:1fr}.sitebody.open .sitepage{display:none}.sitepanel{border-left:0;height:520px}.sitebody:not(.open) .sitepanel{height:0}}
+
 /* Les étapes de la configuration */
 .bsteps{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .bsteps li{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border-radius:14px;color:var(--mute);transition:.3s}
@@ -568,9 +606,46 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
           <li><span class="num">3</span><div><b>Votre carte</b><em>Bouteilles, shows, pancarte</em></div></li>
           <li><span class="num">4</span><div><b>En ligne</b><em>Le code à coller, ou le lien pour la bio</em></div></li>
         </ol>
-        <a href="/inscription" class="btn main" id="bCta">Passer à l&apos;étape 2</a>
+        <a href="#monsite" class="btn main" id="bCta">Voir ça sur mon site &rarr;</a>
         <small id="bSmall">Gratuit pour construire votre espace. Vous ne payez qu&apos;au moment d&apos;ouvrir les réservations.</small>
       </aside>
+    </div>
+  </div>
+</section>
+
+
+<section id="monsite">
+  <div class="wrap">
+    <div class="eyebrow rv">Étape 2 sur 4 · Chez vous</div>
+    <h2 class="rv">Maintenant, voyons-la sur votre site.</h2>
+    <p class="sub rv">Collez l'adresse de votre site. On vous montre votre page, avec le bouton et la réservation posés dessus. C'est exactement ce que verront vos clients.</p>
+
+    <div class="siteask rv">
+      <input id="sIn" type="url" inputmode="url" placeholder="leveloursclub.fr" autocomplete="url" aria-label="L'adresse de votre site">
+      <button class="btn main" id="sGo">Voir chez moi</button>
+    </div>
+    <p class="sitenote" id="sNote">Pas de site ? Mettez votre page Instagram, ça marche aussi.</p>
+
+    <div class="sitestage" id="sStage" hidden>
+      <div class="sitewin">
+        <div class="sitebar">
+          <span class="sitedots"><i></i><i></i><i></i></span>
+          <span class="siteurl"><img id="sIcon" alt="" hidden><b id="sUrl">votresite.fr</b></span>
+        </div>
+        <div class="sitebody" id="sBody">
+          <div class="sitepage" id="sPage">
+            <p class="sitetag" id="sTag">Votre site</p>
+            <h3 id="sTitle">Le Velours</h3>
+            <p id="sDesc">Votre page, telle qu'elle est aujourd'hui.</p>
+            <button class="sitecta pulse" id="sCta">Réserver une table</button>
+          </div>
+          <div class="sitepanel"><iframe id="liveS" title="La réservation sur votre site" loading="lazy"></iframe></div>
+        </div>
+      </div>
+      <div class="siteafter">
+        <a href="/inscription" class="btn main" id="sNext">Garder tout ça et ouvrir mon espace</a>
+        <small>Sans carte bancaire. Votre première soirée est offerte.</small>
+      </div>
     </div>
   </div>
 </section>
@@ -631,7 +706,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
  const SCENES=[
   {float:false,act:{mode:'vip',tour:0}},
   {float:true, act:{mode:'vip',tour:0},pill:0},
-  {float:true, act:{mode:'vip',tour:1},pill:1},
+  {float:true, act:{mode:'vip',tour:0},pill:1},
   {float:true, act:{mode:'vip',tour:2},pill:2},
   {float:true, act:{mode:'vip',tour:3},pill:3},
   {float:true, act:{mode:'tix'},        pill:4},
@@ -698,14 +773,15 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
  });
 
  /* constructeur : le prospect met la fenêtre à son nom, et ses choix suivent jusqu'à l'inscription */
- const look={name:'',event:'',kind:'club',amb:'tablo',accent:'',btn:'pill'};
+ const look={name:'',event:'',kind:'club',amb:'tablo',accent:'',btn:'pill',site:''};
  const siteName=document.getElementById('siteName'),siteEvent=document.getElementById('siteEvent');
- const ctas=['nCta','bCta','fCta'].map(i=>document.getElementById(i)).filter(Boolean);
+ const ctas=['nCta','fCta','sNext'].map(i=>document.getElementById(i)).filter(Boolean);
  const refreshCtas=()=>{const q=new URLSearchParams();
    if(look.name)q.set('club',look.name);
    q.set('kind',look.kind);q.set('amb',look.amb);
    if(look.accent)q.set('couleur',look.accent);
    if(look.btn!=='pill')q.set('boutons',look.btn);
+   if(look.site)q.set('site',look.site);
    ctas.forEach(a=>a.href='/inscription?'+q.toString());
  };
  const touched={};
@@ -752,6 +828,63 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   new IntersectionObserver(es=>es.forEach(e=>keepbar.classList.toggle('hide',e.isIntersecting)),{threshold:.25}).observe(fin);
  const m=document.getElementById('liveM');
  m&&m.addEventListener('load',()=>setTimeout(()=>sendTo(m,{venue:look.kind,amb:look.amb,accent:look.accent||undefined,btn:look.btn,name:look.name||undefined}),400));
+
+
+ /* étape 2 : son vrai site, avec l'extension posée dessus */
+ const sIn=document.getElementById('sIn'),sGo=document.getElementById('sGo'),sNote=document.getElementById('sNote'),
+       sStage=document.getElementById('sStage'),sBody=document.getElementById('sBody'),sPage=document.getElementById('sPage'),
+       sTitle=document.getElementById('sTitle'),sDesc=document.getElementById('sDesc'),sTag=document.getElementById('sTag'),
+       sUrl=document.getElementById('sUrl'),sIcon=document.getElementById('sIcon'),sCta=document.getElementById('sCta'),
+       liveS=document.getElementById('liveS');
+ let sBusy=false,sTimer=null;
+
+ const openPanel=()=>{if(!sBody.classList.contains('open')){sBody.classList.add('open');sCta.classList.remove('pulse')}};
+
+ async function showSite(){
+  if(sBusy)return;
+  const raw=(sIn.value||'').trim();
+  if(!raw){sNote.textContent="Mettez l'adresse de votre site pour voir le rendu.";sNote.classList.add('err');sIn.focus();return}
+  sBusy=true;sGo.disabled=true;sGo.textContent='Un instant…';sNote.classList.remove('err');
+  sNote.textContent='On va chercher votre page…';
+  let d={};
+  try{
+   const r=await fetch('/api/apercu',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:raw})});
+   d=await r.json();
+   if(d.error){sNote.textContent=d.error;sNote.classList.add('err');sBusy=false;sGo.disabled=false;sGo.textContent='Voir chez moi';return}
+  }catch(e){d={host:raw.replace(/^https?:\/\//,'').replace(/\/.*$/,'')}}
+
+  look.site=d.url||('https://'+(d.host||raw));
+  refreshCtas();
+  const nom=look.name||d.title||d.host||'Votre établissement';
+  sUrl.textContent=d.host||'votresite.fr';
+  if(d.icon){sIcon.src=d.icon;sIcon.hidden=false}else{sIcon.hidden=true}
+  sTitle.textContent=nom;
+  sTag.textContent=(look.kind==='beach'?'Beach club':'Club')+(d.host?' · '+d.host:'');
+  sDesc.textContent=d.tagline?d.tagline.slice(0,160):'Votre page, telle qu\'elle est aujourd\'hui. Le bouton ci-dessous, c\'est la seule chose qui change.';
+  if(d.image){sPage.style.background=`url(${d.image}) center/cover no-repeat`;sPage.classList.remove('bare')}
+  else{sPage.style.background='';sPage.classList.add('bare');sPage.style.setProperty('--sc',look.accent||'#ff5fa2')}
+  const col=look.accent||'#ff5fa2';
+  sCta.style.background=col;
+  sCta.style.color=(parseInt(col.slice(1,3),16)*.299+parseInt(col.slice(3,5),16)*.587+parseInt(col.slice(5,7),16)*.114)>150?'#0b0b10':'#fff';
+  sCta.style.borderRadius=look.btn==='square'?'10px':look.btn==='round'?'16px':'999px';
+  sCta.textContent='Réserver une table';sCta.classList.add('pulse');
+  sBody.classList.remove('open');
+
+  sStage.hidden=false;
+  requestAnimationFrame(()=>sStage.classList.add('in'));
+  if(!liveS.src){
+   liveS.src='demo.html?embed=1';
+   liveS.addEventListener('load',()=>setTimeout(()=>sendTo(liveS,{venue:look.kind,amb:look.amb,accent:look.accent||undefined,btn:look.btn,name:look.name||undefined,mode:'vip',tour:0}),380),{once:true});
+  }else sendTo(liveS,{venue:look.kind,amb:look.amb,accent:look.accent||undefined,btn:look.btn,name:look.name||undefined,mode:'vip',tour:0});
+
+  sNote.textContent=d.title?('Voilà ce que ça donne sur '+(d.host||'votre site')+'.'):'Voilà le principe : le bouton vit chez vous, la réservation s\'ouvre à côté.';
+  sGo.textContent='Essayer une autre adresse';sGo.disabled=false;sBusy=false;
+  setTimeout(()=>sStage.scrollIntoView({behavior:'smooth',block:'center'}),120);
+  clearTimeout(sTimer);sTimer=setTimeout(openPanel,1600);
+ }
+ sGo&&sGo.addEventListener('click',showSite);
+ sIn&&sIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();showSite()}});
+ sCta&&sCta.addEventListener('click',()=>{clearTimeout(sTimer);openPanel()});
 
  /* onglets de l'espace club */
  const tabs=document.querySelector('.apptabs');

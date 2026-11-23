@@ -92,6 +92,18 @@ model Venue {
   ticketBuyback      Boolean   @default(false)
   ticketBuybackHours Int       @default(24) // jusqu'à X heures avant la soirée
   ticketBuybackPct   Int       @default(100) // part remboursée
+  websiteUrl         String? // le site du club, où l'extension est posée
+  /// Facturation : on ouvre tout gratuitement, le club choisit une soirée d'essai,
+  /// et le paiement n'est demandé qu'après cette nuit-là.
+  billing            Billing   @default(SETUP)
+  trialEventId       String? // la soirée offerte, choisie par le club
+  trialPickedAt      DateTime?
+  trialClosedAt      DateTime? // lendemain de la soirée d'essai : le bilan est prêt
+  /// Vue 3D du plan : générée depuis le plan 2D, ou vraie visite si le club en a une.
+  plan3d             Boolean   @default(true)
+  planTilt           Int       @default(52) // inclinaison de départ, en degrés
+  wallColor          String? // couleur du sol et des murs dans la vue 3D
+  tour3dUrl          String? // visite 3D existante (Matterport, Polycam, modèle .glb)
   createdAt          DateTime  @default(now())
 
   memberships  Membership[]
@@ -128,6 +140,9 @@ model TableCategory {
   id            String       @id @default(cuid())
   venueId       String
   name          String // Prestige, Scène, Lounge…
+  /// Rendu 3D : couleur du carré et hauteur de l'estrade (0 = à plat).
+  color         String?
+  elevation     Int          @default(2)
   depositPct    Int          @default(0) // 0 à 100
   includedShows Int          @default(0)
   minSpendCents Int          @default(0)
@@ -364,6 +379,13 @@ model Ticket {
   to      Ticket[]    @relation("TicketTransfer")
 
   @@index([venueId, eventId])
+}
+
+enum Billing {
+  SETUP // il construit son espace, rien n'est ouvert au public
+  TRIAL // sa soirée d'essai est choisie : tout fonctionne cette nuit-là
+  ACTIVE // abonné
+  LOCKED // l'essai est passé, il faut payer pour rouvrir
 }
 
 enum GarageStatus {

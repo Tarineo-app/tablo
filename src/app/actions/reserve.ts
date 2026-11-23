@@ -3,6 +3,7 @@
 import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { gateFor } from "@/lib/billing";
 import { bottleCount, bottleOptionUnlocked, depositCents, priceShows } from "@/lib/pricing";
 import { rateLimit } from "@/lib/ratelimit";
 
@@ -35,6 +36,8 @@ export async function createReservation(raw: z.infer<typeof Input>): Promise<Res
   const venue = await db.venue.findUnique({ where: { slug: d.slug } });
   if (!venue) return { error: "Établissement introuvable." };
   if (!venue.payModes.includes(d.payMode)) return { error: "Ce mode de paiement n'est pas proposé par le club." };
+  const gate = gateFor(venue, d.eventId);
+  if (!gate.open) return { error: gate.message ?? "Les réservations ne sont pas ouvertes." };
 
   const [event, table] = await Promise.all([
     db.event.findFirst({ where: { id: d.eventId, venueId: venue.id, isOpen: true }, include: { prices: { where: { tableId: d.tableId } } } }),

@@ -11,6 +11,9 @@ import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type
 
 export type ActionState = { error?: string; ok?: string } | undefined;
 
+/** Couleurs de départ des catégories : elles servent au plan et à la vue 3D. */
+const CAT_COLORS = ["#ff5fa2", "#a970ff", "#4fd8ff", "#ffd25f", "#7dffa8", "#ff8a5f"];
+
 const slugify = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "club";
 
@@ -41,9 +44,10 @@ export async function createVenue(_: ActionState, form: FormData): Promise<Actio
     data: {
       name, city: city || null, kind, slug,
       theme: themeFromLook(kind, look),
+      websiteUrl: look.site ?? null,
       rules: kind === "beach" ? "18 ans et plus. Maillot accepté jusqu'à 20 h, tenue de soirée ensuite." : "18 ans et plus. Tenue correcte exigée.",
       memberships: { create: { userId: user.id, role: "OWNER" } },
-      categories: { create: cats.map(([n, dep, inc, min], i) => ({ name: n as string, depositPct: dep as number, includedShows: inc as number, minSpendCents: (min as number) * 100, sortOrder: i })) },
+      categories: { create: cats.map(([n, dep, inc, min], i) => ({ name: n as string, depositPct: dep as number, includedShows: inc as number, minSpendCents: (min as number) * 100, sortOrder: i, color: CAT_COLORS[i % CAT_COLORS.length], elevation: [5, 7, 2, 1][i] ?? 2 })) },
     },
   });
   await forgetLook();
@@ -96,7 +100,13 @@ export async function saveCategory(_: ActionState, form: FormData): Promise<Acti
   const { venue } = await requireMembership(MANAGE);
   const p = CatSchema.safeParse(Object.fromEntries(form));
   if (!p.success) return { error: p.error.issues[0].message };
-  const data = { ...p.data, minSpendCents: toCents(form.get("minSpend")) };
+  const color = String(form.get("color") || "").trim();
+  const data = {
+    ...p.data,
+    minSpendCents: toCents(form.get("minSpend")),
+    color: /^#[0-9a-fA-F]{6}$/.test(color) ? color : null,
+    elevation: Math.max(0, Math.min(10, parseInt(String(form.get("elevation") || "2"), 10) || 0)),
+  };
   const id = String(form.get("id") || "");
   if (id) await db.tableCategory.updateMany({ where: { id, venueId: venue.id }, data });
   else await db.tableCategory.create({ data: { ...data, venueId: venue.id, sortOrder: await db.tableCategory.count({ where: { venueId: venue.id } }) } });
@@ -121,9 +131,17 @@ const TableSchema = z.object({
   categoryId: z.string().min(1),
   capacity: z.number().int().min(1).max(100),
   minSpendCents: z.number().int().min(0).nullable(),
+  photoUrl: z.string().max(1_500_000).nullable().optional(),
   x: z.number().min(0).max(100), y: z.number().min(0).max(100), w: z.number().min(2).max(100), h: z.number().min(2).max(100),
 });
-const PlanSchema = z.object({ planImageUrl: z.string().max(3_000_000).nullable(), tables: z.array(TableSchema).max(200) });
+const PlanSchema = z.object({
+  planImageUrl: z.string().max(3_000_000).nullable(),
+  tables: z.array(TableSchema).max(200),
+  plan3d: z.boolean().optional(),
+  planTilt: z.number().int().min(0).max(70).optional(),
+  wallColor: z.string().max(9).nullable().optional(),
+  tour3dUrl: z.string().max(400).nullable().optional(),
+});
 
 export async function savePlan(input: z.infer<typeof PlanSchema>): Promise<ActionState> {
   const { venue } = await requireMembership(MANAGE);
@@ -132,12 +150,25 @@ export async function savePlan(input: z.infer<typeof PlanSchema>): Promise<Actio
   const cats = new Set((await db.tableCategory.findMany({ where: { venueId: venue.id }, select: { id: true } })).map((c) => c.id));
   if (p.data.tables.some((t) => !cats.has(t.categoryId))) return { error: "Un carré a une catégorie inconnue." };
   const img = p.data.planImageUrl;
-  if (img && !/^(https:\/\/|data:image\/(png|jpeg|webp);base64,)/.test(img)) return { error: "Image de plan invalide." };
+  const okImg = (v: string) => /^(https:\/\/|data:image\/(png|jpeg|webp);base64,)/.test(v);
+  if (img && !okImg(img)) return { error: "Image de plan invalide." };
+  if (p.data.tables.some((t) => t.photoUrl && !okImg(t.photoUrl))) return { error: "Photo de carré invalide." };
+  const tour = (p.data.tour3dUrl ?? "").trim();
+  if (tour && !/^https:\/\//.test(tour)) return { error: "Le lien de la visite 3D doit commencer par https://" };
 
   const existing = await db.venueTable.findMany({ where: { venueId: venue.id }, select: { id: true } });
   const keep = new Set(p.data.tables.filter((t) => t.id).map((t) => t.id));
   await db.$transaction(async (tx) => {
-    await tx.venue.update({ where: { id: venue.id }, data: { planImageUrl: img } });
+    await tx.venue.update({
+      where: { id: venue.id },
+      data: {
+        planImageUrl: img,
+        ...(p.data.plan3d === undefined ? {} : { plan3d: p.data.plan3d }),
+        ...(p.data.planTilt === undefined ? {} : { planTilt: p.data.planTilt }),
+        ...(p.data.wallColor === undefined ? {} : { wallColor: p.data.wallColor || null }),
+        ...(p.data.tour3dUrl === undefined ? {} : { tour3dUrl: tour || null }),
+      },
+    });
     for (const old of existing) {
       if (keep.has(old.id)) continue;
       // Un carré déjà réservé est désactivé plutôt que supprimé, pour garder l'historique.
@@ -146,7 +177,7 @@ export async function savePlan(input: z.infer<typeof PlanSchema>): Promise<Actio
       else await tx.venueTable.delete({ where: { id: old.id } });
     }
     for (const t of p.data.tables) {
-      const data = { name: t.name, categoryId: t.categoryId, capacity: t.capacity, minSpendCents: t.minSpendCents, x: t.x, y: t.y, w: t.w, h: t.h, active: true };
+      const data = { name: t.name, categoryId: t.categoryId, capacity: t.capacity, minSpendCents: t.minSpendCents, photoUrl: t.photoUrl ?? null, x: t.x, y: t.y, w: t.w, h: t.h, active: true };
       if (t.id && existing.some((e) => e.id === t.id)) await tx.venueTable.update({ where: { id: t.id }, data });
       else await tx.venueTable.create({ data: { ...data, venueId: venue.id } });
     }
@@ -257,4 +288,20 @@ export async function deleteEvent(id: string) {
   if (used) await db.event.updateMany({ where: { id, venueId: venue.id }, data: { isOpen: false } });
   else await db.event.deleteMany({ where: { id, venueId: venue.id } });
   revalidatePath("/app/soirees");
+}
+
+/** Le club choisit la nuit qu'il veut tester : elle est offerte, tout y fonctionne. */
+export async function pickTrialEvent(eventId: string): Promise<ActionState> {
+  const { venue } = await requireMembership(MANAGE);
+  if (venue.billing === "ACTIVE") return { error: "Votre abonnement est déjà actif." };
+  if (venue.billing !== "SETUP") return { error: "Votre soirée d'essai a déjà été choisie." };
+  const ev = await db.event.findFirst({ where: { id: eventId, venueId: venue.id } });
+  if (!ev) return { error: "Cette soirée n'existe pas." };
+  if (ev.date.getTime() < Date.now() - 2 * 3600e3) return { error: "Choisissez une soirée à venir." };
+  await db.venue.updateMany({
+    where: { id: venue.id, billing: "SETUP" },
+    data: { billing: "TRIAL", trialEventId: ev.id, trialPickedAt: new Date() },
+  });
+  revalidatePath("/app");
+  return { ok: `C'est parti : votre soirée d'essai est ouverte.` };
 }

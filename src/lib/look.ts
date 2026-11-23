@@ -6,7 +6,7 @@ import { AMBIANCES, defaultTheme } from "./theme";
  * Réglages choisis par le prospect sur la page d'accueil (nom, ambiance, couleur…).
  * On les garde le temps de l'inscription pour que son espace démarre déjà à son image.
  */
-export type Look = { club?: string; kind?: string; amb?: string; couleur?: string; boutons?: string };
+export type Look = { club?: string; kind?: string; amb?: string; couleur?: string; boutons?: string; site?: string };
 const COOKIE = "tablo_look";
 
 const clean = (v: string | undefined, max = 40) => (v ?? "").trim().slice(0, max);
@@ -16,7 +16,9 @@ export function parseLook(q: Record<string, string | string[] | undefined>): Loo
   const amb = clean(one("amb"), 16);
   const couleur = clean(one("couleur"), 9);
   const boutons = clean(one("boutons"), 8);
+  const site = clean(one("site"), 200);
   return {
+    site: /^https:\/\/[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(site) ? site : undefined,
     club: clean(one("club"), 60) || undefined,
     kind: one("kind") === "beach" ? "beach" : one("kind") === "club" ? "club" : undefined,
     amb: amb in AMBIANCES ? amb : undefined,
@@ -26,7 +28,7 @@ export function parseLook(q: Record<string, string | string[] | undefined>): Loo
 }
 
 export async function rememberLook(look: Look) {
-  if (!look.club && !look.amb && !look.couleur && !look.kind) return;
+  if (!look.club && !look.amb && !look.couleur && !look.kind && !look.site) return;
   (await cookies()).set(COOKIE, JSON.stringify(look), { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 3600 });
 }
 
