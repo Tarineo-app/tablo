@@ -38,7 +38,7 @@ export default function Door() {
       } catch { setMsg("Caméra indisponible : tapez le code."); setScan(false); }
     })();
     return () => { stop = true; stream?.getTracks().forEach((t) => t.stop()); };
-  }, [scan]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [scan]);
 
   const ok = res && !("error" in res) ? res : null;
   const left = ok ? ok.quantity - ok.checkedIn : 0;

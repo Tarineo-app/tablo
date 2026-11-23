@@ -15,6 +15,7 @@ const LINKS: [string, string, Role[]][] = [
   ["/app/stats", "Statistiques", MGMT],
   ["/app/service", "Service du soir", ALL],
   ["/app/entree", "Contrôle entrée", ALL],
+  ["/app/garage", "Garage", ALL],
   ["/app/equipe", "Équipe", MGMT],
   ["sep:Réglages", "Réglages", MGMT],
   ["/app/soirees", "Soirées et billetterie", MGMT],

@@ -42,21 +42,45 @@ async function main() {
 
   const bottle = (name: string, type: string, sizes: [string, string, number][], flavors: string[] = []) =>
     db.bottle.create({ data: { venueId: venue.id, name, type, flavors, sizes: { create: sizes.map(([label, volume, eur]) => ({ label, volume, priceCents: eur * 100 })) } } });
-  await bottle("Champagne Brut", "Champagne", [["Classique", "75 cl", 180], ["Magnum", "1,5 L", 380], ["Jéroboam", "3 L", 900]]);
+  const brut = await bottle("Champagne Brut", "Champagne", [["Classique", "75 cl", 180], ["Magnum", "1,5 L", 380], ["Jéroboam", "3 L", 900]]);
   await bottle("Champagne Rosé", "Champagne", [["Classique", "75 cl", 240], ["Magnum", "1,5 L", 520]]);
   await bottle("Champagne Prestige", "Champagne", [["Classique", "75 cl", 450], ["Magnum", "1,5 L", 980]]);
   await bottle("Vodka premium", "Vodka", [["Classique", "70 cl", 200], ["Magnum", "1,75 L", 420]], ["Original", "Pêche", "Ananas", "Fruits rouges"]);
   await bottle("Tequila añejo", "Tequila", [["Classique", "70 cl", 320]]);
   await bottle("Whisky 12 ans", "Whisky", [["Classique", "70 cl", 220]]);
 
-  const show = (name: string, description: string, price: number, cats: { id: string }[], isSign = false) =>
-    db.show.create({ data: { venueId: venue.id, name, description, priceCents: price * 100, isSign, categories: { connect: cats.map((c) => ({ id: c.id })) } } });
+  await db.venue.update({ where: { id: venue.id }, data: { garageEnabled: true, garageMinBottles: 1, garageDays: 60, garageKeepsMin: false } });
+
+  const show = (name: string, description: string, price: number, cats: { id: string }[], isSign = false, option?: { minBottles: number; bottleId?: string }) =>
+    db.show.create({
+      data: {
+        venueId: venue.id, name, description, priceCents: price * 100, isSign,
+        minBottles: option?.minBottles ?? 0, bottleId: option?.bottleId ?? null,
+        categories: { connect: cats.map((c) => ({ id: c.id })) },
+      },
+    });
   await show("Pancarte personnalisée", "La pancarte du club avec votre texte", 0, [prestige, scene, lounge, haute], true);
   await show("Parade de sparklers", "6 sparklers apportés à la table avec la bouteille", 80, [prestige, scene, lounge]);
   await show("Danseurs boule à facettes", "3 danseurs disco à votre table, 5 minutes", 150, [prestige, scene]);
   await show("Mallette lumineuse", "Bouteille servie dans une mallette LED avec fumée", 120, [prestige]);
   await show("Dédicace du DJ", "Votre prénom annoncé au micro", 50, [prestige, scene, lounge]);
   await show("Canon à confettis", "Explosion de confettis au-dessus du carré", 90, []);
+  // Options liées aux bouteilles : elles apparaissent dans le choix des bouteilles.
+  await show("Couronne de champagne", "Les bouteilles arrivent en couronne lumineuse, portées par l'équipe", 0, [prestige, scene], false, { minBottles: 3, bottleId: brut.id });
+  await show("Cortège géant", "Cortège complet avec fumée et sparklers pour les grosses commandes", 0, [prestige], false, { minBottles: 6 });
+
+  // Une bouteille au garage, pour la démonstration (code GDEMO1).
+  const vodkaSize = await db.bottleSize.findFirst({ where: { bottle: { venueId: venue.id, name: "Vodka premium" } }, orderBy: { priceCents: "asc" } });
+  if (vodkaSize) {
+    await db.garageItem.create({
+      data: {
+        venueId: venue.id, code: "GDEMO1", bottleSizeId: vodkaSize.id,
+        ownerName: "Sarah Martin", ownerEmail: "sarah@example.com", ownerPhone: "0612345678",
+        quantity: 1, flavor: "Fruits rouges", note: "Entamée à moitié, bouchon marqué 14",
+        expiresAt: new Date(Date.now() + 60 * 864e5),
+      },
+    });
+  }
 
   const next = new Date();
   const dates: [number, string][] = [[5, "Afro Night"], [6, "Velvet Gold"], [6, "Nuit Vénitienne"]];

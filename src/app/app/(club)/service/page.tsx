@@ -43,6 +43,7 @@ export default async function Page() {
       id: it.id,
       quantity: it.quantity,
       label: `${it.bottleSize.bottle.name} ${it.bottleSize.label}${it.flavor ? ` · ${it.flavor}` : ""}`,
+      fromGarage: it.fromGarage,
     })),
   }));
 

@@ -8,13 +8,13 @@ import { useActionState } from "react";
 export type FloorTable = {
   id: string; name: string; category: string; capacity: number; minSpendCents: number;
   x: number; y: number; w: number; h: number;
-  resa: null | { id: string; name: string; phone: string; guests: number; totalCents: number; paidCents: number; status: string; manager: string | null; orders: number };
+  resa: null | { id: string; name: string; phone: string; email: string; guests: number; totalCents: number; paidCents: number; status: string; manager: string | null; orders: number; garage: string | null };
 };
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 const STATUS: Record<string, string> = { DRAFT: "À payer", PENDING_PAYMENT: "Paiement en cours", CONFIRMED: "Confirmé", FULLY_PAID: "Payé", CHECKED_IN: "Arrivé", COMPLETED: "Terminé", NO_SHOW: "Absent" };
 
-export default function Tonight({ tables, eventId, planImageUrl }: { tables: FloorTable[]; eventId: string; planImageUrl: string | null }) {
+export default function Tonight({ tables, eventId, planImageUrl, garageEnabled }: { tables: FloorTable[]; eventId: string; planImageUrl: string | null; garageEnabled: boolean }) {
   const router = useRouter();
   const [openId, setOpenId] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -81,6 +81,7 @@ export default function Tonight({ tables, eventId, planImageUrl }: { tables: Flo
                   <b style={{ fontSize: 17 }}>{table.resa.name}</b>
                   <span className="mute" style={{ fontSize: 13 }}>{table.resa.phone || "pas de téléphone"} · {table.resa.guests} personnes</span>
                   {table.resa.manager && <span className="tag soft">via {table.resa.manager}</span>}
+                  {table.resa.garage && <span className="tag soft">Reprend du garage : {table.resa.garage}</span>}
                   <div className="row" style={{ justifyContent: "space-between" }}><span className="mute">Total</span><b>{eur(table.resa.totalCents)}</b></div>
                   <div className="row" style={{ justifyContent: "space-between" }}><span className="mute">Déjà payé</span><b>{eur(table.resa.paidCents)}</b></div>
                   <div className="row" style={{ justifyContent: "space-between" }}><span className="mute">Envois</span><b>{table.resa.orders}</b></div>
@@ -93,6 +94,12 @@ export default function Tonight({ tables, eventId, planImageUrl }: { tables: Flo
                     {table.resa.status === "NO_SHOW" ? "Annuler l'absence" : "Absent"}
                   </button>
                 </div>
+                {garageEnabled && (
+                  <a className="btn btn-out" style={{ justifySelf: "start" }}
+                    href={`/app/garage?nom=${encodeURIComponent(table.resa.name)}&tel=${encodeURIComponent(table.resa.phone)}&email=${encodeURIComponent(table.resa.email)}`}>
+                    Mettre une bouteille au garage
+                  </a>
+                )}
               </>
             ) : (
               <WalkInForm eventId={eventId} tableId={table.id} onDone={() => { setOpenId(null); router.refresh(); }} />

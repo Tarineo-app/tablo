@@ -12,3 +12,20 @@ export function priceShows(chosen: { id: string; priceCents: number; categoryIds
 }
 
 export const depositCents = (totalCents: number, pct: number) => Math.ceil((totalCents * pct) / 100);
+
+/**
+ * Options liées aux bouteilles (« couronne de 3 Moët ») : un show avec `minBottles > 0`
+ * n'est proposé que si le client a commandé assez de bouteilles.
+ * `bottleId` à null = n'importe quelle bouteille du panier.
+ */
+export function bottleOptionUnlocked(
+  option: { minBottles: number; bottleId: string | null },
+  lines: { bottleId: string; quantity: number }[],
+) {
+  if (option.minBottles <= 0) return true;
+  const count = lines.filter((l) => !option.bottleId || l.bottleId === option.bottleId).reduce((a, l) => a + l.quantity, 0);
+  return count >= option.minBottles;
+}
+
+/** Nombre total de bouteilles d'un panier. */
+export const bottleCount = (lines: { quantity: number }[]) => lines.reduce((a, l) => a + l.quantity, 0);

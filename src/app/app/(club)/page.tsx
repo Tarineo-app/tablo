@@ -51,7 +51,7 @@ export default async function Page() {
     db.venueTable.findMany({ where: { venueId: venue.id, active: true }, include: { category: true }, orderBy: { name: "asc" } }),
     db.reservation.findMany({
       where: { venueId: venue.id, eventId: event.id, status: { not: "CANCELLED" } },
-      include: { manager: { include: { user: { select: { name: true } } } }, _count: { select: { orders: true } } },
+      include: { manager: { include: { user: { select: { name: true } } } }, garageItem: { include: { bottleSize: { include: { bottle: true } } } }, _count: { select: { orders: true } } },
     }),
     db.ticket.aggregate({ where: { eventId: event.id, status: { not: "CANCELLED" } }, _sum: { quantity: true, checkedIn: true, totalCents: true } }),
   ]);
@@ -63,7 +63,14 @@ export default async function Page() {
       id: t.id, name: t.name, category: t.category.name, capacity: t.capacity,
       minSpendCents: t.minSpendCents ?? t.category.minSpendCents,
       x: t.x, y: t.y, w: t.w, h: t.h,
-      resa: r ? { id: r.id, name: r.organizerName, phone: r.organizerPhone, guests: r.guests, totalCents: r.totalCents, paidCents: r.paidCents, status: r.status, manager: r.manager?.user.name ?? null, orders: r._count.orders } : null,
+      resa: r
+        ? {
+            id: r.id, name: r.organizerName, phone: r.organizerPhone, email: r.organizerEmail, guests: r.guests,
+            totalCents: r.totalCents, paidCents: r.paidCents, status: r.status,
+            manager: r.manager?.user.name ?? null, orders: r._count.orders,
+            garage: r.garageItem ? `${r.garageItem.bottleSize.bottle.name} ${r.garageItem.bottleSize.label}` : null,
+          }
+        : null,
     };
   });
 
@@ -82,7 +89,7 @@ export default async function Page() {
         <div className="card"><span className="mute">Vendu ce soir</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{eur(vendu)}</div></div>
         <div className="card"><span className="mute">Panier moyen carré</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{resas.length ? eur(Math.round(resas.reduce((a, r) => a + r.totalCents, 0) / resas.length)) : "—"}</div></div>
       </div>
-      <Tonight tables={floor} eventId={event.id} planImageUrl={venue.planImageUrl} />
+      <Tonight tables={floor} eventId={event.id} planImageUrl={venue.planImageUrl} garageEnabled={venue.garageEnabled} />
     </>
   );
 }

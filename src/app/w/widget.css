@@ -88,3 +88,16 @@
 .w-tier .p b { font-family: var(--w-head); font-size: 18px; }
 .w-tier.on { border-color: var(--w-accent); box-shadow: 0 0 0 2px var(--w-accent) inset; }
 .w-tier:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Garage : la bouteille gardée au club */
+.w-garage { margin: 2px 0 6px; }
+.w-glink { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; padding: 13px 15px; border-radius: 16px; border: 1px dashed var(--w-line); background: var(--w-panel); color: var(--w-ink); font: inherit; cursor: pointer; }
+.w-glink:hover { border-color: var(--w-accent); }
+.w-glink span { display: grid; }
+.w-glink small, .w-gfound small { display: block; color: var(--w-mute); font-size: 13px; margin-top: 2px; }
+.w-glink > span:last-child { margin-left: auto; color: var(--w-mute); }
+.w-gfound { display: flex; align-items: flex-start; gap: 12px; padding: 14px 15px; border-radius: 16px; border: 1px solid var(--w-accent); background: var(--w-panel); }
+.w-gfound > div { flex: 1; }
+.w-gicon { font-size: 20px; line-height: 1; }
+.w-ghost { background: transparent; color: var(--w-mute); border: 1px solid var(--w-line); min-height: 36px; padding: 0 12px; font-size: 13px; }
+.w-show:disabled { opacity: .5; cursor: not-allowed; }

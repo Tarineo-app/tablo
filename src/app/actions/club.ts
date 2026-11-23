@@ -201,10 +201,17 @@ export async function addShow(_: ActionState, form: FormData): Promise<ActionSta
   if (mediaUrl && !/^https:\/\//.test(mediaUrl)) return { error: "Le média doit être une adresse https://" };
   const catIds = form.getAll("categories").map(String);
   const valid = await db.tableCategory.findMany({ where: { venueId: venue.id, id: { in: catIds } }, select: { id: true } });
+  // Option liée aux bouteilles (« couronne de 3 Moët ») : proposée à l'étape des bouteilles.
+  const minBottles = Math.max(0, Math.min(50, parseInt(String(form.get("minBottles") || "0"), 10) || 0));
+  const wantedBottle = String(form.get("bottleId") || "").trim();
+  const bottle = wantedBottle ? await db.bottle.findFirst({ where: { id: wantedBottle, venueId: venue.id }, select: { id: true } }) : null;
+  if (wantedBottle && !bottle) return { error: "Cette bouteille n'est pas à votre carte." };
+  if (bottle && minBottles < 1) return { error: "Indiquez le nombre de bouteilles minimum pour cette option." };
   await db.show.create({
     data: {
       venueId: venue.id, name, description: String(form.get("description") || "").trim() || null, priceCents: toCents(form.get("price")),
       mediaUrl: mediaUrl || null, isSign: form.get("isSign") === "on",
+      minBottles, bottleId: bottle?.id ?? null,
       categories: { connect: valid },
     },
   });

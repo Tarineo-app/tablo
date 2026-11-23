@@ -25,11 +25,15 @@ export async function loadWidget(slug: string) {
   ]);
   const catById = new Map(categories.map((c) => [c.id, c]));
   return {
-    venue: { name: venue.name, slug: venue.slug, kind: venue.kind, city: venue.city, rules: venue.rules, planImageUrl: venue.planImageUrl, payModes: venue.payModes, theme: readTheme(venue.theme, venue.kind) },
+    venue: {
+      name: venue.name, slug: venue.slug, kind: venue.kind, city: venue.city, rules: venue.rules, planImageUrl: venue.planImageUrl, payModes: venue.payModes,
+      garage: { enabled: venue.garageEnabled, minBottles: venue.garageMinBottles, keepsMin: venue.garageKeepsMin },
+      theme: readTheme(venue.theme, venue.kind),
+    },
     categories: categories.map((c) => ({ id: c.id, name: c.name, depositPct: c.depositPct, includedShows: c.includedShows })),
     tables: tables.map((t) => ({ id: t.id, name: t.name, categoryId: t.categoryId, capacity: t.capacity, minSpendCents: t.minSpendCents ?? catById.get(t.categoryId)?.minSpendCents ?? 0, x: t.x, y: t.y, w: t.w, h: t.h })),
-    bottles: bottles.map((b) => ({ id: b.id, name: b.name, type: b.type, photoUrl: b.photoUrl, flavors: b.flavors, sizes: b.sizes.map((s) => ({ id: s.id, label: s.label, volume: s.volume, priceCents: s.priceCents, soldOut: s.stock === 0 })) })),
-    shows: shows.map((s) => ({ id: s.id, name: s.name, description: s.description, priceCents: s.priceCents, mediaUrl: s.mediaUrl, isSign: s.isSign, categoryIds: s.categories.map((c) => c.id) })),
+    bottles: bottles.map((b) => ({ id: b.id, name: b.name, type: b.type, photoUrl: b.photoUrl, flavors: b.flavors, sizes: b.sizes.map((s) => ({ id: s.id, bottleId: b.id, label: s.label, volume: s.volume, priceCents: s.priceCents, soldOut: s.stock === 0 })) })),
+    shows: shows.map((s) => ({ id: s.id, name: s.name, description: s.description, priceCents: s.priceCents, mediaUrl: s.mediaUrl, isSign: s.isSign, minBottles: s.minBottles, bottleId: s.bottleId, categoryIds: s.categories.map((c) => c.id) })),
     events: events.map((e) => ({
       id: e.id, date: e.date.toISOString(), name: e.name,
       taken: [...new Set(e.reservations.map((r) => r.tableId))],

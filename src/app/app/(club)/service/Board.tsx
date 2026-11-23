@@ -16,7 +16,7 @@ export type Envoi = {
   takenBy: string | null;
   mine: boolean;
   createdAt: string;
-  items: { id: string; label: string; quantity: number }[];
+  items: { id: string; label: string; quantity: number; fromGarage: boolean }[];
 };
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
@@ -68,7 +68,7 @@ export default function Board({ envois, eventName }: { envois: Envoi[]; eventNam
             </div>
 
             <ul className="items">
-              {e.items.map((it) => <li key={it.id}><b>{it.quantity} ×</b> {it.label}</li>)}
+              {e.items.map((it) => <li key={it.id} className={it.fromGarage ? "garage" : undefined}><b>{it.quantity} ×</b> {it.label}{it.fromGarage && <span className="gtag">du garage</span>}</li>)}
             </ul>
 
             {e.cashDueCents > 0 && <div className="cash">Reste à encaisser sur le carré : <b>{eur(e.cashDueCents)}</b></div>}

@@ -16,6 +16,7 @@ export default async function Page({ params }: Props) {
     include: {
       venue: true, table: { include: { category: true } }, event: true,
       shows: { include: { show: true } },
+      garageItem: { include: { bottleSize: { include: { bottle: true } } } },
       orders: { where: { number: 1 }, include: { items: { include: { bottleSize: { include: { bottle: true } } } } } },
     },
   });
@@ -35,12 +36,13 @@ export default async function Page({ params }: Props) {
         </div>
         <div className="w-card" style={{ display: "grid", gap: 8 }}>
           {r.orders[0]?.items.map((it) => (
-            <div key={it.id} className="w-line"><span>{it.quantity} × {it.bottleSize.bottle.name} {it.bottleSize.label}{it.flavor ? ` · ${it.flavor}` : ""}</span><b>{eur(it.unitCents * it.quantity)}</b></div>
+            <div key={it.id} className="w-line"><span>{it.quantity} × {it.bottleSize.bottle.name} {it.bottleSize.label}{it.flavor ? ` · ${it.flavor}` : ""}{it.fromGarage ? " · de votre garage" : ""}</span><b>{it.fromGarage ? "Offerte" : eur(it.unitCents * it.quantity)}</b></div>
           ))}
           {r.shows.map((s) => <div key={s.id} className="w-line"><span>{s.show.name}{s.show.isSign && r.signText ? ` « ${r.signText} »` : ""}</span><b>{s.included ? "Offert" : eur(s.priceCents)}</b></div>)}
           <div className="w-total"><span>Total</span><span>{eur(r.totalCents)}</span></div>
           <div className="w-line"><span>{r.payMode === "FULL" ? "À régler" : "Acompte à régler"}</span><b>{eur(r.depositCents)}</b></div>
         </div>
+        {r.garageItem && <div className="w-card w-rules">Votre bouteille gardée au club ({r.garageItem.bottleSize.bottle.name} {r.garageItem.bottleSize.label}) vous sera remontée avec votre première commande.</div>}
         <div className="w-card w-rules">Le paiement en ligne de l&apos;acompte arrive très bientôt. En attendant, le club vous contacte au {r.organizerPhone} pour confirmer votre réservation.</div>
         <p className="w-legal">L&apos;abus d&apos;alcool est dangereux pour la santé, à consommer avec modération.</p>
       </section>

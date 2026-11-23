@@ -80,6 +80,11 @@ model Venue {
   stripeAccountId  String? // Stripe Connect Express
   stripeCustomerId String? // abonnement Tablo
   plan             String? // CLUB | PRESTIGE
+  /// Garage : les bouteilles non terminées sont gardées au club pour la prochaine fois.
+  garageEnabled    Boolean   @default(false)
+  garageMinBottles Int       @default(1) // bouteilles à racheter pour venir la rechercher
+  garageDays       Int       @default(60) // durée de conservation
+  garageKeepsMin   Boolean   @default(false) // true = le minimum du carré s'applique quand même
   createdAt        DateTime  @default(now())
 
   memberships  Membership[]
@@ -91,6 +96,7 @@ model Venue {
   reservations Reservation[]
   tickets      Ticket[]
   orders       Order[]
+  garageItems  GarageItem[]
 }
 
 model Membership {
@@ -180,17 +186,19 @@ model Bottle {
   active   Boolean      @default(true)
   venue    Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
   sizes    BottleSize[]
+  shows    Show[]
 }
 
 model BottleSize {
-  id         String      @id @default(cuid())
-  bottleId   String
-  label      String // Classique, Magnum, Jéroboam…
-  volume     String // 75 cl, 1,5 L
-  priceCents Int
-  stock      Int? // null = illimité
-  bottle     Bottle      @relation(fields: [bottleId], references: [id], onDelete: Cascade)
-  orderItems OrderItem[]
+  id          String       @id @default(cuid())
+  bottleId    String
+  label       String // Classique, Magnum, Jéroboam…
+  volume      String // 75 cl, 1,5 L
+  priceCents  Int
+  stock       Int? // null = illimité
+  bottle      Bottle       @relation(fields: [bottleId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+  garageItems GarageItem[]
 }
 
 model Show {
@@ -202,6 +210,12 @@ model Show {
   mediaUrl         String? // photo ou vidéo d'aperçu
   isSign           Boolean           @default(false) // la pancarte du club
   active           Boolean           @default(true)
+  /// Option liée aux bouteilles : « couronne de 3 Moët ». Proposée à l'étape des bouteilles,
+  /// débloquée quand le client a commandé assez de bouteilles. 0 = show classique.
+  minBottles       Int               @default(0)
+  /// Bouteille exigée pour cette option. null = n'importe quelle bouteille.
+  bottleId         String?
+  bottle           Bottle?           @relation(fields: [bottleId], references: [id], onDelete: SetNull)
   venue            Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
   categories       TableCategory[]   @relation("CategoryShows")
   reservationShows ReservationShow[]
@@ -228,12 +242,14 @@ model Reservation {
   stripeCustomerId      String? // client Stripe de l'organisateur (sur le compte connecté)
   stripePaymentMethodId String? // carte enregistrée en garantie
   qrToken               String            @unique @default(cuid())
+  garageItemId          String? // bouteille du garage récupérée ce soir-là
   createdAt             DateTime          @default(now())
 
   venue         Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
   event         Event             @relation(fields: [eventId], references: [id])
   table         VenueTable        @relation(fields: [tableId], references: [id])
   manager       Membership?       @relation("ManagerReservations", fields: [managerId], references: [id])
+  garageItem    GarageItem?       @relation(fields: [garageItemId], references: [id])
   shows         ReservationShow[]
   orders        Order[]
   contributions Contribution[]
@@ -290,6 +306,8 @@ model OrderItem {
   flavor       String?
   quantity     Int
   unitCents    Int
+  /// Bouteille rendue au client, pas vendue ce soir (elle était au garage).
+  fromGarage   Boolean    @default(false)
   order        Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
   bottleSize   BottleSize @relation(fields: [bottleSizeId], references: [id])
 }
@@ -333,4 +351,35 @@ model Ticket {
   manager Membership? @relation("ManagerTickets", fields: [managerId], references: [id])
 
   @@index([venueId, eventId])
+}
+
+enum GarageStatus {
+  STORED // gardée au club
+  RETRIEVED // reprise par le client
+  EXPIRED // délai dépassé
+}
+
+/// Une bouteille entamée ou non ouverte, gardée au club pour la prochaine venue du client.
+/// Le code est donné au client : c'est lui qui le saisit dans le widget pour revenir la chercher.
+model GarageItem {
+  id           String       @id @default(cuid())
+  venueId      String
+  code         String       @unique
+  ownerName    String
+  ownerEmail   String
+  ownerPhone   String
+  bottleSizeId String
+  quantity     Int          @default(1)
+  flavor       String?
+  note         String? // « entamée aux trois quarts », « bouchon marqué 14 »
+  status       GarageStatus @default(STORED)
+  expiresAt    DateTime
+  retrievedAt  DateTime?
+  createdAt    DateTime     @default(now())
+
+  venue        Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  bottleSize   BottleSize    @relation(fields: [bottleSizeId], references: [id])
+  reservations Reservation[]
+
+  @@index([venueId, status])
 }
