@@ -8,9 +8,10 @@ const STATUS: Record<string, string> = { DRAFT: "À payer", PENDING_PAYMENT: "Pa
 const MODE: Record<string, string> = { FULL: "Complet", POOL: "Cagnotte", CASH: "Espèces" };
 
 export default async function Page() {
-  const { venue } = await requireMembership();
+  const { venue, membership } = await requireMembership(["OWNER", "DIRECTOR", "MANAGER"]);
+  const mine = membership.role === "MANAGER";
   const list = await db.reservation.findMany({
-    where: { venueId: venue.id },
+    where: { venueId: venue.id, ...(mine ? { managerId: membership.id } : {}) },
     include: { table: { select: { name: true } }, event: { select: { date: true, name: true } }, manager: { include: { user: { select: { name: true } } } } },
     orderBy: { createdAt: "desc" },
     take: 200,
@@ -18,7 +19,7 @@ export default async function Page() {
   return (
     <>
       <header>
-        <h1>Réservations</h1>
+        <h1>{mine ? "Mes réservations" : "Réservations"}</h1>
         <p>Les réservations faites depuis le widget. Le paiement en ligne (acompte, cagnotte) arrive à l&apos;étape suivante du développement : pour l&apos;instant elles sont « à payer ».</p>
       </header>
       <section className="card" style={{ overflowX: "auto" }}>

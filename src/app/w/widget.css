@@ -72,3 +72,19 @@
   .w-t small { font-size: 9px; }
   .w-cta { display: none; }
 }
+
+/* Onglets carré / entrée */
+.w-modes { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; border: 1px solid var(--w-line); background: var(--w-panel); justify-self: start; }
+.w-modes a { min-height: 38px; padding: 0 16px; border-radius: 999px; display: inline-flex; align-items: center; font-weight: 700; font-size: 14px; color: var(--w-mute); text-decoration: none; }
+.w-modes a.on { background: var(--w-btn); color: var(--w-on); }
+
+/* Billetterie */
+.w-tiers { display: grid; gap: 8px; }
+.w-tier { display: grid; grid-template-columns: 74px 1fr auto; gap: 14px; align-items: center; text-align: left; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--w-line); background: var(--w-panel); color: var(--w-ink); font: inherit; cursor: pointer; }
+.w-tier .h { display: grid; text-align: center; font-size: 11px; color: var(--w-mute); text-transform: uppercase; letter-spacing: .08em; background: var(--w-panel2); border-radius: 12px; padding: 8px 4px; }
+.w-tier .h b { font-family: var(--w-head); font-size: 17px; color: var(--w-ink); text-transform: none; letter-spacing: 0; }
+.w-tier .n { font-weight: 700; }
+.w-tier .n small { display: block; color: var(--w-mute); font-weight: 500; margin-top: 2px; }
+.w-tier .p b { font-family: var(--w-head); font-size: 18px; }
+.w-tier.on { border-color: var(--w-accent); box-shadow: 0 0 0 2px var(--w-accent) inset; }
+.w-tier:disabled { opacity: .4; cursor: not-allowed; }

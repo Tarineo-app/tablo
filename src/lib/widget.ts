@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "./db";
 import { readTheme } from "./theme";
+import { SOLD, tierDeadline } from "./tickets";
 
 /** Tout ce dont le widget public a besoin, en données simples (envoyées au navigateur). */
 export async function loadWidget(slug: string) {
@@ -16,7 +17,10 @@ export async function loadWidget(slug: string) {
       where: { venueId: venue.id, isOpen: true, date: { gte: today } },
       orderBy: { date: "asc" },
       take: 12,
-      include: { reservations: { where: { status: { notIn: ["CANCELLED"] } }, select: { tableId: true } }, prices: true },
+      include: {
+        reservations: { where: { status: { notIn: ["CANCELLED"] } }, select: { tableId: true } }, prices: true,
+        ticketTiers: { where: { active: true }, orderBy: [{ sortOrder: "asc" }, { priceCents: "asc" }], include: { tickets: { where: { status: { in: [...SOLD] } }, select: { quantity: true } } } },
+      },
     }),
   ]);
   const catById = new Map(categories.map((c) => [c.id, c]));
@@ -30,6 +34,11 @@ export async function loadWidget(slug: string) {
       id: e.id, date: e.date.toISOString(), name: e.name,
       taken: [...new Set(e.reservations.map((r) => r.tableId))],
       prices: Object.fromEntries(e.prices.map((p) => [p.tableId, p.minSpendCents])),
+      tiers: e.ticketTiers.map((t) => {
+        const sold = t.tickets.reduce((a, x) => a + x.quantity, 0);
+        const dl = tierDeadline(e.date, t.untilTime);
+        return { id: t.id, name: t.name, priceCents: t.priceCents, drinks: t.drinks, untilTime: t.untilTime, left: t.quota === null ? null : Math.max(0, t.quota - sold), closed: !!dl && dl.getTime() < Date.now() };
+      }),
     })),
   };
 }

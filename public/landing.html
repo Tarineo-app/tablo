@@ -265,6 +265,47 @@ footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-c
 @media (max-width:980px){#projet .faq{grid-template-columns:1fr!important}}
 @media (max-width:560px){.nav-cta{display:none}nav{padding:12px 20px}.showgrid{grid-template-columns:1fr}footer{flex-direction:column;gap:8px;text-align:center}.floorwrap{height:240px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.live{width:min(1180px,100%);margin:34px auto 0;text-align:left}
+.livehead{display:flex;align-items:center;gap:10px;justify-content:center;font-size:14px;color:#bdbbc9;margin-bottom:14px;text-align:center}
+.rec{width:9px;height:9px;border-radius:50%;background:#ff3b5c;box-shadow:0 0 0 0 rgba(255,59,92,.6);animation:rec 1.6s infinite;flex:none}
+@keyframes rec{70%{box-shadow:0 0 0 10px rgba(255,59,92,0)}100%{box-shadow:0 0 0 0 rgba(255,59,92,0)}}
+.liveframe{position:relative;border-radius:24px;padding:1px;background:var(--holo);box-shadow:0 30px 120px rgba(169,112,255,.22),0 0 0 8px rgba(255,255,255,.03)}
+.liveframe iframe{display:block;width:100%;height:min(760px,82vh);border:0;border-radius:23px;background:#060607}
+.tune{display:flex;flex-wrap:wrap;gap:14px 26px;justify-content:center;margin-top:20px;padding:16px 18px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.02)}
+.tg{display:grid;gap:8px;justify-items:start}
+.tg>b{font:700 11px Manrope,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:#121216;color:#d9d8e2;font:700 13px Manrope,sans-serif;cursor:pointer;transition:.15s}
+.chips button i{width:16px;height:16px;border-radius:50%;display:block}
+.chips button:hover{border-color:rgba(255,255,255,.3)}
+.chips button.on{background:#fff;color:#08080a;border-color:#fff}
+.sws{display:flex;gap:7px;flex-wrap:wrap}
+.sws button{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.12);cursor:pointer;transition:.15s}
+.sws button.on{outline:2px solid #fff;outline-offset:2px}
+.fulldemo{display:block;text-align:center;margin-top:14px;color:#bdbbc9;font-size:14px;font-weight:700;text-decoration:none}
+.fulldemo:hover{color:#fff}
+.hero{padding-top:112px}
+.hero h1{font-size:clamp(40px,6.2vw,92px);margin:22px 0 18px}
+.hero .lead{margin-bottom:22px;font-size:17px}
+.hero .aud{margin-bottom:14px}
+.live{margin-top:24px}
+@media (max-width:560px){.liveframe iframe{height:640px}.tune{justify-content:flex-start}.hero{padding-top:110px}}
+
+.stairs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:end;height:300px;margin:44px 0 0;padding:0 4px;border-bottom:1px solid var(--line)}
+.st{height:var(--h);border-radius:18px 18px 0 0;background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border:1px solid var(--line);border-bottom:0;padding:16px;display:flex;flex-direction:column;gap:6px;position:relative}
+.st b{font:800 clamp(20px,2.6vw,32px) Unbounded,sans-serif}
+.st span{font-size:13px;color:#bdbbc9;line-height:1.4}
+.st i{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-top:auto}
+.st.on{background:linear-gradient(180deg,rgba(169,112,255,.35),rgba(79,216,255,.06));border-color:rgba(169,112,255,.5)}
+.st.on b{background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tix3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.tix3>div{border:1px solid var(--line);border-radius:20px;padding:22px;background:var(--card)}
+.tix3 h4{font:800 16px Unbounded,sans-serif;margin:0 0 8px}
+.tix3 p{color:var(--mute);margin:0;line-height:1.6;font-size:15px}
+@media (max-width:760px){.stairs{height:260px;gap:6px}.st{padding:10px;border-radius:12px 12px 0 0}.st span{font-size:11px}.tix3{grid-template-columns:1fr}}
+
+nav .links a,nav .nav-cta{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -312,8 +353,8 @@ footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-c
 
 <nav>
   <a href="#" class="logo"><span class="dot"></span>tablo</a>
-  <div class="links"><a href="#comment">Comment ça marche</a><a href="#pour-qui">Pour qui</a><a href="#themes">Soirées à thème</a><a href="#fonctions">Fonctions</a><a href="#shows">Shows</a><a href="#tarifs">Tarifs</a><a href="#faq">FAQ</a><a href="/connexion">Connexion</a></div>
-  <a href="/w/le-velours" class="btn main nav-cta">Essayer la démo ↗</a>
+  <div class="links"><a href="#comment">Comment ça marche</a><a href="#billetterie">Billetterie</a><a href="#themes">Soirées à thème</a><a href="#fonctions">Fonctions</a><a href="#tarifs">Tarifs</a><a href="#faq">FAQ</a><a href="/connexion">Connexion</a></div>
+  <a href="#essai" class="btn main nav-cta">Essayer maintenant</a>
 </nav>
 
 <main>
@@ -324,7 +365,28 @@ footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-c
   <h1><span class="chrome">Vendez la nuit,</span><br><span class="holo">carré par carré.</span></h1>
   <div class="aud" role="tablist" aria-label="Vous êtes"><button class="on" data-aud="0">Un club</button><button data-aud="1">Un beach club</button><button data-aud="2">Un organisateur de soirées</button></div>
   <p class="lead" id="audlead">Tablo s'installe sur votre site en une ligne. Vos clients choisissent leur carré, leurs bouteilles et leur show, puis paient entre amis. Vous, vous encaissez.</p>
-  <div class="ctas"><a href="/w/le-velours" class="btn main">Essayer la démo ↗</a><a href="#comment" class="btn out">Voir comment ça marche</a></div>
+  <div class="ctas"><a href="/inscription" class="btn main">Créer l'espace de mon club</a><a href="#comment" class="btn out">Voir comment ça marche</a></div>
+  <div class="live" id="essai">
+    <div class="livehead"><span class="rec"></span>En direct : c'est la vraie fenêtre de réservation. Choisissez un carré, des bouteilles, un show… ou juste votre entrée.</div>
+    <div class="liveframe"><iframe id="liveW" src="demo.html?embed=1" title="Démo de réservation de carré Tablo" loading="eager"></iframe></div>
+    <div class="tune" aria-label="Personnaliser la démo">
+      <div class="tg"><b>Ambiance</b><div class="chips" id="tAmb">
+        <button data-amb="tablo" class="on"><i style="background:#060607;border:1px solid #333"></i>Tablo</button>
+        <button data-amb="masque"><i style="background:radial-gradient(circle at 50% 0%,#283080,#0c0f33)"></i>Bal masqué</button>
+        <button data-amb="jungle"><i style="background:radial-gradient(circle at 30% 0%,#0f5a36,#04170e)"></i>Jungle</button>
+        <button data-amb="disco"><i style="background:radial-gradient(circle at 50% 0%,#3b1d6e,#0b0716)"></i>Disco</button>
+        <button data-amb="pool"><i style="background:linear-gradient(180deg,#ffb45f,#ff7aa8 50%,#2bd4c4)"></i>Pool party</button>
+        <button data-amb="chic"><i style="background:#f6f5f2"></i>Chic clair</button>
+      </div></div>
+      <div class="tg"><b>Couleur</b><div class="sws" id="tCol">
+        <button style="background:#ffffff" data-c="#ffffff" aria-label="Blanc"></button><button style="background:#e2b860" data-c="#e2b860" aria-label="Or"></button><button style="background:#ff5fa2" data-c="#ff5fa2" aria-label="Rose"></button><button style="background:#a970ff" data-c="#a970ff" aria-label="Violet"></button><button style="background:#4fd8ff" data-c="#4fd8ff" aria-label="Bleu"></button><button style="background:#7dffa8" data-c="#7dffa8" aria-label="Vert"></button><button style="background:#ff3b3b" data-c="#ff3b3b" aria-label="Rouge"></button>
+      </div></div>
+      <div class="tg"><b>Boutons</b><div class="chips" id="tBtn"><button data-btn="pill">Pilule</button><button data-btn="round">Arrondis</button><button data-btn="square">Carrés</button></div></div>
+      <div class="tg"><b>Vendre</b><div class="chips" id="tMode"><button data-mode="vip" class="on">Carré VIP</button><button data-mode="tix">Entrée</button></div></div>
+      <div class="tg"><b>Lieu</b><div class="chips" id="tVen"><button data-v="club" class="on">Club</button><button data-v="beach">Beach club</button></div></div>
+    </div>
+    <a class="fulldemo" href="/demo">Voir la démo complète, avec le site du club et l'espace de personnalisation →</a>
+  </div>
   <div class="floorwrap">
     <div class="floor" id="floor"></div>
     <div class="crew">
@@ -498,6 +560,27 @@ footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-c
   </div>
 </section>
 
+<!-- BILLETTERIE -->
+<section id="billetterie">
+  <div class="wrap">
+    <div class="eyebrow rv">Billetterie</div>
+    <h2 class="rv">Les entrées aussi. Plus tôt, moins cher.</h2>
+    <p class="sub rv">Vendez l'entrée dans le même lien que les carrés. Le prix monte au fil de la soirée, avec ou sans conso, et chaque tarif se ferme tout seul à l'heure prévue.</p>
+    <div class="stairs rv" aria-label="Exemple de tarifs selon l'heure d'arrivée">
+      <div class="st" style="--h:28%"><b>Gratuit</b><span>Early · avant 23 h 30</span><i>80 places</i></div>
+      <div class="st" style="--h:48%"><b>10 €</b><span>Avant 0 h 30 · sans conso</span></div>
+      <div class="st" style="--h:68%"><b>15 €</b><span>Avant 0 h 30 · 1 conso</span></div>
+      <div class="st on" style="--h:92%"><b>20 €</b><span>Toute la nuit · 1 conso</span></div>
+    </div>
+    <div class="tix3">
+      <div class="rv"><h4>Des prix selon l'heure</h4><p>Early gratuit, avant minuit, toute la nuit : vous fixez l'heure limite de chaque tarif et le nombre de places.</p></div>
+      <div class="rv"><h4>Avec ou sans conso</h4><p>Proposez l'entrée seule ou avec une ou deux consommations incluses. Le client choisit, le bar sait quoi servir.</p></div>
+      <div class="rv"><h4>Contrôle à l'entrée</h4><p>Le videur scanne le QR code avec son téléphone : nom, tarif, nombre de personnes, et une alerte si le client arrive après l'heure.</p></div>
+    </div>
+    <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a href="#essai" class="btn main" data-try-tix>Essayer la billetterie</a></div>
+  </div>
+</section>
+
 <!-- SHOWS -->
 <section id="shows">
   <div class="wrap">
@@ -521,7 +604,7 @@ footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-c
     <p class="sub rv">Sans engagement. L'argent des réservations arrive directement sur le compte de l'établissement.</p>
     <div class="prices">
       <div class="price rv"><h3>Club</h3><div class="amt">79 €<span> /mois</span></div><div class="nt">Pour lancer la réservation en ligne.</div>
-        <ul><li>Widget, lien bio et QR code</li><li>Plan interactif et photos des carrés</li><li>Bouteilles, pancartes et shows</li><li>Cagnotte, acompte et espèces</li><li>App serveur</li></ul><a href="/inscription" class="btn out">Créer mon espace</a></div>
+        <ul><li>Widget, lien bio et QR code</li><li>Plan interactif et photos des carrés</li><li>Bouteilles, pancartes et shows</li><li>Cagnotte, acompte et espèces</li><li>Billetterie : prix selon l'heure, avec ou sans conso</li><li>App serveur et contrôle entrée</li></ul><a href="/inscription" class="btn out">Créer mon espace</a></div>
       <div class="price best rv"><span class="badge">Le plus choisi</span><h3>Prestige</h3><div class="amt">149 €<span> /mois</span></div><div class="nt">Pour les clubs avec une équipe commerciale.</div>
         <ul><li>Tout le plan Club</li><li>Plan 3D et vues 360°</li><li>Managers, packages et commissions</li><li>Objectifs et tarifs par soirée</li><li>Fidélité, classement et Top 3</li><li>Personnalisation complète et shows IA</li></ul><a href="/inscription" class="btn main">Créer mon espace</a></div>
       <div class="price rv"><h3>Organisateur</h3><div class="amt" style="font-size:44px">À la soirée</div><div class="nt">Pour les soirées à thème dans des lieux loués.</div>
@@ -537,6 +620,7 @@ footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-c
     <h2 class="rv">Les questions qu'on nous pose.</h2>
     <div class="faq">
       <div class="q rv"><h4>Comment j'installe Tablo ?</h4><p>Une ligne de code à coller sur votre site (WordPress, Wix, Webflow, sur mesure). Sans site : un lien pour la bio Instagram et un QR code pour les flyers.</p></div>
+      <div class="q rv"><h4>Je peux vendre seulement des entrées ?</h4><p>Oui. La billetterie marche seule ou avec les carrés : tarifs early, avant minuit, avec ou sans conso, places limitées. Aucune commission Tablo sur les billets, comme pour les carrés (seuls les frais bancaires du paiement s'appliquent).</p></div>
       <div class="q rv"><h4>Combien de temps pour être en ligne ?</h4><p>L'onboarding vous guide en 11 étapes. Comptez une soirée pour publier un premier widget.</p></div>
       <div class="q rv"><h4>Vous prenez une commission ?</h4><p>Non. Vous payez l'abonnement, l'argent des clients arrive sur votre compte via Stripe. Seuls les frais bancaires s'appliquent.</p></div>
       <div class="q rv"><h4>Et si la cagnotte n'est pas complète ?</h4><p>L'organisateur a déjà payé l'acompte de sa catégorie. La veille au soir, le reste est débité sur sa carte, avec un rappel avant.</p></div>
@@ -570,7 +654,7 @@ rs();addEventListener('resize',rs);
 const tl=document.querySelectorAll('.tl');let bx=0;(function sp(){bx=(bx+.2)%9;tl.forEach(t=>t.setAttribute('transform',`translate(${bx} 0)`));requestAnimationFrame(sp)})();
 
 // Piste de danse
-const fl=document.getElementById('floor');for(let i=0;i<70;i++)fl.appendChild(document.createElement('i'));
+const fl=document.getElementById('floor');if(fl)for(let i=0;i<70;i++)fl.appendChild(document.createElement('i'));
 const T=[...fl.children],FC=['#ff5fa2','#a970ff','#4fd8ff','#b6ff6a','#ffd25f'];
 setInterval(()=>{T.forEach(t=>{if(Math.random()<.22){const k=FC[Math.random()*5|0];t.style.background=k;t.style.boxShadow=`0 0 24px ${k}`}else{t.style.background='';t.style.boxShadow=''}})},420);
 
@@ -628,6 +712,26 @@ tl2.addEventListener('click',()=>clearInterval(thAuto));
 // Apparition
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
 document.querySelectorAll('.rv').forEach(e=>io.observe(e));
+</script>
+
+<script>
+(()=>{const f=document.getElementById('liveW');if(!f)return;
+ const st={tablo:1,venue:'club',amb:'tablo'};
+ const send=d=>{Object.assign(st,d);f.contentWindow&&f.contentWindow.postMessage(Object.assign({tablo:1},d),'*')};
+ const on=(box,el)=>box.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));
+ const tA=document.getElementById('tAmb'),tC=document.getElementById('tCol'),tB=document.getElementById('tBtn'),tV=document.getElementById('tVen');
+ const amb=k=>{on(tA,tA.querySelector(`[data-amb="${k}"]`));tC.querySelectorAll('button').forEach(b=>b.classList.remove('on'));tB.querySelectorAll('button').forEach(b=>b.classList.remove('on'));send({amb:k})};
+ const ven=v=>{on(tV,tV.querySelector(`[data-v="${v}"]`));send({venue:v})};
+ tA.addEventListener('click',e=>{const b=e.target.closest('button');if(b)amb(b.dataset.amb)});
+ tC.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;on(tC,b);send({accent:b.dataset.c})});
+ tB.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;on(tB,b);send({btn:b.dataset.btn})});
+ const tM=document.getElementById('tMode');const mode=m=>{on(tM,tM.querySelector(`[data-mode="${m}"]`));send({mode:m})};
+ tM.addEventListener('click',e=>{const b=e.target.closest('button');if(b)mode(b.dataset.mode)});
+ document.querySelectorAll('[data-try-tix]').forEach(a=>a.addEventListener('click',()=>mode('tix')));
+ tV.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ven(b.dataset.v);amb(b.dataset.v==='beach'?'pool':'tablo')});
+ // « Vous êtes » du héros : adapte aussi la démo
+ document.querySelectorAll('.aud button').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.aud;if(k==='1'){ven('beach');amb('pool')}else{ven('club');amb(k==='2'?'masque':'tablo')}}));
+})();
 </script>
 </body>
 </html>

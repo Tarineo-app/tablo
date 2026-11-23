@@ -6,6 +6,7 @@ import { createReservation } from "@/app/actions/reserve";
 import { depositCents, priceShows } from "@/lib/pricing";
 import { themeVars } from "@/lib/theme";
 import type { WidgetData } from "@/lib/widget";
+import ModeTabs from "./ModeTabs";
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: c % 100 ? 2 : 0 });
 const day = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/Paris" });
@@ -93,6 +94,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
             {STEPS.map((s, i) => <button key={s} className={i === step ? "on" : ""} disabled={i > step} onClick={() => setStep(i)} aria-label={s}>{i + 1}<span className="lbl">. {s}</span></button>)}
           </nav>
         </div>
+        {events.some((e) => e.tiers.length > 0) && step === 0 && <ModeTabs slug={venue.slug} kind={venue.kind} current="table" managerCode={managerCode} />}
 
         {step === 0 && (
           <>

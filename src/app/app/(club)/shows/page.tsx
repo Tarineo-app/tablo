@@ -1,14 +1,14 @@
 import { addShow, deleteShow } from "@/app/actions/club";
 import ActionForm from "@/components/ActionForm";
 import ConfirmButton from "@/components/ConfirmButton";
-import { requireMembership } from "@/lib/auth";
+import { MANAGE, requireMembership } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { eur } from "@/lib/money";
 
 export const metadata = { title: "Shows · Tablo" };
 
 export default async function Page() {
-  const { venue } = await requireMembership();
+  const { venue } = await requireMembership(MANAGE);
   const [shows, cats] = await Promise.all([
     db.show.findMany({ where: { venueId: venue.id, active: true }, include: { categories: { select: { name: true } } }, orderBy: { priceCents: "asc" } }),
     db.tableCategory.findMany({ where: { venueId: venue.id }, orderBy: { sortOrder: "asc" } }),

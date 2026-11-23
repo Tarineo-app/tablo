@@ -1,7 +1,7 @@
 import { deleteCategory, saveCategory } from "@/app/actions/club";
 import ActionForm from "@/components/ActionForm";
 import ConfirmButton from "@/components/ConfirmButton";
-import { requireMembership } from "@/lib/auth";
+import { MANAGE, requireMembership } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const metadata = { title: "Catégories · Tablo" };
@@ -21,7 +21,7 @@ function Fields({ c }: { c?: { id: string; name: string; depositPct: number; inc
 }
 
 export default async function Page() {
-  const { venue } = await requireMembership();
+  const { venue } = await requireMembership(MANAGE);
   const cats = await db.tableCategory.findMany({ where: { venueId: venue.id }, orderBy: { sortOrder: "asc" }, include: { _count: { select: { tables: true } } } });
   return (
     <>

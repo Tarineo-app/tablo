@@ -1,11 +1,11 @@
-import { requireMembership } from "@/lib/auth";
+import { MANAGE, requireMembership } from "@/lib/auth";
 import { readTheme } from "@/lib/theme";
 import ThemeEditor from "./ThemeEditor";
 
 export const metadata = { title: "Ambiance · Tablo" };
 
 export default async function Page() {
-  const { venue } = await requireMembership();
+  const { venue } = await requireMembership(MANAGE);
   return (
     <>
       <header>

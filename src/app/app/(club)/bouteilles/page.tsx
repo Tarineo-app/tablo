@@ -1,7 +1,7 @@
 import { addBottle, deleteBottle, toggleBottle } from "@/app/actions/club";
 import ActionForm from "@/components/ActionForm";
 import ConfirmButton from "@/components/ConfirmButton";
-import { requireMembership } from "@/lib/auth";
+import { MANAGE, requireMembership } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { eur } from "@/lib/money";
 
@@ -10,7 +10,7 @@ export const metadata = { title: "Bouteilles · Tablo" };
 const PRESETS = [["Classique", "75 cl"], ["Magnum", "1,5 L"], ["Jéroboam", "3 L"]];
 
 export default async function Page() {
-  const { venue } = await requireMembership();
+  const { venue } = await requireMembership(MANAGE);
   const bottles = await db.bottle.findMany({ where: { venueId: venue.id }, include: { sizes: { orderBy: { priceCents: "asc" } } }, orderBy: { name: "asc" } });
   return (
     <>

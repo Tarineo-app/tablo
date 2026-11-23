@@ -1,5 +1,8 @@
 import { yesterday } from "@/lib/dates";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { isFloor } from "@/lib/roles";
+import ManagerHome from "./ManagerHome";
 import { saveVenueInfo } from "@/app/actions/club";
 import ActionForm from "@/components/ActionForm";
 import { requireMembership } from "@/lib/auth";
@@ -9,7 +12,9 @@ import { eur } from "@/lib/money";
 export const metadata = { title: "Tableau de bord · Tablo" };
 
 export default async function Dashboard() {
-  const { venue } = await requireMembership();
+  const { venue, membership } = await requireMembership();
+  if (isFloor(membership.role)) redirect("/app/service");
+  if (membership.role === "MANAGER") return <ManagerHome membershipId={membership.id} code={membership.managerCode} pct={membership.commissionPct ?? 0} slug={venue.slug} />;
   const [cats, tables, bottles, shows, events, resa] = await Promise.all([
     db.tableCategory.count({ where: { venueId: venue.id } }),
     db.venueTable.count({ where: { venueId: venue.id, active: true } }),

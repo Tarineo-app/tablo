@@ -64,7 +64,20 @@ async function main() {
     const d = new Date(next);
     d.setUTCDate(d.getUTCDate() + ((weekday - d.getUTCDay() + 7) % 7 || 7) + (name === "Nuit Vénitienne" ? 7 : 0));
     d.setUTCHours(12, 0, 0, 0);
-    await db.event.create({ data: { venueId: venue.id, date: d, name } });
+    await db.event.create({
+      data: {
+        venueId: venue.id, date: d, name,
+        // Billetterie : le prix monte avec l'heure d'arrivée.
+        ticketTiers: {
+          create: [
+            { name: "Early", priceCents: 0, drinks: 0, untilTime: "23:30", quota: 80, sortOrder: 0 },
+            { name: "Avant minuit", priceCents: 1000, drinks: 0, untilTime: "00:30", sortOrder: 1 },
+            { name: "Avant minuit + conso", priceCents: 1500, drinks: 1, untilTime: "00:30", sortOrder: 2 },
+            { name: "Entrée + conso", priceCents: 2000, drinks: 1, untilTime: null, sortOrder: 3 },
+          ],
+        },
+      },
+    });
   }
   console.log("Le Velours créé. Connexion : demo@tablo.club / tablo-demo · Widget : /w/le-velours");
 }

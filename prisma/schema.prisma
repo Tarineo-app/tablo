@@ -41,6 +41,13 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum TicketStatus {
+  PENDING // en attente de paiement
+  PAID
+  CHECKED_IN // entré dans le club
+  CANCELLED
+}
+
 enum PaymentStatus {
   PENDING
   SUCCEEDED
@@ -82,6 +89,7 @@ model Venue {
   shows        Show[]
   events       Event[]
   reservations Reservation[]
+  tickets      Ticket[]
   orders       Order[]
 }
 
@@ -98,6 +106,7 @@ model Membership {
   venue        Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
   reservations Reservation[] @relation("ManagerReservations")
   ordersTaken  Order[]       @relation("ServerOrders")
+  tickets      Ticket[]      @relation("ManagerTickets")
 
   @@unique([userId, venueId])
 }
@@ -116,7 +125,7 @@ model TableCategory {
 }
 
 model VenueTable {
-  id            String         @id @default(cuid())
+  id            String            @id @default(cuid())
   venueId       String
   categoryId    String
   name          String // « Impérial », « S1 »
@@ -128,22 +137,24 @@ model VenueTable {
   y             Float
   w             Float
   h             Float
-  active        Boolean        @default(true)
-  venue         Venue          @relation(fields: [venueId], references: [id], onDelete: Cascade)
-  category      TableCategory  @relation(fields: [categoryId], references: [id])
+  active        Boolean           @default(true)
+  venue         Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  category      TableCategory     @relation(fields: [categoryId], references: [id])
   eventPrices   EventTablePrice[]
   reservations  Reservation[]
 }
 
 model Event {
-  id        String            @id @default(cuid())
-  venueId   String
-  date      DateTime // date de la soirée (Europe/Paris)
-  name      String?
-  isOpen    Boolean           @default(true)
-  venue     Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
-  prices    EventTablePrice[]
+  id           String            @id @default(cuid())
+  venueId      String
+  date         DateTime // date de la soirée (Europe/Paris)
+  name         String?
+  isOpen       Boolean           @default(true)
+  venue        Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  prices       EventTablePrice[]
   reservations Reservation[]
+  ticketTiers  TicketTier[]
+  tickets      Ticket[]
 
   @@unique([venueId, date])
 }
@@ -183,41 +194,41 @@ model BottleSize {
 }
 
 model Show {
-  id          String          @id @default(cuid())
-  venueId     String
-  name        String
-  description String?
-  priceCents  Int
-  mediaUrl    String? // photo ou vidéo d'aperçu
-  isSign      Boolean         @default(false) // la pancarte du club
-  active      Boolean         @default(true)
-  venue       Venue           @relation(fields: [venueId], references: [id], onDelete: Cascade)
-  categories  TableCategory[] @relation("CategoryShows")
+  id               String            @id @default(cuid())
+  venueId          String
+  name             String
+  description      String?
+  priceCents       Int
+  mediaUrl         String? // photo ou vidéo d'aperçu
+  isSign           Boolean           @default(false) // la pancarte du club
+  active           Boolean           @default(true)
+  venue            Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  categories       TableCategory[]   @relation("CategoryShows")
   reservationShows ReservationShow[]
 }
 
 model Reservation {
-  id             String            @id @default(cuid())
-  venueId        String
-  eventId        String
-  tableId        String
-  managerId      String? // Membership du manager commercial
-  status         ReservationStatus @default(DRAFT)
-  payMode        PayMode
-  guests         Int
-  organizerName  String
-  organizerEmail String
-  organizerPhone String
-  signText       String?
-  totalCents     Int               @default(0)
-  depositCents   Int               @default(0)
-  paidCents      Int               @default(0)
-  poolToken      String?           @unique // lien de cagnotte /c/[token]
-  poolDeadline   DateTime?
+  id                    String            @id @default(cuid())
+  venueId               String
+  eventId               String
+  tableId               String
+  managerId             String? // Membership du manager commercial
+  status                ReservationStatus @default(DRAFT)
+  payMode               PayMode
+  guests                Int
+  organizerName         String
+  organizerEmail        String
+  organizerPhone        String
+  signText              String?
+  totalCents            Int               @default(0)
+  depositCents          Int               @default(0)
+  paidCents             Int               @default(0)
+  poolToken             String?           @unique // lien de cagnotte /c/[token]
+  poolDeadline          DateTime?
   stripeCustomerId      String? // client Stripe de l'organisateur (sur le compte connecté)
   stripePaymentMethodId String? // carte enregistrée en garantie
-  qrToken        String            @unique @default(cuid())
-  createdAt      DateTime          @default(now())
+  qrToken               String            @unique @default(cuid())
+  createdAt             DateTime          @default(now())
 
   venue         Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
   event         Event             @relation(fields: [eventId], references: [id])
@@ -281,4 +292,45 @@ model OrderItem {
   unitCents    Int
   order        Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
   bottleSize   BottleSize @relation(fields: [bottleSizeId], references: [id])
+}
+
+/// Billetterie : un tarif d'entrée pour une soirée (ex. « Avant minuit + 1 conso »).
+model TicketTier {
+  id         String   @id @default(cuid())
+  eventId    String
+  name       String
+  priceCents Int
+  drinks     Int      @default(0) // consommations incluses
+  untilTime  String? // "00:30" = arrivée avant cette heure ; null = toute la nuit
+  quota      Int? // places maximum ; null = sans limite
+  sortOrder  Int      @default(0)
+  active     Boolean  @default(true)
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tickets    Ticket[]
+}
+
+/// Achat d'entrées : une commande, un QR code, N personnes.
+model Ticket {
+  id          String       @id @default(cuid())
+  venueId     String
+  eventId     String
+  tierId      String
+  managerId   String?
+  status      TicketStatus @default(PENDING)
+  quantity    Int
+  totalCents  Int
+  buyerName   String
+  buyerEmail  String
+  buyerPhone  String?
+  qrToken     String       @unique
+  checkedIn   Int          @default(0) // personnes déjà entrées
+  checkedInAt DateTime?
+  createdAt   DateTime     @default(now())
+
+  venue   Venue       @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  event   Event       @relation(fields: [eventId], references: [id])
+  tier    TicketTier  @relation(fields: [tierId], references: [id])
+  manager Membership? @relation("ManagerTickets", fields: [managerId], references: [id])
+
+  @@index([venueId, eventId])
 }

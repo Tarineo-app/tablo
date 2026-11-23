@@ -1,12 +1,12 @@
 import { headers } from "next/headers";
 import QRCode from "qrcode";
-import { requireMembership } from "@/lib/auth";
+import { MANAGE, requireMembership } from "@/lib/auth";
 import CopyBox from "./CopyBox";
 
 export const metadata = { title: "Intégrer · Tablo" };
 
 export default async function Page() {
-  const { venue } = await requireMembership();
+  const { venue } = await requireMembership(MANAGE);
   const h = await headers();
   const origin = process.env.NEXT_PUBLIC_APP_URL || `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`;
   const link = `${origin}/w/${venue.slug}`;
@@ -27,6 +27,9 @@ export default async function Page() {
         <section className="card" style={{ display: "grid", gap: 10 }}>
           <h2 style={{ fontSize: 17 }}>2. Lien pour la bio Instagram</h2>
           <CopyBox value={link} />
+          <p className="mute" style={{ margin: 0 }}>Lien direct vers la billetterie (entrées) :</p>
+          <CopyBox value={`${link}/billets`} />
+          <p className="mute" style={{ margin: 0, fontSize: 13 }}>Sur votre site, un bouton qui ouvre directement les entrées : ajoutez <code>data-tablo-open=&quot;billets&quot;</code> à n&apos;importe quel lien ou bouton.</p>
         </section>
         <section className="card row" style={{ alignItems: "flex-start", gap: 24 }}>
           <img src={qr} alt="QR code de réservation" width={180} height={180} style={{ borderRadius: 12, background: "#fff" }} />
