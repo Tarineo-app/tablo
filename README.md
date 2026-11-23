@@ -46,10 +46,47 @@ Sans ces clés, tout marche avec email et mot de passe ; le bouton Google n'appa
 
 ## Mettre en ligne (Vercel)
 
-1. Pousse le projet sur un dépôt GitHub privé.
-2. Sur Vercel : *Add New > Project*, choisis le dépôt.
-3. Dans *Settings > Environment Variables*, ajoute `DATABASE_URL`, `DIRECT_URL`, `SESSION_SECRET`, `NEXT_PUBLIC_APP_URL` (l'adresse Vercel ou ton domaine), et si tu veux la connexion Google, `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET`.
-4. Le script `vercel-build` génère Prisma, applique les migrations puis construit le site.
+1. **Le dépôt GitHub.** Sur [github.com/new](https://github.com/new) : nom `tablo`, **Private**, aucune case à cocher (ni README, ni .gitignore, ni licence). Créer.
+2. **Sur Vercel**, *Add New > Project*, choisir le dépôt `tablo`. Région : **Paris (cdg1)**.
+3. **Variables d'environnement** (*Settings > Environment Variables*), pour Production, Preview et Development :
+
+   | Variable | Où la trouver |
+   | --- | --- |
+   | `DATABASE_URL` | Supabase > Database > Connection string, « Transaction pooler » (port 6543) |
+   | `DIRECT_URL` | la même, connexion directe (port 5432) |
+   | `SESSION_SECRET` | `openssl rand -base64 32` — **une valeur neuve, différente de celle du Mac** |
+   | `NEXT_PUBLIC_APP_URL` | l'adresse Vercel, sans `/` final |
+   | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | facultatif, pour le bouton Google |
+
+4. Le script `vercel-build` génère Prisma, applique les migrations puis construit le site. Rien à lancer à la main.
+5. Dans Google Cloud, ajouter l'URI de redirection `https://<adresse-vercel>/auth/google/callback`.
+
+## Travailler à deux
+
+**Sur GitHub** : *Settings > Collaborators > Add people*, mettre le pseudo GitHub de ton pote. Il reçoit une invitation par email.
+
+**Sur Vercel** : il crée un compte Vercel, puis depuis le projet *Settings > Members* (ou l'équipe, si tu en crées une) tu l'ajoutes. Il voit alors les déploiements et les logs.
+
+**Chez lui, pour développer** :
+```
+git clone https://github.com/<ton-pseudo>/tablo.git ~/dev/tablo
+cd ~/dev/tablo
+npm install
+cp .env.example .env.local && cp .env.example .env
+```
+Il remplit ses variables (il peut utiliser **sa propre** base Supabase gratuite pour ne pas toucher aux vraies données), puis :
+```
+npx prisma migrate deploy && npm run db:seed && npm run dev
+```
+
+**La règle de base** : jamais de `.env` dans Git, jamais de mot de passe collé dans un chat ou un message. Chacun a ses propres clés. Le `.gitignore` bloque déjà tous les `.env*`.
+
+**Pour travailler sans se marcher dessus** : une branche par sujet.
+```
+git checkout -b stripe
+git push -u origin stripe
+```
+Vercel construit automatiquement un aperçu de chaque branche, avec sa propre adresse : vous pouvez tester avant de fusionner dans `main`.
 
 ## Continuer avec Claude Code
 
