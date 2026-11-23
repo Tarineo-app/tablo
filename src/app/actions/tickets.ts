@@ -194,3 +194,107 @@ export async function admit(kind: "ticket" | "table", id: string, count: number)
   revalidatePath("/app/entree");
   return { ok: "Entrée validée." };
 }
+
+/* ---------- Revente : donner son billet, ou le rendre au club ---------- */
+
+export type ResaleState = { error?: string; ok?: string; link?: string } | undefined;
+
+const Transfer = z.object({
+  token: z.string().min(4).max(20),
+  name: z.string().trim().min(2, "Indiquez le nom de la personne.").max(80),
+  email: z.string().trim().toLowerCase().email("Email invalide."),
+  phone: z.string().trim().max(30).optional(),
+});
+
+/**
+ * Donner son billet à quelqu'un : l'ancien code devient invalide, un nouveau billet est créé
+ * au nom du nouveau venu. Aucun argent ne passe par Tablo, les deux se règlent entre eux.
+ */
+export async function transferTicket(_: ResaleState, form: FormData): Promise<ResaleState> {
+  const p = Transfer.safeParse(Object.fromEntries(form));
+  if (!p.success) return { error: p.error.issues[0].message };
+  const d = p.data;
+  const tooMany = await rateLimit("transfert", d.token, 5, 60 * 60e3);
+  if (tooMany) return { error: tooMany };
+
+  const t = await db.ticket.findUnique({ where: { qrToken: d.token.toUpperCase() }, include: { venue: true, event: true } });
+  if (!t) return { error: "Billet introuvable." };
+  if (!t.venue.ticketTransfer) return { error: "Ce club ne permet pas de donner son billet." };
+  if (t.status === "TRANSFERRED") return { error: "Ce billet a déjà été donné." };
+  if (t.status === "RETURNED") return { error: "Ce billet a été rendu au club." };
+  if (t.status === "CANCELLED") return { error: "Ce billet est annulé." };
+  if (t.checkedIn > 0) return { error: "Une partie du groupe est déjà entrée : voyez avec le club." };
+  if (t.event.date.getTime() < Date.now() - 12 * 3600e3) return { error: "Cette soirée est passée." };
+
+  const token = newCode();
+  await db.$transaction(async (tx) => {
+    const still = await tx.ticket.updateMany({ where: { id: t.id, status: { in: ["PENDING", "PAID"] } }, data: { status: "TRANSFERRED" } });
+    if (still.count === 0) throw new Error("GONE");
+    await tx.ticket.create({
+      data: {
+        venueId: t.venueId, eventId: t.eventId, tierId: t.tierId, managerId: t.managerId,
+        status: t.status, quantity: t.quantity, totalCents: t.totalCents,
+        buyerName: d.name, buyerEmail: d.email, buyerPhone: d.phone || null,
+        qrToken: token, fromTicketId: t.id,
+      },
+    });
+  }).catch((e) => { if (!(e instanceof Error && e.message === "GONE")) throw e; });
+
+  const fresh = await db.ticket.findUnique({ where: { qrToken: token } });
+  if (!fresh) return { error: "Ce billet n'est plus transférable." };
+  return { ok: `Le billet est maintenant au nom de ${d.name}. Envoyez-lui ce lien :`, link: `/w/${t.venue.slug}/b/${token}` };
+}
+
+/** Rendre son billet au club, quand le club le permet et que le délai est respecté. */
+export async function returnTicket(token: string): Promise<ResaleState> {
+  const tooMany = await rateLimit("reprise", token, 5, 60 * 60e3);
+  if (tooMany) return { error: tooMany };
+  const t = await db.ticket.findUnique({ where: { qrToken: token.toUpperCase() }, include: { venue: true, event: true } });
+  if (!t) return { error: "Billet introuvable." };
+  if (!t.venue.ticketBuyback) return { error: "Ce club ne reprend pas les billets." };
+  if (!["PENDING", "PAID"].includes(t.status)) return { error: "Ce billet n'est plus valable." };
+  const limit = t.event.date.getTime() - t.venue.ticketBuybackHours * 3600e3;
+  if (Date.now() > limit)
+    return { error: `Le club reprend les billets jusqu'à ${t.venue.ticketBuybackHours} h avant la soirée. Le délai est passé.` };
+
+  const refund = t.status === "PAID" ? Math.round((t.totalCents * Math.min(100, t.venue.ticketBuybackPct)) / 100) : 0;
+  const done = await db.ticket.updateMany({ where: { id: t.id, status: { in: ["PENDING", "PAID"] } }, data: { status: "RETURNED", returnedAt: new Date(), refundCents: refund } });
+  if (done.count === 0) return { error: "Ce billet vient de changer d'état." };
+  return {
+    ok: refund
+      ? `Billet rendu. Le club vous rembourse ${(refund / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}, votre place est remise en vente.`
+      : "Billet rendu. Votre place est remise en vente.",
+  };
+}
+
+/** Côté club : marquer le remboursement comme fait. */
+export async function markRefunded(id: string) {
+  const { venue } = await requireMembership(MANAGE);
+  await db.ticket.updateMany({ where: { id, venueId: venue.id, status: "RETURNED" }, data: { refundCents: 0 } });
+  revalidatePath("/app/ventes");
+  return { ok: "Remboursement noté." };
+}
+
+const Resale = z.object({
+  ticketTransfer: z.string().optional(),
+  ticketBuyback: z.string().optional(),
+  ticketBuybackHours: z.coerce.number().int().min(0).max(720),
+  ticketBuybackPct: z.coerce.number().int().min(0).max(100),
+});
+
+export async function saveResaleSettings(_: ActionState, form: FormData): Promise<ActionState> {
+  const { venue } = await requireMembership(MANAGE);
+  const p = Resale.safeParse(Object.fromEntries(form));
+  if (!p.success) return { error: p.error.issues[0].message };
+  await db.venue.update({
+    where: { id: venue.id },
+    data: {
+      ticketTransfer: p.data.ticketTransfer === "on",
+      ticketBuyback: p.data.ticketBuyback === "on",
+      ticketBuybackHours: p.data.ticketBuybackHours,
+      ticketBuybackPct: p.data.ticketBuybackPct,
+    },
+  });
+  revalidatePath("/app/soirees");
+  return { ok: "Réglages enregistrés." };
+}

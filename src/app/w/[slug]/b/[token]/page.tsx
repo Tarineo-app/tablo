@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { eur } from "@/lib/money";
 import { readTheme, themeVars } from "@/lib/theme";
 import { tierLabel } from "@/lib/tickets";
+import Resale from "./Resale";
 import "../../../widget.css";
 
 type Props = { params: Promise<{ slug: string; token: string }> };
@@ -32,6 +33,11 @@ export default async function Page({ params }: Props) {
           <div className="w-line"><span>{t.quantity} × {t.tier.name}</span><b>{eur(t.totalCents)}</b></div>
           <div className="w-line"><span>Conditions</span><b>{tierLabel(t.tier)}</b></div>
         </div>
+        {["PENDING", "PAID"].includes(t.status) && (
+          <Resale token={token} transfer={t.venue.ticketTransfer} buyback={t.venue.ticketBuyback} hours={t.venue.ticketBuybackHours} pct={t.venue.ticketBuybackPct} />
+        )}
+        {t.status === "TRANSFERRED" && <div className="w-card w-rules">Ce billet a été donné à quelqu&apos;un d&apos;autre : ce code ne fonctionne plus.</div>}
+        {t.status === "RETURNED" && <div className="w-card w-rules">Ce billet a été rendu au club. La place est remise en vente.</div>}
         {t.status === "PENDING" && <div className="w-card w-rules">Le paiement en ligne arrive très bientôt. En attendant, votre place est notée et le club vous confirme le règlement.</div>}
         <p className="w-legal">Passé l&apos;heure indiquée, le billet n&apos;est plus valable à ce tarif. Entrée sous réserve de l&apos;accord de la sécurité. L&apos;abus d&apos;alcool est dangereux pour la santé.</p>
       </section>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { saveResaleSettings } from "@/app/actions/tickets";
 import { yesterday } from "@/lib/dates";
 import { addEvent, deleteEvent, toggleEvent } from "@/app/actions/club";
 import ActionForm from "@/components/ActionForm";
@@ -18,6 +19,21 @@ export default async function Page() {
         <h1>Soirées</h1>
         <p>Les dates où vos clients peuvent réserver un carré ou acheter leur entrée. Fermez une soirée pour arrêter les ventes sans la supprimer.</p>
       </header>
+      <section className="card" style={{ marginBottom: 18 }}>
+        <h2 style={{ fontSize: 17, marginBottom: 6 }}>Si un client ne peut plus venir</h2>
+        <p className="mute" style={{ marginTop: 0, marginBottom: 14, fontSize: 14 }}>
+          Donner son billet ne vous coûte rien : le billet change de nom, les deux se règlent entre eux. La reprise, elle, vous engage à rembourser.
+        </p>
+        <ActionForm action={saveResaleSettings} submit="Enregistrer">
+          <label className="row" style={{ gap: 8, fontSize: 14 }}><input type="checkbox" name="ticketTransfer" defaultChecked={venue.ticketTransfer} /> Un client peut donner son billet à quelqu&apos;un d&apos;autre</label>
+          <label className="row" style={{ gap: 8, fontSize: 14 }}><input type="checkbox" name="ticketBuyback" defaultChecked={venue.ticketBuyback} /> Je reprends les billets et je rembourse</label>
+          <div className="grid2">
+            <label className="field">Jusqu&apos;à combien d&apos;heures avant la soirée<input className="input" name="ticketBuybackHours" inputMode="numeric" defaultValue={venue.ticketBuybackHours} /></label>
+            <label className="field">Part remboursée (%)<input className="input" name="ticketBuybackPct" inputMode="numeric" defaultValue={venue.ticketBuybackPct} /></label>
+          </div>
+        </ActionForm>
+      </section>
+
       <section className="card" style={{ marginBottom: 18 }}>
         <table className="list">
           <thead><tr><th>Date</th><th>Nom de la soirée</th><th>Carrés</th><th>Billetterie</th><th>État</th><th /></tr></thead>

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { markRefunded } from "@/app/actions/tickets";
+import ConfirmButton from "@/components/ConfirmButton";
 import { requireMembership } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { eur } from "@/lib/money";
@@ -6,7 +8,7 @@ import { eur } from "@/lib/money";
 export const metadata = { title: "Ventes · Tablo" };
 
 const STATUS: Record<string, string> = { DRAFT: "À payer", PENDING_PAYMENT: "Paiement en cours", CONFIRMED: "Acompte payé", FULLY_PAID: "Payée", CHECKED_IN: "Arrivée", COMPLETED: "Terminée", CANCELLED: "Annulée", NO_SHOW: "Absente", PAYMENT_ISSUE: "Problème de paiement" };
-const TSTATUS: Record<string, string> = { PENDING: "À payer", PAID: "Payé", CHECKED_IN: "Entré", CANCELLED: "Annulé" };
+const TSTATUS: Record<string, string> = { PENDING: "À payer", PAID: "Payé", CHECKED_IN: "Entré", TRANSFERRED: "Donné", RETURNED: "Rendu", CANCELLED: "Annulé" };
 const MODE: Record<string, string> = { FULL: "Complet", POOL: "Cagnotte", CASH: "Espèces" };
 const jour = (d: Date) => d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", timeZone: "Europe/Paris" });
 
@@ -31,7 +33,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ t
   ]);
 
   const caResa = resas.filter((r) => r.status !== "CANCELLED").reduce((a, r) => a + r.totalCents, 0);
-  const caBillets = tickets.filter((t) => t.status !== "CANCELLED").reduce((a, t) => a + t.totalCents, 0);
+  const caBillets = tickets.filter((t) => ["PENDING", "PAID", "CHECKED_IN"].includes(t.status)).reduce((a, t) => a + t.totalCents, 0);
+  const aRembourser = tickets.filter((t) => t.status === "RETURNED" && t.refundCents > 0);
 
   return (
     <>
@@ -45,6 +48,24 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ t
         <div className="card"><span className="mute">Entrées</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{tickets.reduce((a, t) => a + t.quantity, 0)}</div><span className="mute" style={{ fontSize: 12 }}>{eur(caBillets)}</span></div>
         <div className="card"><span className="mute">Total</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }} className="holo">{eur(caResa + caBillets)}</div></div>
       </div>
+
+      {aRembourser.length > 0 && !mine && (
+        <section className="card" style={{ marginBottom: 18, borderColor: "rgba(255,176,32,.5)" }}>
+          <h2 style={{ fontSize: 17, marginBottom: 10 }}>Billets rendus : {aRembourser.length} remboursement(s) à faire</h2>
+          <table className="list">
+            <tbody>
+              {aRembourser.map((t) => (
+                <tr key={t.id}>
+                  <td>{t.buyerName}<div className="mute" style={{ fontSize: 12 }}>{t.buyerEmail}</div></td>
+                  <td>{jour(t.event.date)} · {t.tier.name}</td>
+                  <td><b>{eur(t.refundCents)}</b></td>
+                  <td><ConfirmButton className="btn btn-out" label="Remboursé" run={markRefunded.bind(null, t.id)} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
 
       <div className="row" style={{ gap: 8, marginBottom: 16 }}>
         <Link className={`btn ${billets ? "btn-out" : "btn-main"}`} href="/app/ventes">Carrés</Link>

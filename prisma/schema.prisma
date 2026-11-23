@@ -45,6 +45,8 @@ enum TicketStatus {
   PENDING // en attente de paiement
   PAID
   CHECKED_IN // entré dans le club
+  TRANSFERRED // donné à quelqu'un d'autre : remplacé par un nouveau billet
+  RETURNED // repris par le club, la place est remise en vente
   CANCELLED
 }
 
@@ -65,27 +67,32 @@ model User {
 }
 
 model Venue {
-  id               String    @id @default(cuid())
-  slug             String    @unique
-  name             String
-  city             String?
-  kind             String    @default("club") // club | beach
-  logoUrl          String?
-  theme            Json? // { color, background, font, buttonRadius }
-  rules            String? // âge minimum, tenue…
-  cancelPolicy     String?
-  planImageUrl     String?
-  payModes         PayMode[] @default([FULL, POOL, CASH])
-  poolDeadlineHour Int       @default(18) // la veille, heure locale
-  stripeAccountId  String? // Stripe Connect Express
-  stripeCustomerId String? // abonnement Tablo
-  plan             String? // CLUB | PRESTIGE
+  id                 String    @id @default(cuid())
+  slug               String    @unique
+  name               String
+  city               String?
+  kind               String    @default("club") // club | beach
+  logoUrl            String?
+  theme              Json? // { color, background, font, buttonRadius }
+  rules              String? // âge minimum, tenue…
+  cancelPolicy       String?
+  planImageUrl       String?
+  payModes           PayMode[] @default([FULL, POOL, CASH])
+  poolDeadlineHour   Int       @default(18) // la veille, heure locale
+  stripeAccountId    String? // Stripe Connect Express
+  stripeCustomerId   String? // abonnement Tablo
+  plan               String? // CLUB | PRESTIGE
   /// Garage : les bouteilles non terminées sont gardées au club pour la prochaine fois.
-  garageEnabled    Boolean   @default(false)
-  garageMinBottles Int       @default(1) // bouteilles à racheter pour venir la rechercher
-  garageDays       Int       @default(60) // durée de conservation
-  garageKeepsMin   Boolean   @default(false) // true = le minimum du carré s'applique quand même
-  createdAt        DateTime  @default(now())
+  garageEnabled      Boolean   @default(false)
+  garageMinBottles   Int       @default(1) // bouteilles à racheter pour venir la rechercher
+  garageDays         Int       @default(60) // durée de conservation
+  garageKeepsMin     Boolean   @default(false) // true = le minimum du carré s'applique quand même
+  /// Revente des billets : transfert à un proche, et reprise par le club.
+  ticketTransfer     Boolean   @default(true)
+  ticketBuyback      Boolean   @default(false)
+  ticketBuybackHours Int       @default(24) // jusqu'à X heures avant la soirée
+  ticketBuybackPct   Int       @default(100) // part remboursée
+  createdAt          DateTime  @default(now())
 
   memberships  Membership[]
   categories   TableCategory[]
@@ -329,26 +336,32 @@ model TicketTier {
 
 /// Achat d'entrées : une commande, un QR code, N personnes.
 model Ticket {
-  id          String       @id @default(cuid())
-  venueId     String
-  eventId     String
-  tierId      String
-  managerId   String?
-  status      TicketStatus @default(PENDING)
-  quantity    Int
-  totalCents  Int
-  buyerName   String
-  buyerEmail  String
-  buyerPhone  String?
-  qrToken     String       @unique
-  checkedIn   Int          @default(0) // personnes déjà entrées
-  checkedInAt DateTime?
-  createdAt   DateTime     @default(now())
+  id           String       @id @default(cuid())
+  venueId      String
+  eventId      String
+  tierId       String
+  managerId    String?
+  status       TicketStatus @default(PENDING)
+  quantity     Int
+  totalCents   Int
+  buyerName    String
+  buyerEmail   String
+  buyerPhone   String?
+  qrToken      String       @unique
+  checkedIn    Int          @default(0) // personnes déjà entrées
+  checkedInAt  DateTime?
+  /// Billet d'origine, quand celui-ci vient d'un transfert.
+  fromTicketId String?
+  returnedAt   DateTime?
+  refundCents  Int          @default(0) // à rembourser par le club quand il reprend le billet
+  createdAt    DateTime     @default(now())
 
   venue   Venue       @relation(fields: [venueId], references: [id], onDelete: Cascade)
   event   Event       @relation(fields: [eventId], references: [id])
   tier    TicketTier  @relation(fields: [tierId], references: [id])
   manager Membership? @relation("ManagerTickets", fields: [managerId], references: [id])
+  from    Ticket?     @relation("TicketTransfer", fields: [fromTicketId], references: [id])
+  to      Ticket[]    @relation("TicketTransfer")
 
   @@index([venueId, eventId])
 }
