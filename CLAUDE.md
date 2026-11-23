@@ -81,6 +81,16 @@ Fait :
 emails Resend (invitations et confirmations), photos sur Supabase Storage (aujourd'hui en data URL).
 Les réservations et les billets payants restent en « à payer » tant que Stripe n'est pas branché.
 
+### Sécurité (audit du 23/11/2026, voir le doc « Tablo — audit de sécurité » du projet)
+- Les cookies de session portent `purpose: "session"` ; `readSession()` refuse tout autre jeton signé avec `SESSION_SECRET`
+  (sinon un lien d'invitation pouvait servir de session). **Tout nouveau jeton signé avec cette clé doit porter son propre `purpose`.**
+- `src/lib/ratelimit.ts` : limiteur en mémoire sur la connexion, l'inscription, la réservation, l'achat de billets et la porte.
+  À remplacer par un compteur partagé quand le trafic montera.
+- En-têtes dans `next.config.ts` : `frame-ancestors 'none'` partout **sauf** `/w/*` (le widget vit dans l'iframe des clubs) et la démo.
+- `package.json` contient un `overrides` sur `effect` (vulnérabilité ReDoS tirée par l'outil Prisma). `npm audit` doit rester à 0.
+- Toute requête métier doit filtrer par `venue.id` après `requireMembership()`. Toute mise à jour par identifiant
+  doit être précédée d'une lecture filtrée, ou utiliser `updateMany`/`deleteMany` avec `venueId`.
+
 ### Migrations
 - `20261123115825_init`
 - `20261123130000_billetterie` (TicketTier, Ticket, enum TicketStatus) — à appliquer avec `npx prisma migrate deploy`.
