@@ -69,12 +69,23 @@ Fait :
   - Réglages : ambiance, catégories, plan 2D, bouteilles, shows, soirées et billetterie, intégration, informations du club (`/app/reglages`).
 - **Widget public** `/w/[slug]` : soirée → carré → bouteilles → pancarte et shows → coordonnées et paiement → confirmation avec QR.
   Montants recalculés côté serveur (`src/app/actions/reserve.ts`), shows offerts dans `src/lib/pricing.ts`.
+- **Options liées aux bouteilles** (« couronne de 3 Moët ») : un `Show` avec `minBottles > 0` (et `bottleId` facultatif)
+  apparaît **à l'étape des bouteilles** et se débloque au nombre de bouteilles commandées (`bottleOptionUnlocked` dans `src/lib/pricing.ts`).
+  Il suit les mêmes règles d'offert que les autres shows, et n'apparaît plus à l'étape 3.
+- **Garage** : bouteille entamée gardée au club (`GarageItem`, code à 6 caractères donné au client).
+  Réglages sur `/app/garage` : activé ou non, bouteilles à racheter, durée, et si le minimum du carré s'applique quand même.
+  Côté client, bloc dans l'étape des bouteilles ; la bouteille part dans l'envoi n°1 avec `OrderItem.fromGarage`.
+- **Revente des billets** : donner son billet à un proche (nouveau code, l'ancien passe en `TRANSFERRED`)
+  ou le rendre au club s'il l'accepte (`RETURNED`, place remise en vente, remboursement listé dans `/app/ventes`).
+  Réglages sur `/app/soirees`.
 - **Billetterie** `/w/[slug]/billets` : tarifs par soirée avec **heure limite d'arrivée** et consos incluses (`src/lib/tickets.ts`, `src/app/actions/tickets.ts`),
   quota par tarif, billet `/w/[slug]/b/[token]` avec QR et code à 8 caractères. Côté club : `/app/soirees/[id]`.
 - `/embed.js` : panneau latéral (ou fenêtre avec `data-mode="modal"`), `data-page="billets"`, `data-tablo-open="billets"`, aux couleurs du club.
-- **Landing** `public/landing.html` servie sur « / » : démo jouable dans le haut de page (iframe `public/demo.html?embed=1`),
-  visite guidée en 5 chapitres pilotée par `postMessage` (`tour(n)` dans demo.html), personnalisation en direct (ambiance, couleur, boutons, lieu, carré/entrée),
-  polaroïds horodatés, maquette de l'espace club, problèmes résolus, calculateur de gain, billetterie, tarifs, FAQ.
+- **Landing** `public/landing.html` servie sur « / » (version 3, courte et tournée vers la conversion) :
+  promesse + un seul appel à l'action, démo jouable dans le haut de page (iframe `public/demo.html?embed=1`)
+  avec visite guidée en 5 chapitres pilotée par `postMessage` (`tour(n)` dans demo.html) et changement d'ambiance en direct,
+  trois bénéfices, maquette de l'espace club en 3 onglets, tarifs avec calcul rapide, FAQ, appel final.
+  **Règle : ne pas la ré-alourdir.** Toute nouvelle fonction entre dans la bande « aussi inclus » ou dans la FAQ, pas dans une section de plus.
 - Données de démo : `npm run db:seed` crée « Le Velours » (demo@tablo.club / tablo-demo) avec 4 tarifs d'entrée par soirée.
 
 À faire ensuite : **étape 4 (Stripe Connect : acompte et paiement complet)**, puis cagnotte `/c/[token]`, abonnement Stripe Billing,
@@ -93,4 +104,8 @@ Les réservations et les billets payants restent en « à payer » tant que Stri
 
 ### Migrations
 - `20261123115825_init`
-- `20261123130000_billetterie` (TicketTier, Ticket, enum TicketStatus) — à appliquer avec `npx prisma migrate deploy`.
+- `20261123130000_billetterie` (TicketTier, Ticket, enum TicketStatus)
+- `20261123160000_garage_et_couronnes` (GarageItem, Show.minBottles/bottleId, réglages garage sur Venue, OrderItem.fromGarage)
+- `20261123170000_revente_billets` (TicketStatus TRANSFERRED/RETURNED, réglages de revente sur Venue, Ticket.fromTicketId)
+
+À appliquer avec `npx prisma migrate deploy`.
