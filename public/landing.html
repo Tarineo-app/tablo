@@ -25,7 +25,7 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:30;width
   padding:10px 10px 10px 24px;border-radius:999px;background:rgba(18,18,22,.7);backdrop-filter:blur(14px);border:1px solid var(--line)}
 .logo{font:900 20px Unbounded,sans-serif;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
 .logo .dot{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9ea1b5 45%,#3a3c4a);box-shadow:0 0 12px rgba(169,112,255,.6)}
-.links{display:flex;gap:28px;font-size:14px;font-weight:600;color:#c9c7d4}
+.links{display:flex;gap:22px;font-size:13.5px;font-weight:600;color:#c9c7d4}
 .links a:hover{color:#fff}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 24px;border-radius:999px;font:700 14px Manrope,sans-serif;cursor:pointer;border:0;transition:.2s}
 .btn.main{background:#fff;color:#08080a}
@@ -306,6 +306,125 @@ footer{border-top:1px solid var(--line);padding:28px 40px;display:flex;justify-c
 @media (max-width:760px){.stairs{height:260px;gap:6px}.st{padding:10px;border-radius:12px 12px 0 0}.st span{font-size:11px}.tix3{grid-template-columns:1fr}}
 
 nav .links a,nav .nav-cta{white-space:nowrap}
+
+/* Visite guidée de la démo */
+.tourbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 0 14px}
+.tourbar button{min-height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#bdbbc9;font:700 13px Manrope,system-ui,sans-serif;cursor:pointer;transition:.15s}
+.tourbar button:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+.tourbar button.on{background:var(--holo);color:#0a0a0c;border-color:transparent}
+.liveframe{position:relative}
+.tipwrap{text-align:center;margin:0 0 20px}
+.tip{position:relative;display:inline-flex;max-width:560px;text-align:left;display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:14px;background:#fff;color:#111;font:600 13.5px/1.45 Manrope,system-ui,sans-serif;box-shadow:0 14px 40px rgba(0,0,0,.5);transition:opacity .25s}
+.tip i{flex:none;width:10px;height:10px;margin-top:4px;border-radius:50%;background:#ff3b5c;box-shadow:0 0 0 0 rgba(255,59,92,.6);animation:rec 1.6s infinite}
+.tip::after{content:"";position:absolute;left:50%;margin-left:-7px;bottom:-7px;width:14px;height:14px;background:#fff;transform:rotate(45deg)}
+
+/* Polaroïds */
+.nuit{padding-top:100px}
+.polas{display:flex;gap:18px;overflow-x:auto;padding:36px 4px 10px;scrollbar-width:none}
+.polas::-webkit-scrollbar{display:none}
+.pola{flex:0 0 206px;margin:0;background:#f4f2ec;border-radius:4px;padding:12px 12px 0;box-shadow:0 18px 44px rgba(0,0,0,.55);transform:rotate(var(--r,0deg));transition:transform .3s}
+.pola:hover{transform:rotate(0) translateY(-6px)}
+.pola .shot{height:150px;border-radius:2px;position:relative;overflow:hidden;display:grid;place-items:center}
+.pola figcaption{font:600 10.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#2a2a2e;letter-spacing:-.02em;padding:11px 2px 16px;text-align:center}
+.shot.a{background:radial-gradient(circle at 50% 30%,#3a2b66,#0b0712)}
+.shot.a svg{width:112px;filter:drop-shadow(0 0 24px rgba(169,112,255,.75))}
+.shot.b{background:radial-gradient(circle at 50% 60%,#13324a,#060b12)}
+.shot.c{background:radial-gradient(circle at 50% 40%,#1f3a2a,#050c08)}
+.shot.d{background:radial-gradient(circle at 50% 70%,#5a1f46,#120611);align-items:end}
+.shot.d svg{width:120px;margin-bottom:-6px}
+.shot.e{background:radial-gradient(circle at 50% 80%,#4a3a12,#0f0b05)}
+.coins{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.coins i{width:30px;height:30px;border-radius:50%;background:linear-gradient(180deg,#8fd3ff,#2f7fb5);box-shadow:0 0 14px rgba(79,216,255,.6)}
+.coins i:nth-child(5),.coins i:nth-child(6){opacity:.35}
+.qrsmall{width:92px;height:92px;border-radius:6px;padding:4px;background:#fff;box-shadow:0 0 30px rgba(125,255,168,.5)}
+.bott{width:44px;height:120px;border-radius:14px 14px 8px 8px;background:linear-gradient(180deg,#f7dc95,#a87a2c);box-shadow:0 0 30px rgba(247,220,149,.55);position:relative}
+.bott::before{content:"";position:absolute;left:50%;top:-22px;margin-left:-7px;width:14px;height:26px;border-radius:4px;background:#c8a64e}
+.sprk{position:absolute;left:50%;top:14px;width:2px;height:54px;margin-left:-1px;background:linear-gradient(180deg,#fff,rgba(255,255,255,0));box-shadow:0 0 16px #fff}
+@media (max-width:760px){.pola{flex-basis:190px}.tip{max-width:none}}
+
+/* Maquette de l'espace club */
+.apptabs{display:flex;gap:6px;flex-wrap:wrap;margin:30px 0 16px}
+.apptabs button{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#bdbbc9;font:700 13.5px Manrope,system-ui,sans-serif;cursor:pointer;transition:.15s}
+.apptabs button:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+.apptabs button.on{background:#fff;color:#08080a;border-color:#fff}
+.appwin{border:1px solid var(--line);border-radius:20px;background:#0a0a0d;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.appbar{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line);background:#101014;font:700 13px Manrope,system-ui,sans-serif;color:#cfcdd9}
+.dots{display:flex;gap:6px}.dots i{width:10px;height:10px;border-radius:50%;background:#2a2a32}
+.appview{display:none;padding:20px}
+.appview.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpis>div{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--card)}
+.kpis span{display:block;font-size:12px;color:var(--mute)}
+.kpis b{font:800 22px Unbounded,sans-serif}
+.appgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.appplan{position:relative;aspect-ratio:16/9;border:1px solid var(--line);border-radius:16px;background:#0d0d11;overflow:hidden}
+.appplan .t{position:absolute;border-radius:9px;border:1.5px solid var(--line);background:#15151b;display:grid;place-items:center;text-align:center;font:700 11px Manrope,system-ui,sans-serif;font-style:normal;color:#e7e5ef;padding:2px}
+.appplan .t em{display:block;font-style:normal;font-weight:600;font-size:9.5px;color:#9b99a7;margin-top:2px}
+.appplan .t.pris{background:rgba(169,112,255,.22);border-color:rgba(169,112,255,.7)}
+.appplan .t.arrive{background:rgba(61,220,151,.22);border-color:rgba(61,220,151,.7)}
+.appplan .t.arrive em,.appplan .t.pris em{color:#e7e5ef}
+.appplan .piste{position:absolute;left:28%;top:36%;width:44%;height:30%;border-radius:50%;background:radial-gradient(circle,rgba(169,112,255,.3),rgba(79,216,255,.12));display:grid;place-items:center;font:800 11px Unbounded,sans-serif;font-style:normal;letter-spacing:.2em;color:#cfcdd9}
+.appside{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px;display:grid;gap:9px;align-content:start}
+.appside>b{font:800 18px Unbounded,sans-serif}
+.mut{color:var(--mute);font-size:12.5px;line-height:1.5}
+.appcard{border:1px solid var(--line);border-radius:14px;background:var(--card2,#101014);padding:12px;display:grid;gap:6px}
+.appcard .ln{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.appcard .ln b{color:var(--text)}
+.chip{justify-self:start;font:700 11px Manrope,system-ui,sans-serif;padding:3px 9px;border-radius:999px;background:#22222a;color:#cfcdd9}
+.approw{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btnfake{display:inline-flex;align-items:center;min-height:34px;padding:0 13px;border-radius:999px;border:1px solid var(--line);font:700 12.5px Manrope,system-ui,sans-serif;color:#cfcdd9;background:#15151b}
+.btnfake.main{background:#fff;color:#08080a;border-color:#fff}
+.kpis.four{grid-template-columns:repeat(4,1fr)}
+.appbars{display:flex;align-items:flex-end;gap:12px;height:180px;margin:6px 0 18px;padding:0 2px}
+.appbars>div{flex:1;display:grid;grid-template-rows:1fr auto auto;gap:4px;justify-items:center;height:100%}
+.appbars i{width:100%;max-width:60px;height:var(--h);align-self:end;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#a970ff,#4fd8ff)}
+.appbars em{font-style:normal;font-size:11.5px;font-weight:700}
+.appbars span{font-size:11px;color:var(--mute)}
+.appgrid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.appgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mline{display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;font-size:13px}
+.mline u{text-decoration:none;height:8px;border-radius:9px;background:#1b1b22;position:relative;overflow:hidden}
+.mline u::after{content:"";position:absolute;inset:0;width:var(--w);border-radius:9px;background:linear-gradient(90deg,#a970ff,#4fd8ff)}
+.mline em{font-style:normal;font-weight:700;font-size:12.5px}
+.envoi .eh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.envoi .eh b{font:800 17px Unbounded,sans-serif}
+.envoi .num{font:800 11px Manrope,system-ui,sans-serif;padding:3px 9px;border-radius:999px;background:#1a1a20;color:#cfcdd9}
+.envoi .it{font-size:13.5px;padding:7px 9px;border-radius:9px;background:#0f0f13}
+.envoi .cashline{font-size:12.5px;padding:7px 9px;border-radius:9px;background:rgba(255,210,95,.1);color:#ffd25f}
+.envoi .ok{color:#3ddc97;font-size:13px;font-weight:700}
+.envoi.done{opacity:.72}
+.porte{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
+.codein{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:800 19px ui-monospace,Menlo,monospace;letter-spacing:.12em}
+.appcard.valid{border-color:rgba(61,220,151,.5);box-shadow:0 0 0 1px rgba(61,220,151,.3) inset}
+.appcard.warn{border-color:rgba(255,176,32,.5);box-shadow:0 0 0 1px rgba(255,176,32,.3) inset}
+.green{color:#3ddc97;font-size:19px}.orange{color:#ffb020;font-size:14px}
+.apptable{width:100%;border-collapse:collapse;font-size:13.5px}
+.apptable th{text-align:left;color:var(--mute);font-weight:600;padding:10px 8px;border-bottom:1px solid var(--line);font-size:12.5px}
+.apptable td{padding:12px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.apptable td .mut{display:block;margin-top:2px}
+@media (max-width:900px){.appgrid,.appgrid2,.porte{grid-template-columns:1fr}.appgrid3{grid-template-columns:1fr}.kpis,.kpis.four{grid-template-columns:repeat(2,1fr)}.apptable{display:block;overflow-x:auto}}
+
+/* Problèmes */
+.probs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}
+.prob{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px;display:grid;gap:10px;align-content:start}
+.prob h3{font:800 16px/1.35 Unbounded,sans-serif;margin:0}
+.prob p{margin:0;color:var(--mute);font-size:15px;line-height:1.6}
+.prob span{justify-self:start;font:700 11px Manrope,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:#17171d;color:#9b99a7}
+
+/* Calculateur */
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:34px;align-items:start}
+.calcin{display:grid;grid-template-columns:1fr 1fr;gap:12px;border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px}
+.calcin label{display:grid;gap:6px;font:600 12.5px Manrope,system-ui,sans-serif;color:#cfcdd9}
+.calcin input{min-height:46px;border-radius:12px;border:1px solid var(--line);background:#0c0c0f;color:var(--text);padding:0 14px;font:700 16px Manrope,system-ui,sans-serif}
+.calcin input:focus{outline:2px solid #a970ff;outline-offset:1px}
+.calcout{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:22px;display:grid;gap:14px;align-content:start}
+.co{display:grid;gap:2px}
+.co span{font-size:13px;color:var(--mute)}
+.co b{font:800 30px Unbounded,sans-serif}
+.co.big{border-top:1px solid var(--line);padding-top:14px}
+.co.big b{font-size:40px}
+.calcnote{margin:0;font-size:12px;color:var(--mute);line-height:1.6}
+@media (max-width:900px){.probs{grid-template-columns:1fr}.calc{grid-template-columns:1fr}.calcin{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -353,7 +472,7 @@ nav .links a,nav .nav-cta{white-space:nowrap}
 
 <nav>
   <a href="#" class="logo"><span class="dot"></span>tablo</a>
-  <div class="links"><a href="#comment">Comment ça marche</a><a href="#billetterie">Billetterie</a><a href="#themes">Soirées à thème</a><a href="#fonctions">Fonctions</a><a href="#tarifs">Tarifs</a><a href="#faq">FAQ</a><a href="/connexion">Connexion</a></div>
+  <div class="links"><a href="#comment">Comment ça marche</a><a href="#espace-club">Espace club</a><a href="#billetterie">Billetterie</a><a href="#calcul">Calculateur</a><a href="#tarifs">Tarifs</a><a href="/connexion">Connexion</a></div>
   <a href="#essai" class="btn main nav-cta">Essayer maintenant</a>
 </nav>
 
@@ -367,8 +486,18 @@ nav .links a,nav .nav-cta{white-space:nowrap}
   <p class="lead" id="audlead">Tablo s'installe sur votre site en une ligne. Vos clients choisissent leur carré, leurs bouteilles et leur show, puis paient entre amis. Vous, vous encaissez.</p>
   <div class="ctas"><a href="/inscription" class="btn main">Créer l'espace de mon club</a><a href="#comment" class="btn out">Voir comment ça marche</a></div>
   <div class="live" id="essai">
-    <div class="livehead"><span class="rec"></span>En direct : c'est la vraie fenêtre de réservation. Choisissez un carré, des bouteilles, un show… ou juste votre entrée.</div>
-    <div class="liveframe"><iframe id="liveW" src="demo.html?embed=1" title="Démo de réservation de carré Tablo" loading="eager"></iframe></div>
+    <div class="livehead"><span class="rec"></span>En direct : c'est la vraie fenêtre de réservation, telle que la voient vos clients.</div>
+    <div class="tourbar" id="tourbar" role="tablist" aria-label="Visite guidée">
+      <button class="on" data-tour="0">1 · Le carré</button>
+      <button data-tour="1">2 · Les bouteilles</button>
+      <button data-tour="2">3 · Shows et pancarte</button>
+      <button data-tour="3">4 · Payer entre amis</button>
+      <button data-tour="tix">5 · L'entrée</button>
+    </div>
+    <div class="tipwrap"><div class="tip" id="tip"><i></i><span>Touchez un carré libre sur le plan : le client voit la catégorie, le minimum et les shows offerts.</span></div></div>
+    <div class="liveframe">
+      <iframe id="liveW" src="demo.html?embed=1" title="Démo de réservation de carré Tablo" loading="eager"></iframe>
+    </div>
     <div class="tune" aria-label="Personnaliser la démo">
       <div class="tg"><b>Ambiance</b><div class="chips" id="tAmb">
         <button data-amb="tablo" class="on"><i style="background:#060607;border:1px solid #333"></i>Tablo</button>
@@ -396,6 +525,38 @@ nav .links a,nav .nav-cta{white-space:nowrap}
     </div>
   </div>
 </header>
+
+
+<!-- LA NUIT -->
+<section id="nuit" class="nuit">
+  <div class="wrap">
+    <div class="eyebrow rv">Une soirée vue de la régie</div>
+    <h2 class="rv">Ce que Tablo fait pendant que vous travaillez.</h2>
+    <div class="polas">
+      <figure class="pola rv" style="--r:-3deg">
+        <div class="shot a"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#ball"/></svg></div>
+        <figcaption>[18:02] CARRÉ IMPÉRIAL RÉSERVÉ · 2 190 €</figcaption>
+      </figure>
+      <figure class="pola rv" style="--r:2deg">
+        <div class="shot b"><span class="coins"><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+        <figcaption>[20:41] CAGNOTTE COMPLÈTE · 6 AMIS</figcaption>
+      </figure>
+      <figure class="pola rv" style="--r:-2deg">
+        <div class="shot c"><svg class="qrsmall" viewBox="0 0 21 21" shape-rendering="crispEdges" aria-hidden="true"><rect width="21" height="21" fill="#fff"/><g fill="#111"><path d="M0 0h7v7H0zm1 1v5h5V1z"/><path d="M2 2h3v3H2z"/><path d="M14 0h7v7h-7zm1 1v5h5V1z"/><path d="M16 2h3v3h-3z"/><path d="M0 14h7v7H0zm1 1v5h5v-5z"/><path d="M2 16h3v3H2z"/><path d="M9 0h1v2H9zm2 1h1v2h-1zM8 3h2v1H8zm3 2h2v1h-2zM9 6h1v2H9zm4-3h1v3h-1zM8 9h2v1H8zm3 0h1v2h-1zm2 1h2v1h-2zm3 2h1v2h-1zm-2 1h1v1h-1zm3 1h2v1h-2zm-5 1h1v2h-1zm3 1h1v2h-1zm2 1h1v1h-1zm-5 2h2v1h-2zm4 0h1v1h-1zM9 12h1v2H9zm-2 2h1v1H7zm0 3h1v1H7zm2 1h1v2H9zm2-2h1v1h-1zM3 9h2v1H3zM0 9h2v1H0zm6 1h1v2H6zM4 11h1v1H4zm13-2h2v1h-2zm2 2h2v1h-2z"/></g></svg></div>
+        <figcaption>[23:12] 4 ENTRÉES SCANNÉES À LA PORTE</figcaption>
+      </figure>
+      <figure class="pola rv" style="--r:3deg">
+        <div class="shot d"><svg class="dz" viewBox="0 0 200 330" aria-hidden="true"><use href="#guy"/></svg></div>
+        <figcaption>[00:28] SHOW DANSEURS · CARRÉ SCÈNE 1</figcaption>
+      </figure>
+      <figure class="pola rv" style="--r:-4deg">
+        <div class="shot e"><span class="bott"></span><span class="sprk"></span></div>
+        <figcaption>[01:05] ENVOI N°2 SERVI · 3 MAGNUMS</figcaption>
+      </figure>
+    </div>
+    <p class="sub rv" style="max-width:720px;margin-top:26px">Vous n'avez rien tapé de la nuit : les carrés se vendent, la cagnotte se remplit, les entrées se contrôlent et les serveurs reçoivent les envois sur leur téléphone.</p>
+  </div>
+</section>
 
 <div class="ticker" aria-hidden="true"><div id="tick"></div></div>
 
@@ -480,6 +641,129 @@ nav .links a,nav .nav-cta{white-space:nowrap}
   </div>
 </section>
 
+
+
+<!-- ESPACE CLUB -->
+<section id="espace-club">
+  <div class="wrap">
+    <div class="eyebrow rv">Votre côté de l'écran</div>
+    <h2 class="rv">Le client voit un widget. Vous, vous tenez la soirée.</h2>
+    <p class="sub rv">Pas besoin d'un logiciel de plus : tout se passe au même endroit, depuis le bureau ou depuis le téléphone d'un serveur.</p>
+
+    <div class="apptabs rv" role="tablist" aria-label="Espace club">
+      <button class="on" data-app="soir">Ce soir</button>
+      <button data-app="stats">Statistiques</button>
+      <button data-app="service">Service du soir</button>
+      <button data-app="porte">Contrôle entrée</button>
+      <button data-app="clients">Clients</button>
+    </div>
+
+    <div class="appwin rv">
+      <div class="appbar"><span class="dots"><i></i><i></i><i></i></span><b>Le Velours · espace club</b></div>
+
+      <div class="appview on" data-view="soir">
+        <div class="appgrid">
+          <div>
+            <div class="kpis">
+              <div><span>Carrés</span><b>7 / 10</b></div>
+              <div><span>Entrées vendues</span><b>186</b></div>
+              <div><span>Vendu ce soir</span><b>14 380 €</b></div>
+              <div><span>Panier moyen</span><b>2 054 €</b></div>
+            </div>
+            <div class="appplan">
+              <i class="t pris" style="left:4%;top:8%;width:21%;height:22%">Impérial<em>Sarah · 8p</em></i>
+              <i class="t arrive" style="left:30%;top:8%;width:16%;height:20%">Scène 1<em>Karim · 6p</em></i>
+              <i class="t pris" style="left:50%;top:8%;width:16%;height:20%">Scène 2<em>Inès · 6p</em></i>
+              <i class="t libre" style="left:72%;top:8%;width:22%;height:22%">Royal<em>libre · 10p</em></i>
+              <i class="t arrive" style="left:4%;top:44%;width:17%;height:20%">Lounge 1<em>Hugo · 5p</em></i>
+              <i class="t libre" style="left:4%;top:72%;width:17%;height:20%">Lounge 2<em>libre · 6p</em></i>
+              <i class="t pris" style="left:76%;top:44%;width:18%;height:20%">Lounge 3<em>Léa · 6p</em></i>
+              <i class="t arrive" style="left:76%;top:72%;width:18%;height:20%">Lounge 4<em>Nina · 4p</em></i>
+              <i class="piste">PISTE</i>
+            </div>
+          </div>
+          <aside class="appside">
+            <b>Impérial</b>
+            <span class="mut">Prestige · 8 personnes · minimum 1 500 €</span>
+            <div class="appcard"><b>Sarah Martin</b><span class="mut">06 •• •• •• 12 · 8 personnes</span><span class="chip">via Karim</span>
+              <div class="ln"><span>Total</span><b>2 190 €</b></div><div class="ln"><span>Déjà payé</span><b>1 095 €</b></div><div class="ln"><span>Envois</span><b>2</b></div></div>
+            <div class="approw"><span class="btnfake main">Marquer arrivé</span><span class="btnfake">Absent</span></div>
+            <span class="mut">Un client se présente sans réservation ? Touchez un carré libre et il est installé en deux clics.</span>
+          </aside>
+        </div>
+      </div>
+
+      <div class="appview" data-view="stats">
+        <div class="kpis four">
+          <div><span>Chiffre d'affaires</span><b>128 400 €</b></div>
+          <div><span>Carrés vendus</span><b>63</b></div>
+          <div><span>Via un manager</span><b>41 %</b></div>
+          <div><span>Taux d'absence</span><b>4 %</b></div>
+        </div>
+        <div class="appbars">
+          <div style="--h:42%"><i></i><em>6 400 €</em><span>Sam. 4</span></div>
+          <div style="--h:61%"><i></i><em>9 200 €</em><span>Sam. 11</span></div>
+          <div style="--h:38%"><i></i><em>5 800 €</em><span>Ven. 17</span></div>
+          <div style="--h:78%"><i></i><em>11 900 €</em><span>Sam. 18</span></div>
+          <div style="--h:54%"><i></i><em>8 100 €</em><span>Ven. 24</span></div>
+          <div style="--h:100%"><i></i><em>14 380 €</em><span>Sam. 25</span></div>
+        </div>
+        <div class="appgrid2">
+          <div class="appcard"><b>Ventes par manager</b>
+            <div class="mline"><span>Karim</span><u style="--w:100%"></u><em>38 200 €</em></div>
+            <div class="mline"><span>Léa</span><u style="--w:72%"></u><em>27 400 €</em></div>
+            <div class="mline"><span>Inès</span><u style="--w:41%"></u><em>15 600 €</em></div>
+          </div>
+          <div class="appcard"><b>Entrées par tarif</b>
+            <div class="mline"><span>Early</span><u style="--w:64%"></u><em>240</em></div>
+            <div class="mline"><span>Avant minuit</span><u style="--w:100%"></u><em>372</em></div>
+            <div class="mline"><span>Entrée + conso</span><u style="--w:48%"></u><em>181</em></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="appview" data-view="service">
+        <div class="appgrid3">
+          <div class="appcard envoi"><div class="eh"><b>Impérial</b><span class="num">Envoi n°2</span></div><span class="mut">Prestige · Sarah Martin · 8 pers.</span>
+            <div class="it">2 × Moët &amp; Chandon Magnum</div><div class="it">1 × Belvedere 70 cl</div>
+            <div class="cashline">Reste à encaisser : <b>1 095 €</b></div>
+            <div class="approw"><span class="btnfake main">Je prends</span><span class="btnfake">Servi ✓</span></div></div>
+          <div class="appcard envoi"><div class="eh"><b>Scène 1</b><span class="num">Envoi n°1</span></div><span class="mut">Scène · Karim · 6 pers.</span>
+            <div class="it">1 × Ruinart 75 cl</div><div class="it">2 × Jägermeister</div>
+            <div class="approw"><span class="mut" style="font-size:12px">Pris par Léa</span><span class="btnfake main">Servi ✓</span></div></div>
+          <div class="appcard envoi done"><div class="eh"><b>Lounge 1</b><span class="num">Envoi n°1</span></div><span class="mut">Lounge · Hugo · 5 pers.</span>
+            <div class="it">1 × Absolut 1 L</div><div class="ok">Servi par Léa</div></div>
+        </div>
+      </div>
+
+      <div class="appview" data-view="porte">
+        <div class="porte">
+          <div class="appcard"><span class="mut">Code du billet</span><div class="codein">P7QFXN37<span class="btnfake main">Vérifier</span><span class="btnfake">Scanner</span></div></div>
+          <div class="appcard valid"><b class="green">✓ Valide</b><b style="font-size:19px">Sarah Martin</b>
+            <span class="mut">Billet d'entrée · Avant minuit + conso · 1 conso incluse</span>
+            <span>0 / 4 déjà entrés</span>
+            <div class="approw"><span class="btnfake">Faire entrer 1</span><span class="btnfake main">Faire entrer les 4</span></div></div>
+          <div class="appcard warn"><b class="orange">⚠ À vérifier</b><b style="font-size:19px">Mehdi R.</b>
+            <span class="mut">Billet d'entrée · Early · sans conso</span>
+            <span class="orange">• Arrivée après 23 h 30 : ce tarif n'est plus valable.</span></div>
+        </div>
+      </div>
+
+      <div class="appview" data-view="clients">
+        <table class="apptable">
+          <thead><tr><th>Client</th><th>Carrés</th><th>Entrées</th><th>Dépensé</th><th>Ses bouteilles</th><th>Manager</th></tr></thead>
+          <tbody>
+            <tr><td><b>🥇 Sarah Martin</b><span class="mut">Pancarte : HAPPY BDAY SARAH</span></td><td>7</td><td>2</td><td><b>14 900 €</b></td><td>Moët Magnum, Belvedere</td><td><span class="chip">Karim</span></td></tr>
+            <tr><td><b>🥈 Yanis B.</b><span class="mut">4 soirées cette saison</span></td><td>4</td><td>6</td><td><b>9 240 €</b></td><td>Ruinart, Jägermeister</td><td><span class="chip">Léa</span></td></tr>
+            <tr><td><b>🥉 Chloé D.</b><span class="mut">Vient toujours à deux</span></td><td>3</td><td>11</td><td><b>6 810 €</b></td><td>Cîroc Red Berry</td><td><span class="mut">—</span></td></tr>
+            <tr><td><b>Hugo L.</b><span class="mut">Première venue en mars</span></td><td>2</td><td>3</td><td><b>4 150 €</b></td><td>Absolut 1 L</td><td><span class="chip">Karim</span></td></tr>
+          </tbody>
+        </table>
+        <p class="sub" style="margin-top:16px;font-size:15px">Le fichier se remplit tout seul à chaque réservation et à chaque billet. Aucune saisie, aucun double emploi.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- THEMES -->
 <section id="themes">
@@ -592,6 +876,50 @@ nav .links a,nav .nav-cta{white-space:nowrap}
       <div class="sc rv"><div class="v" id="spk"></div><div class="t">Parade de sparklers<span>80 €</span></div></div>
       <div class="sc rv"><div class="v" style="display:grid;place-items:center"><div style="font:900 22px Unbounded,system-ui,sans-serif;padding:16px 20px;border:2px solid #fff;border-radius:12px;box-shadow:0 0 30px rgba(255,95,162,.6),inset 0 0 20px rgba(255,95,162,.4)" class="holo">HAPPY BDAY</div></div><div class="t">Pancarte personnalisée<span>incluse</span></div></div>
       <div class="sc rv"><div class="v" style="display:grid;place-items:center"><svg viewBox="0 0 120 120" style="position:static;transform:none;height:120px;animation:sw 4s ease-in-out infinite"><use href="#ball"/></svg></div><div class="t">Boule à facettes XXL<span>120 €</span></div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- PROBLEMES -->
+<section id="problemes">
+  <div class="wrap">
+    <div class="eyebrow rv">Ce que ça règle</div>
+    <h2 class="rv">Les soirs où ça coince.</h2>
+    <p class="sub rv">Chaque fonction de Tablo répond à un problème que vous connaissez déjà.</p>
+    <div class="probs">
+      <article class="prob rv"><h3>« Le carré était réservé, personne n'est venu. »</h3><p>Acompte obligatoire par catégorie, carte enregistrée en garantie. Un carré bloqué est un carré payé.</p><span>Acompte · cagnotte · garantie</span></article>
+      <article class="prob rv"><h3>« On passe la soirée au téléphone et sur WhatsApp. »</h3><p>Le client choisit son carré, ses bouteilles et son show en ligne. Vous recevez une réservation complète, pas une conversation.</p><span>Widget · plan · catalogue</span></article>
+      <article class="prob rv"><h3>« Les groupes se divisent sur qui paie quoi. »</h3><p>L'organisateur paie l'acompte et partage un lien : chacun met ce qu'il veut. Le solde est débité la veille.</p><span>Cagnotte entre amis</span></article>
+      <article class="prob rv"><h3>« Je ne sais pas qui a vendu quoi. »</h3><p>Chaque manager a son lien et son QR. Les ventes et les commissions se calculent toutes seules.</p><span>Liens managers · commissions</span></article>
+      <article class="prob rv"><h3>« L'entrée se paie en liquide, à l'arrache. »</h3><p>Billetterie intégrée : prix selon l'heure, avec ou sans conso, QR contrôlé à la porte.</p><span>Billetterie · contrôle entrée</span></article>
+      <article class="prob rv"><h3>« Je ne sais pas ce qui a marché le mois dernier. »</h3><p>Remplissage, panier moyen, ventes par manager, entrées par tarif, taux d'absence : tout est compté sans rien saisir.</p><span>Statistiques · fichier clients</span></article>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATEUR -->
+<section id="calcul">
+  <div class="wrap">
+    <div class="eyebrow rv">Est-ce que ça vaut le coup ?</div>
+    <h2 class="rv">Faites le calcul avec vos chiffres.</h2>
+    <p class="sub rv">Une estimation, pas une promesse : changez les valeurs, le résultat suit.</p>
+    <div class="calc rv">
+      <div class="calcin">
+        <label>Carrés vendus par soirée<input type="number" id="cT" value="8" min="0" max="200"></label>
+        <label>Panier moyen par carré (€)<input type="number" id="cP" value="900" min="0" step="50"></label>
+        <label>Soirées par mois<input type="number" id="cS" value="8" min="1" max="31"></label>
+        <label>Carrés qui ne viennent pas (%)<input type="number" id="cN" value="10" min="0" max="60"></label>
+        <label>Acompte demandé (%)<input type="number" id="cA" value="30" min="0" max="100"></label>
+        <label>Entrées payantes par soirée<input type="number" id="cE" value="150" min="0" step="10"></label>
+      </div>
+      <div class="calcout">
+        <div class="co"><span>Encaissé par mois via Tablo</span><b id="rCA">—</b></div>
+        <div class="co"><span>Récupéré sur les carrés absents</span><b id="rNo" class="holo">—</b></div>
+        <div class="co"><span>Commission prise par Tablo</span><b>0 €</b></div>
+        <div class="co big"><span>Face à l'abonnement de 79 €, l'acompte seul rapporte</span><b id="rNet" class="holo">—</b></div>
+        <p class="calcnote">Calcul : carrés × panier × soirées pour l'encaissé ; carrés absents × panier × acompte pour le récupéré. Les entrées sont comptées à part, à un tarif moyen de 12 €. Tablo ne prend aucune commission : seuls les frais bancaires du paiement s'appliquent.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -731,6 +1059,49 @@ document.querySelectorAll('.rv').forEach(e=>io.observe(e));
  tV.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ven(b.dataset.v);amb(b.dataset.v==='beach'?'pool':'tablo')});
  // « Vous êtes » du héros : adapte aussi la démo
  document.querySelectorAll('.aud button').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.aud;if(k==='1'){ven('beach');amb('pool')}else{ven('club');amb(k==='2'?'masque':'tablo')}}));
+})();
+</script>
+
+<script>
+(()=>{const bar=document.getElementById('tourbar'),tip=document.getElementById('tip'),f=document.getElementById('liveW');
+ if(!bar||!f)return;
+ const TXT={0:"Touchez un carré libre sur le plan : le client voit la catégorie, le minimum et les shows offerts.",
+ 1:"Les bouteilles de votre carte, avec vos photos et vos formats. La barre indique ce qui reste pour atteindre le minimum.",
+ 2:"Une pancarte à son prénom, un show de votre catalogue : c'est là que le panier monte.",
+ 3:"Tout payer, payer l'acompte et compléter sur place, ou ouvrir une cagnotte entre amis.",
+ tix:"Et sans carré : l'entrée seule, moins chère avant minuit, avec ou sans conso."};
+ const send=d=>f.contentWindow&&f.contentWindow.postMessage(Object.assign({tablo:1},d),'*');
+ bar.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  bar.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  const k=b.dataset.tour;
+  tip.style.opacity=0;setTimeout(()=>{tip.querySelector('span').textContent=TXT[k]||'';tip.style.opacity=1},160);
+  if(k==='tix')send({mode:'tix'});else send({mode:'vip',tour:+k});
+ });
+})();
+</script>
+
+<script>
+(()=>{const tabs=document.querySelector('.apptabs');if(!tabs)return;
+ tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  tabs.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.appview').forEach(v=>v.classList.toggle('on',v.dataset.view===b.dataset.app));
+ });
+})();
+</script>
+
+<script>
+(()=>{const ids=['cT','cP','cS','cN','cA','cE'];const el={};ids.forEach(i=>el[i]=document.getElementById(i));
+ if(!el.cT)return;
+ const fmt=n=>Math.round(n).toLocaleString('fr-FR')+' €';
+ function calc(){
+  const t=+el.cT.value||0,p=+el.cP.value||0,s=+el.cS.value||0,n=Math.min(100,+el.cN.value||0)/100,a=Math.min(100,+el.cA.value||0)/100,e=+el.cE.value||0;
+  const ca=t*p*s + e*12*s;
+  const perdu=t*p*s*n, recup=perdu*a;
+  document.getElementById('rCA').textContent=fmt(ca);
+  document.getElementById('rNo').textContent=fmt(recup);
+  document.getElementById('rNet').textContent=fmt(Math.max(0,recup-79));
+ }
+ ids.forEach(i=>el[i].addEventListener('input',calc));calc();
 })();
 </script>
 </body>

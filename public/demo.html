@@ -1046,6 +1046,18 @@ function renderTix(){
  $('#aside').innerHTML=`<h3>Votre entrée</h3>${L.join('')}<div class="tot"><span>Total</span><span>${t?(tot?fmt(tot):'Gratuit'):'—'}</span></div><p style="font-size:12px;color:var(--mute);margin-top:14px;line-height:1.5">0 % de commission Tablo. Passé l'heure indiquée, le tarif n'est plus valable.</p>`;
  $('#mf').innerHTML=T.done?`<span></span><div class="t">Total <b>${tot?fmt(tot):'Gratuit'}</b></div><button class="btn" data-a="tnew">Terminer</button>`:`<span></span><div class="t">Total <b>${t?(tot?fmt(tot):'Gratuit'):'—'}</b></div><button class="btn" data-a="tpay" ${t?'':'disabled'}>${t?(tot?'Payer '+fmt(tot):'Réserver mes entrées'):'Tarifs terminés'}</button>`;
 }
+
+/* visite guidée pilotée depuis la landing : on remplit l'étape demandée */
+function tour(n){
+ if(S.mode!=='vip')setMode('vip');
+ reset();
+ const v=VEN();
+ if(n>=1){const t=v.tables.find(t=>!v.taken[S.date].includes(t.id)&&t.cap>=S.people)||v.tables[0];S.table=t.id}
+ if(n>=2&&tbl()){const t=tbl(),b=BOT.find(x=>x.id===S.focus)||BOT[0];S.focus=b.id;const key=b.id+'|0'+(b.fl?'|0':'');let g=0;while(botTotal()<t.min&&g++<30)S.bot[key]=(S.bot[key]||0)+1}
+ if(n>=3&&tbl()){const k=v.shows.find(k=>catOf(tbl()).elig.includes(k));if(k)S.shows[k]=true;S.agree=true;S.org=dep()}
+ S.step=Math.max(0,Math.min(3,n));S.max=S.step;S.detail=false;
+ render();
+}
 function setMode(m){S.mode=m;document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.v===m));if(m==='tix'){tFix();renderTix()}else{$('.modal').classList.remove('tix');render()}}
 document.addEventListener('input',e=>{if(e.target.dataset.t!=='hour')return;T.h=+e.target.value;tFix();const y=$('#main').scrollTop;renderTix();$('#main').scrollTop=y;const r=$('input[data-t=hour]');r&&r.focus()});
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(!a)return;const v=a.dataset.v;
@@ -1067,6 +1079,7 @@ if(EMB){
   if(d.accent){VEN().theme.accent=d.accent;VEN().theme.grad=d.grad||''}
   if(d.btn)VEN().theme.btn=d.btn;
   if(d.mode&&d.mode!==S.mode)setMode(d.mode);
+  if(typeof d.tour==='number')tour(d.tour);
  };
  apply({venue:q.get('v'),amb:q.get('amb')});go();if(q.get('mode')==='tix')setMode('tix');
  addEventListener('message',e=>{const d=e.data;if(!d||d.tablo!==1)return;const v=S.venue;apply(d);if(S.venue!==v)go();else refreshAll()});
