@@ -55,7 +55,7 @@ async function main() {
       console.log("Le Velours existe déjà et n'appartient pas au compte de démo : on n'y touche pas.");
       return;
     }
-    if (!existing.isDemo) await db.venue.update({ where: { id: existing.id }, data: { isDemo: true } });
+    if (!existing.isDemo || existing.billing !== "ACTIVE") await db.venue.update({ where: { id: existing.id }, data: { isDemo: true, billing: "ACTIVE" } });
     // En ligne, le mot de passe connu « tablo-demo » ne doit pas ouvrir l'espace sans les garde-fous de la démo.
     if (!local) await db.user.update({ where: { id: demoOwner.id }, data: { passwordHash: await bcrypt.hash(demoPassword, 10) } });
     await ensureEvents(existing.id);
