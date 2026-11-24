@@ -145,6 +145,14 @@ un nouvel `Order` numéroté à la suite part au service. `OrderItem.bottleSizeI
 La fenêtre est la nuit même : de la veille au lendemain midi.
 
 ## Landing
+Le haut de page : **texte à gauche, un téléphone à droite**. Le visiteur tape l'adresse de son site
+dans la barre du téléphone (`#pUrl` → `POST /api/apercu`), sa vraie page s'affiche dedans, et la
+réservation s'ouvre par-dessus en feuille (`.psheet`) comme une vraie extension. Elle s'ouvre toute
+seule au bout de 2,6 s à la première vue — la démonstration doit se jouer sans qu'on clique.
+L'ancienne section « votre site » a été supprimée : son travail est fait par le téléphone.
+Attention aux noms de classes : les anciennes règles `.phone` (maquette précédente) ont été retirées
+parce qu'elles écrasaient le nouveau téléphone.
+
 Reconstruite le 24/11/2026 autour des bénéfices (CAB) : chaque bloc `.cab` porte la douleur en citation,
 ce que fait l'outil, puis ce que ça rapporte. **Le manager est le bénéfice n°1.** Pas de prix sur la page.
 La règle d'avant tient toujours : ne pas la ré-alourdir, une nouvelle fonction entre dans la bande
