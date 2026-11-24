@@ -13,7 +13,7 @@ import Plan3D, { type Box } from "./Plan3D";
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: c % 100 ? 2 : 0 });
 const day = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/Paris" });
 const STEPS = ["Soirée", "Carré", "Bouteilles", "Pancarte et shows", "Coordonnées"];
-const PAY: Record<string, [string, string]> = { FULL: ["Tout payer", "Vous réglez la totalité maintenant."], POOL: ["Cagnotte", "Vous payez l'acompte, vos amis complètent."], CASH: ["Espèces", "Acompte en ligne, le reste sur place."] };
+const PAY: Record<string, [string, string]> = { FULL: ["Tout payer", "Vous réglez la totalité maintenant."], CASH: ["Acompte", "Vous versez l'acompte, le reste sur place."] };
 
 type Line = { sizeId: string; flavor: string | null; quantity: number };
 
@@ -29,7 +29,8 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
   const [pickFlavor, setPickFlavor] = useState<Record<string, string>>({});
   const [showIds, setShowIds] = useState<string[]>([]);
   const [signText, setSignText] = useState("");
-  const [payMode, setPayMode] = useState<"FULL" | "POOL" | "CASH">((venue.payModes[0] as "FULL") ?? "FULL");
+  const modes = venue.payModes.filter((m) => PAY[m]);
+  const [payMode, setPayMode] = useState<"FULL" | "CASH">((modes[0] as "FULL") ?? "FULL");
   const [who, setWho] = useState({ name: "", email: "", phone: "" });
   const [error, setError] = useState<string>();
   const [garageCode, setGarageCode] = useState("");
@@ -116,7 +117,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
             {STEPS.map((s, i) => <button key={s} className={i === step ? "on" : ""} disabled={i > step} onClick={() => setStep(i)} aria-label={s}>{i + 1}<span className="lbl">. {s}</span></button>)}
           </nav>
         </div>
-        {events.some((e) => e.tiers.length > 0) && step === 0 && <ModeTabs slug={venue.slug} kind={venue.kind} current="table" managerCode={managerCode} />}
+        {venue.ticketsEnabled && events.some((e) => e.tiers.length > 0) && step === 0 && <ModeTabs slug={venue.slug} kind={venue.kind} current="table" managerCode={managerCode} />}
 
         {step === 0 && (
           <>
@@ -319,7 +320,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
             </div>
             <h2 style={{ fontSize: 16 }}>Paiement</h2>
             <div className="w-pay">
-              {venue.payModes.map((m) => <button key={m} className={`w-opt ${payMode === m ? "on" : ""}`} onClick={() => setPayMode(m as "FULL")}><b>{PAY[m][0]}</b><small>{PAY[m][1]}</small></button>)}
+              {modes.map((m) => <button key={m} className={`w-opt ${payMode === m ? "on" : ""}`} onClick={() => setPayMode(m as "FULL")}><b>{PAY[m][0]}</b><small>{PAY[m][1]}</small></button>)}
             </div>
             <div className="w-card w-line"><span>{payMode === "FULL" ? "À payer maintenant" : `Acompte obligatoire (${cat?.depositPct ?? 0} %, catégorie ${cat?.name})`}</span><b>{eur(deposit)}</b></div>
             {error && <p className="w-err" role="alert">{error}</p>}

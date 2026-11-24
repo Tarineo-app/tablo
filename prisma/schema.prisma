@@ -77,7 +77,7 @@ model Venue {
   rules              String? // âge minimum, tenue…
   cancelPolicy       String?
   planImageUrl       String?
-  payModes           PayMode[] @default([FULL, POOL, CASH])
+  payModes           PayMode[] @default([FULL, CASH])
   poolDeadlineHour   Int       @default(18) // la veille, heure locale
   stripeAccountId    String? // Stripe Connect Express
   stripeCustomerId   String? // abonnement Tablo
@@ -87,6 +87,9 @@ model Venue {
   garageMinBottles   Int       @default(1) // bouteilles à racheter pour venir la rechercher
   garageDays         Int       @default(60) // durée de conservation
   garageKeepsMin     Boolean   @default(false) // true = le minimum du carré s'applique quand même
+  /// Billetterie : fermée par défaut. Le cœur du produit, c'est le carré,
+  /// et l'entrée simple est déjà bien servie ailleurs.
+  ticketsEnabled     Boolean   @default(false)
   /// Revente des billets : transfert à un proche, et reprise par le club.
   ticketTransfer     Boolean   @default(true)
   ticketBuyback      Boolean   @default(false)
@@ -117,6 +120,7 @@ model Venue {
   reservations Reservation[]
   tickets      Ticket[]
   orders       Order[]
+  offers       Offer[]
   garageItems  GarageItem[]
 }
 
@@ -133,6 +137,7 @@ model Membership {
   venue        Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
   reservations Reservation[] @relation("ManagerReservations")
   ordersTaken  Order[]       @relation("ServerOrders")
+  offers       Offer[]       @relation("ManagerOffers")
   tickets      Ticket[]      @relation("ManagerTickets")
 
   @@unique([userId, venueId])
@@ -172,6 +177,7 @@ model VenueTable {
   category      TableCategory     @relation(fields: [categoryId], references: [id])
   eventPrices   EventTablePrice[]
   reservations  Reservation[]
+  offers        Offer[]
 }
 
 model Event {
@@ -185,6 +191,7 @@ model Event {
   reservations Reservation[]
   ticketTiers  TicketTier[]
   tickets      Ticket[]
+  offers       Offer[]
 
   @@unique([venueId, date])
 }
@@ -222,6 +229,7 @@ model BottleSize {
   stock       Int? // null = illimité
   bottle      Bottle       @relation(fields: [bottleId], references: [id], onDelete: Cascade)
   orderItems  OrderItem[]
+  offerItems  OfferItem[]
   garageItems GarageItem[]
 }
 
@@ -243,6 +251,8 @@ model Show {
   venue            Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)
   categories       TableCategory[]   @relation("CategoryShows")
   reservationShows ReservationShow[]
+  offerItems       OfferItem[]
+  orderItems       OrderItem[]
 }
 
 model Reservation {
@@ -277,6 +287,7 @@ model Reservation {
   shows         ReservationShow[]
   orders        Order[]
   contributions Contribution[]
+  offer         Offer?
 
   @@index([venueId, eventId])
 }
@@ -324,16 +335,19 @@ model Order {
 }
 
 model OrderItem {
-  id           String     @id @default(cuid())
+  id           String      @id @default(cuid())
   orderId      String
-  bottleSizeId String
+  /// Un envoi porte des bouteilles, et depuis la recommande en soirée, des shows.
+  bottleSizeId String?
+  showId       String?
   flavor       String?
   quantity     Int
   unitCents    Int
   /// Bouteille rendue au client, pas vendue ce soir (elle était au garage).
-  fromGarage   Boolean    @default(false)
-  order        Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  bottleSize   BottleSize @relation(fields: [bottleSizeId], references: [id])
+  fromGarage   Boolean     @default(false)
+  order        Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  bottleSize   BottleSize? @relation(fields: [bottleSizeId], references: [id])
+  show         Show?       @relation(fields: [showId], references: [id])
 }
 
 /// Billetterie : un tarif d'entrée pour une soirée (ex. « Avant minuit + 1 conso »).
@@ -419,4 +433,69 @@ model GarageItem {
   reservations Reservation[]
 
   @@index([venueId, status])
+}
+
+enum OfferStatus {
+  REQUESTED // le client a demandé une offre, le manager doit la chiffrer
+  SENT // le manager a envoyé son prix
+  ACCEPTED // le client a dit oui : la réservation est créée
+  DECLINED
+  EXPIRED
+  CANCELLED
+}
+
+/// Une offre d'un manager commercial : il compose la soirée d'un client
+/// (carré, bouteilles, shows, pancarte), fixe SON prix, et envoie un lien.
+/// Dans l'autre sens, le client demande une offre et le manager la chiffre.
+model Offer {
+  id            String      @id @default(cuid())
+  venueId       String
+  eventId       String
+  managerId     String? // Membership du manager commercial
+  tableId       String?
+  status        OfferStatus @default(SENT)
+  code          String      @unique // lien public /o/[code]
+  guests        Int         @default(4)
+  clientName    String?
+  clientEmail   String?
+  clientPhone   String?
+  /// Le mot du manager au client, et ce que le client avait demandé.
+  message       String?
+  askNote       String?
+  signText      String?
+  /// Le prix annoncé par le manager, tout compris. `listCents` est la valeur
+  /// au tarif public : l'écart entre les deux est ce que le manager offre.
+  priceCents    Int         @default(0)
+  listCents     Int         @default(0)
+  expiresAt     DateTime?
+  reservationId String?     @unique
+  createdAt     DateTime    @default(now())
+  sentAt        DateTime?
+  decidedAt     DateTime?
+
+  venue       Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  event       Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  manager     Membership?  @relation("ManagerOffers", fields: [managerId], references: [id])
+  table       VenueTable?  @relation(fields: [tableId], references: [id])
+  reservation Reservation? @relation(fields: [reservationId], references: [id])
+  items       OfferItem[]
+
+  @@index([venueId, eventId])
+  @@index([venueId, status])
+}
+
+model OfferItem {
+  id           String      @id @default(cuid())
+  offerId      String
+  bottleSizeId String?
+  showId       String?
+  flavor       String?
+  quantity     Int         @default(1)
+  /// Prix public de référence. `offered` = le manager l'ajoute sans le facturer.
+  unitCents    Int         @default(0)
+  offered      Boolean     @default(false)
+  sortOrder    Int         @default(0)
+  offer        Offer       @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  bottleSize   BottleSize? @relation(fields: [bottleSizeId], references: [id])
+  show         Show?       @relation(fields: [showId], references: [id])
 }

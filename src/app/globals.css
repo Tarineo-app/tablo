@@ -162,3 +162,22 @@ table.list td { padding: 12px 8px; border-bottom: 1px solid var(--line); vertica
 .demobar em { display: block; margin-top: 3px; font-style: normal; font-size: 13.5px; color: var(--mute); line-height: 1.5; }
 .demobar .tag { flex: 0 0 auto; align-self: center; width: auto; background: var(--ok); color: #06240f; font-weight: 800; }
 .demobar .btn { min-height: 40px; padding: 0 18px; font-size: 14px; }
+
+/* Offres du manager */
+.offerline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--card2); }
+.offerline .input { flex: 1; min-width: 150px; }
+.offerprice { display: grid; grid-template-columns: 1fr 180px 1fr; gap: 14px; align-items: end; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card2); }
+.offerprice > div { display: grid; gap: 2px; }
+.offerprice span { font-size: 12.5px; }
+.offerprice b { font-size: 20px; letter-spacing: -.02em; }
+.offerdone { display: grid; gap: 8px; border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.offerlink { display: block; padding: 12px 14px; border-radius: 12px; background: var(--card2); border: 1px solid var(--line); font-size: 13.5px; word-break: break-all; }
+.askrow { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); background: var(--card2); }
+.askrow > div { display: grid; gap: 2px; min-width: 220px; flex: 1; }
+.askrow span { font-size: 13px; color: var(--mute); }
+.askrow em { font-style: normal; font-size: 13.5px; color: var(--ink); opacity: .9; }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font: 700 11.5px Manrope, system-ui, sans-serif; background: var(--card2); border: 1px solid var(--line); color: var(--mute); }
+.pill.accepted { background: color-mix(in srgb, var(--ok) 18%, transparent); border-color: color-mix(in srgb, var(--ok) 45%, transparent); color: var(--ok); }
+.pill.sent { background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); color: var(--ink); }
+.pill.declined, .pill.expired, .pill.cancelled { opacity: .7; }
+@media (max-width: 760px) { .offerprice { grid-template-columns: 1fr; } }

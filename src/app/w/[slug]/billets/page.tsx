@@ -14,6 +14,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params, searchParams }: Props) {
   const [{ slug }, { m }] = await Promise.all([params, searchParams]);
   const data = await loadWidget(slug);
-  if (!data) notFound();
+  if (!data || !data.venue.ticketsEnabled) notFound();
   return <Tickets data={data} managerCode={m?.slice(0, 40) ?? null} />;
 }

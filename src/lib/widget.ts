@@ -27,7 +27,7 @@ export async function loadWidget(slug: string) {
   const catById = new Map(categories.map((c) => [c.id, c]));
   return {
     venue: {
-      name: venue.name, slug: venue.slug, kind: venue.kind, city: venue.city, rules: venue.rules, planImageUrl: venue.planImageUrl, payModes: venue.payModes,
+      name: venue.name, slug: venue.slug, kind: venue.kind, city: venue.city, rules: venue.rules, planImageUrl: venue.planImageUrl, payModes: venue.payModes, ticketsEnabled: venue.ticketsEnabled,
       garage: { enabled: venue.garageEnabled, minBottles: venue.garageMinBottles, keepsMin: venue.garageKeepsMin },
       plan3d: venue.plan3d, planTilt: venue.planTilt, wallColor: venue.wallColor, tour3dUrl: venue.tour3dUrl,
       gate: gateFor(venue),

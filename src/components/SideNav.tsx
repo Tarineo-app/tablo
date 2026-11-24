@@ -10,6 +10,7 @@ const SELL: Role[] = ["OWNER", "DIRECTOR", "MANAGER"];
 
 const LINKS: [string, string, Role[]][] = [
   ["/app", "Ce soir", SELL],
+  ["/app/offres", "Mes offres", SELL],
   ["/app/ventes", "Ventes", SELL],
   ["/app/clients", "Clients", SELL],
   ["/app/stats", "Statistiques", MGMT],
@@ -18,7 +19,7 @@ const LINKS: [string, string, Role[]][] = [
   ["/app/garage", "Garage", ALL],
   ["/app/equipe", "Équipe", MGMT],
   ["sep:Réglages", "Réglages", MGMT],
-  ["/app/soirees", "Soirées et billetterie", MGMT],
+  ["/app/soirees", "Soirées", MGMT],
   ["/app/ambiance", "Ambiance et marque", MGMT],
   ["/app/categories", "Catégories de carré", MGMT],
   ["/app/plan", "Plan des carrés", MGMT],

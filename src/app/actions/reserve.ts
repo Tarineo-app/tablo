@@ -15,7 +15,7 @@ const Input = z.object({
   items: z.array(z.object({ sizeId: z.string().min(1), flavor: z.string().max(40).nullable(), quantity: z.number().int().min(1).max(50) })).min(1, "Choisissez au moins une bouteille.").max(40),
   showIds: z.array(z.string()).max(20),
   signText: z.string().trim().max(40).nullable(),
-  payMode: z.enum(["FULL", "POOL", "CASH"]),
+  payMode: z.enum(["FULL", "CASH"]),
   name: z.string().trim().min(2, "Indiquez votre nom.").max(80),
   email: z.string().trim().toLowerCase().email("Email invalide."),
   phone: z.string().trim().min(6, "Téléphone invalide.").max(30),
@@ -110,7 +110,6 @@ export async function createReservation(raw: z.infer<typeof Input>): Promise<Res
           organizerName: d.name, organizerEmail: d.email, organizerPhone: d.phone,
           signText: d.signText || null, totalCents: total, depositCents: deposit, qrToken: token,
           garageItemId: garage?.id ?? null,
-          poolToken: d.payMode === "POOL" ? randomBytes(12).toString("base64url") : null,
           shows: { create: priced.map((s) => ({ showId: s.id, included: s.included, priceCents: s.priceCents })) },
         },
       });

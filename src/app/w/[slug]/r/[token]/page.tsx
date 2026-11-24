@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
+import { itemLabel } from "@/lib/orderitem";
 import { eur } from "@/lib/money";
 import { readTheme, themeVars } from "@/lib/theme";
 import "../../../widget.css";
@@ -17,7 +18,7 @@ export default async function Page({ params }: Props) {
       venue: true, table: { include: { category: true } }, event: true,
       shows: { include: { show: true } },
       garageItem: { include: { bottleSize: { include: { bottle: true } } } },
-      orders: { where: { number: 1 }, include: { items: { include: { bottleSize: { include: { bottle: true } } } } } },
+      orders: { where: { number: 1 }, include: { items: { include: { bottleSize: { include: { bottle: true } }, show: true } } } },
     },
   });
   if (!r || r.venue.slug !== slug) notFound();
@@ -36,7 +37,7 @@ export default async function Page({ params }: Props) {
         </div>
         <div className="w-card" style={{ display: "grid", gap: 8 }}>
           {r.orders[0]?.items.map((it) => (
-            <div key={it.id} className="w-line"><span>{it.quantity} × {it.bottleSize.bottle.name} {it.bottleSize.label}{it.flavor ? ` · ${it.flavor}` : ""}{it.fromGarage ? " · de votre garage" : ""}</span><b>{it.fromGarage ? "Offerte" : eur(it.unitCents * it.quantity)}</b></div>
+            <div key={it.id} className="w-line"><span>{it.quantity} × {itemLabel(it)}{it.fromGarage ? " · de votre garage" : ""}</span><b>{it.fromGarage ? "Offerte" : eur(it.unitCents * it.quantity)}</b></div>
           ))}
           {r.shows.map((s) => <div key={s.id} className="w-line"><span>{s.show.name}{s.show.isSign && r.signText ? ` « ${r.signText} »` : ""}</span><b>{s.included ? "Offert" : eur(s.priceCents)}</b></div>)}
           <div className="w-total"><span>Total</span><span>{eur(r.totalCents)}</span></div>

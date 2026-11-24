@@ -94,6 +94,7 @@ export async function buyTickets(raw: z.infer<typeof BuySchema>): Promise<{ erro
   if (tooMany) return { error: tooMany };
   const venue = await db.venue.findUnique({ where: { slug: d.slug } });
   if (!venue) return { error: "Établissement introuvable." };
+  if (!venue.ticketsEnabled) return { error: "Ce club ne vend pas d'entrées en ligne." };
   const gate = gateFor(venue, d.eventId);
   if (!gate.open) return { error: gate.message ?? "La billetterie n'est pas ouverte." };
   const tier = await db.ticketTier.findFirst({ where: { id: d.tierId, eventId: d.eventId, active: true, event: { venueId: venue.id, isOpen: true } }, include: { event: true } });

@@ -1,6 +1,7 @@
 import { requireMembership } from "@/lib/auth";
 import { tonight } from "@/lib/dates";
 import { db } from "@/lib/db";
+import { itemLabel } from "@/lib/orderitem";
 import Board, { type Envoi } from "./Board";
 
 export const metadata = { title: "Service du soir · Tablo" };
@@ -16,7 +17,7 @@ export default async function Page() {
         include: {
           reservation: { include: { table: { include: { category: true } } } },
           takenBy: { include: { user: true } },
-          items: { include: { bottleSize: { include: { bottle: true } } } },
+          items: { include: { bottleSize: { include: { bottle: true } }, show: true } },
         },
       })
     : [];
@@ -42,7 +43,7 @@ export default async function Page() {
     items: o.items.map((it) => ({
       id: it.id,
       quantity: it.quantity,
-      label: `${it.bottleSize.bottle.name} ${it.bottleSize.label}${it.flavor ? ` · ${it.flavor}` : ""}`,
+      label: itemLabel(it),
       fromGarage: it.fromGarage,
     })),
   }));

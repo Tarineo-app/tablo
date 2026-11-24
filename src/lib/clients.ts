@@ -62,6 +62,7 @@ export async function loadClients(venueId: string, managerId?: string): Promise<
     c.spentCents += r.totalCents;
     if (r.signText && !c.occasions.includes(r.signText)) c.occasions.push(r.signText);
     for (const o of r.orders) for (const it of o.items) {
+      if (!it.bottleSize) continue; // un show n'est pas une bouteille préférée
       const label = `${it.bottleSize.bottle.name} ${it.bottleSize.label}`;
       c.bottleCount.set(label, (c.bottleCount.get(label) ?? 0) + it.quantity);
     }
