@@ -303,6 +303,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .pkick{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#aeb4c0}
 .psitehero h3{margin:6px 0 0;font:900 clamp(22px,5.4vw,30px)/1.05 Unbounded,system-ui,sans-serif;letter-spacing:-.02em}
 .psitehero p{margin:8px 0 70px;font-size:12.5px;color:#c3c8d2;line-height:1.5}
+.pcred{position:absolute;left:16px;bottom:22px;z-index:3;font-size:10px;letter-spacing:.04em;color:rgba(255,255,255,.5)}
+.pcred b{color:rgba(255,255,255,.78);font-weight:700}
 .pfab{position:absolute;right:14px;bottom:14px;z-index:3;border:0;cursor:pointer;border-radius:999px;padding:13px 20px;font:800 13.5px var(--f);color:#0b0b10;background:var(--accent,#ff5fa2);box-shadow:0 12px 30px color-mix(in srgb,var(--accent,#ff5fa2) 55%,transparent);transition:transform .25s,opacity .3s}
 .pfab:hover{transform:translateY(-2px)}
 .pfab.pulse{animation:pf 2.4s ease-in-out infinite}
@@ -399,6 +401,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
             </div>
           </div>
           <button class="pfab" id="pFab">Réserver une table</button>
+          <span class="pcred">propulsé par <b>Tablo</b></span>
           <div class="psheet" id="pSheet">
             <iframe id="pFrame" title="La réservation Tablo" loading="eager"></iframe>
           </div>
@@ -873,17 +876,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   }else sendTo(pFrame,phoneTheme());
   pScreen.classList.add('open');pFab.classList.remove('pulse');
  }
- const closeSheet=()=>pScreen.classList.remove('open');
+ const closeSheet=()=>{pScreen.classList.remove('open');pFab.classList.add('pulse')};
 
  pFab&&pFab.addEventListener('click',()=>{clearTimeout(pTimer);openSheet()});
 
- /* Première visite : au bout d'un moment, la réservation s'ouvre toute seule. */
- if(pScreen&&'IntersectionObserver'in window){
-  const io=new IntersectionObserver((es)=>{
-   es.forEach(e=>{ if(e.isIntersecting&&!pTimer&&!pScreen.classList.contains('open')) pTimer=setTimeout(openSheet,2600); });
-  },{threshold:.5});
-  io.observe(pScreen);
- }
+ /* Pas d'ouverture automatique : le bouton pulse, c'est au visiteur de le toucher. */
 
  /* Il colle son adresse : on va chercher sa vraie page et on la met dans le téléphone. */
  async function showPhoneSite(e){
@@ -913,7 +910,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   pNote.textContent=d.title?('Voilà le bouton sur '+(d.host||'votre site')+'. Touchez-le.'):"Touchez le bouton : la réservation s'ouvre par-dessus votre page.";
   pFab.classList.add('pulse');
   pBusy=false;
-  clearTimeout(pTimer);pTimer=setTimeout(openSheet,2200);
+  closeSheet();
  }
  pUrlForm&&pUrlForm.addEventListener('submit',showPhoneSite);
 
