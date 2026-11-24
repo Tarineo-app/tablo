@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BlockForm from "./BlockForm";
 import { notFound } from "next/navigation";
 import { addTier, copyTiers, deleteTier, toggleTier } from "@/app/actions/tickets";
 import ActionForm from "@/components/ActionForm";
@@ -23,6 +24,21 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     },
   });
   if (!event) notFound();
+  const [tables, taken] = await Promise.all([
+    db.venueTable.findMany({ where: { venueId: venue.id, active: true }, orderBy: { name: "asc" }, include: { category: { select: { name: true, minSpendCents: true } } } }),
+    db.reservation.findMany({
+      where: { eventId: id, venueId: venue.id, status: { notIn: ["CANCELLED", "NO_SHOW"] } },
+      select: { id: true, tableId: true, organizerName: true, organizerPhone: true, guests: true, organizerEmail: true },
+    }),
+  ]);
+  const takenIds = new Set(taken.map((r) => r.tableId));
+  const tableName = new Map(tables.map((t) => [t.id, t.name]));
+  // Un carré bloqué à la main n'a pas d'email : c'est ce qui le distingue d'une vraie réservation en ligne.
+  const held = taken.filter((r) => r.organizerEmail === "").map((r) => ({
+    id: r.id, tableName: tableName.get(r.tableId) ?? "Carré", name: r.organizerName, phone: r.organizerPhone, guests: r.guests,
+  }));
+  const free = tables.filter((t) => !takenIds.has(t.id)).map((t) => ({ id: t.id, label: `${t.name} · ${t.category.name} · ${t.capacity} pers.` }));
+
   const others = await db.event.findMany({ where: { venueId: venue.id, id: { not: id }, ticketTiers: { some: {} } }, orderBy: { date: "desc" }, take: 6 });
   const sold = event.ticketTiers.flatMap((t) => t.tickets);
   const count = sold.reduce((a, t) => a + t.quantity, 0);
@@ -33,9 +49,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <header>
         <p className="mute" style={{ margin: 0 }}><Link href="/app/soirees">← Soirées</Link></p>
         <h1 style={{ textTransform: "capitalize" }}>{event.name || "Soirée"} · {fmt(event.date)}</h1>
-        <p>Vendez les entrées avec des prix qui montent au fil de la soirée : moins cher pour ceux qui arrivent tôt, avec ou sans conso. Les tarifs passent automatiquement en « Terminé » à l&apos;heure prévue.</p>
+        <p>{venue.ticketsEnabled
+          ? "Tenez les carrés promis en dehors de l'application, et vendez les entrées avec des prix qui montent au fil de la soirée."
+          : "Tenez ici les carrés promis au téléphone ou en direct : ils sortent de la vente en ligne tout de suite."}</p>
       </header>
 
+      <BlockForm eventId={event.id} free={free} held={held} />
+
+      {venue.ticketsEnabled && (
+        <>
       <div className="grid3" style={{ marginBottom: 18 }}>
         <div className="card"><span className="mute">Entrées vendues</span><div style={{ font: "800 30px Unbounded", marginTop: 6 }}>{count}</div></div>
         <div className="card"><span className="mute">Chiffre billetterie</span><div style={{ font: "800 30px Unbounded", marginTop: 6 }}>{eur(revenue)}</div></div>
@@ -106,6 +128,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </tbody>
         </table>
       </section>
+        </>
+      )}
     </>
   );
 }

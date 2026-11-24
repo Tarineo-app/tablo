@@ -2,7 +2,7 @@
 
 Tablo est le « Zenchef des carrés VIP » : un widget que les discothèques et beach clubs intègrent à leur site
 (une ligne de script, un lien bio ou un QR code) pour vendre leurs tables VIP en ligne.
-Abonnement mensuel pour le club (Club 79 €, Prestige 149 €), **aucune commission** sur les réservations :
+Abonnement mensuel pour le club (**200 € par mois**, ou sur mesure pour les groupes), **aucune commission** sur les réservations :
 l'argent des clients arrive sur le compte Stripe du club.
 
 Le fondateur (Alann) n'est pas développeur : explique chaque étape simplement, en français,
@@ -122,6 +122,12 @@ Les réservations et les billets payants restent en « à payer » tant que Stri
 
 ## Tunnel d'inscription
 Les réglages pris sur la page d'accueil voyagent ainsi : URL `/inscription?club=…&site=…` → champs cachés `look_*` du formulaire (`AuthForm`) → cookie `tablo_look` posé **dans l'action `signup`** (jamais pendant le rendu d'une page) → `readLook()` dans `createVenue`.
+
+## Carrés tenus hors application
+`blockTable` / `releaseTable` dans `src/app/actions/floor.ts`, formulaire sur `/app/soirees/[id]`.
+Un carré promis au téléphone, en DM ou au comptoir est bloqué en amont : une `Reservation` `CONFIRMED`
+sans email (c'est ce qui la distingue d'une vraie réservation en ligne), ce qui la sort du widget.
+`releaseTable` la passe en `CANCELLED` et le carré repart à la vente.
 
 ## Démonstration sans compte
 `/demo-club` (route handler) crée une session portant `demo: true` pour le propriétaire de l'établissement `isDemo`. Trois conditions : `DEMO_LOGIN=1`, l'établissement porte `isDemo`, et `requireMembership` renvoie vers `/connexion` si un jeton de démo tombe sur un autre établissement. La session dure 1 h. `refuseInDemo()` dans `src/lib/auth.ts` bloque les actions d'équipe, de compte et d'abonnement — **l'ajouter à toute nouvelle action qui envoie un email, engage de l'argent ou touche aux accès**. Le reste reste manipulable volontairement.

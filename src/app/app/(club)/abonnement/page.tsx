@@ -8,12 +8,27 @@ const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency"
 
 const PLANS = [
   {
-    name: "Club", price: "79 € / mois", sub: "Pour un établissement, une salle.",
-    lines: ["Réservation de carrés sur votre site", "Billetterie et QR codes à l'entrée", "Plan de salle en 3D", "Garage et shows", "Équipe et commissions", "Zéro commission sur vos réservations"],
+    name: "Club", price: "200 € / mois", sub: "Un établissement, tout l'outil.",
+    lines: [
+      "Réservation de carrés sur votre site",
+      "Offres de vos managers et commissions",
+      "Plan de salle en 3D et photos des carrés",
+      "Garage, shows et couronnes",
+      "App serveur et contrôle à l'entrée",
+      "Fichier clients et statistiques",
+      "Zéro commission sur vos réservations",
+    ],
   },
   {
-    name: "Prestige", price: "149 € / mois", sub: "Plusieurs salles, ou un gros volume.",
-    lines: ["Tout le Club", "Plusieurs établissements", "Fichier clients et exports", "Cagnotte entre amis", "Revente et transfert de billets", "Zéro commission sur vos réservations"],
+    name: "Sur mesure", price: "Nous en parlons", sub: "Plusieurs salles, gros volume, besoins à part.",
+    lines: [
+      "Tout le Club",
+      "Plusieurs établissements",
+      "Billetterie ouverte si vous la voulez",
+      "Exports et connexions à vos outils",
+      "Accompagnement à la mise en route",
+      "Zéro commission sur vos réservations",
+    ],
   },
 ];
 
@@ -51,7 +66,7 @@ export default async function Page() {
             <ul style={{ display: "grid", gap: 6, margin: "6px 0 0", padding: 0, listStyle: "none", lineHeight: 1.5 }}>
               {p.lines.map((l) => <li key={l}>· {l}</li>)}
             </ul>
-            <button className="btn btn-main" disabled style={{ marginTop: 8 }}>Payer par carte</button>
+            <button className="btn btn-main" disabled style={{ marginTop: 8 }}>{p.name === "Club" ? "Payer par carte" : "Nous écrire"}</button>
           </section>
         ))}
       </div>

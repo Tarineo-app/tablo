@@ -83,7 +83,7 @@ cd ~/dev/tablo && claude
 
 ## Étape 8 — Abonnement Tablo et landing
 
-> Ajoute l'abonnement du club à Tablo avec Stripe Billing (Club 79 €, Prestige 149 € par mois, essai gratuit de 30 jours, résiliation à la fin de période), comme sur Tarineo. Intègre la landing page de reference/landing.html en page d'accueil (Next.js), avec le bouton de démo vers le widget du club fictif.
+> Ajoute l'abonnement du club à Tablo avec Stripe Billing (200 € par mois ou sur mesure, première soirée offerte, résiliation à la fin de période), comme sur Tarineo. Intègre la landing page de reference/landing.html en page d'accueil (Next.js), avec le bouton de démo vers le widget du club fictif.
 
 **Vérifier :** souscription en test, accès bloqué en fin d'essai sans carte.
 

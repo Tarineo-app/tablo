@@ -179,35 +179,6 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
               </div>
             )}
             <div className="w-legend"><span>Libre</span><span>● Votre choix</span><span>▨ Indisponible ou trop petit</span></div>
-            {table && cat && (
-              <div className="w-info">
-                <div>Catégorie<b>{cat.name}</b></div>
-                <div>Minimum<b>{eur(minCents)}</b></div>
-                <div>Shows offerts<b>{cat.includedShows}</b></div>
-                <div>Acompte<b>{cat.depositPct} %</b></div>
-              </div>
-            )}
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <h1 className="w-title">Vos bouteilles</h1>
-            <div className="w-card" style={{ display: "grid", gap: 8 }}>
-              {garage && !garage.keepsMin ? (
-                <>
-                  <div className="w-line"><span>À racheter pour reprendre votre bouteille</span><b>{nBottles} / {garage.minBottles} bouteille{garage.minBottles > 1 ? "s" : ""}</b></div>
-                  <div className="w-bar"><i style={{ width: `${Math.min(100, (nBottles / Math.max(1, garage.minBottles)) * 100)}%` }} /></div>
-                </>
-              ) : (
-                <>
-                  <div className="w-line"><span>Minimum du carré {table?.name}</span><b>{eur(bottlesCents)} / {eur(minCents)}</b></div>
-                  <div className="w-bar"><i style={{ width: `${Math.min(100, minCents ? (bottlesCents / minCents) * 100 : 100)}%` }} /></div>
-                  {garage && <div className="w-line"><span>Et au moins {garage.minBottles} bouteille{garage.minBottles > 1 ? "s" : ""} pour votre garage</span><b>{nBottles} / {garage.minBottles}</b></div>}
-                </>
-              )}
-            </div>
-
             {venue.garage.enabled && (
               <div className="w-garage">
                 {garage ? (
@@ -241,6 +212,36 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
                 )}
               </div>
             )}
+
+            {table && cat && (
+              <div className="w-info">
+                <div>Catégorie<b>{cat.name}</b></div>
+                <div>Minimum<b>{eur(minCents)}</b></div>
+                <div>Shows offerts<b>{cat.includedShows}</b></div>
+                <div>Acompte<b>{cat.depositPct} %</b></div>
+              </div>
+            )}
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <h1 className="w-title">Vos bouteilles</h1>
+            <div className="w-card" style={{ display: "grid", gap: 8 }}>
+              {garage && !garage.keepsMin ? (
+                <>
+                  <div className="w-line"><span>À racheter pour reprendre votre bouteille</span><b>{nBottles} / {garage.minBottles} bouteille{garage.minBottles > 1 ? "s" : ""}</b></div>
+                  <div className="w-bar"><i style={{ width: `${Math.min(100, (nBottles / Math.max(1, garage.minBottles)) * 100)}%` }} /></div>
+                </>
+              ) : (
+                <>
+                  <div className="w-line"><span>Minimum du carré {table?.name}</span><b>{eur(bottlesCents)} / {eur(minCents)}</b></div>
+                  <div className="w-bar"><i style={{ width: `${Math.min(100, minCents ? (bottlesCents / minCents) * 100 : 100)}%` }} /></div>
+                  {garage && <div className="w-line"><span>Et au moins {garage.minBottles} bouteille{garage.minBottles > 1 ? "s" : ""} pour votre garage</span><b>{nBottles} / {garage.minBottles}</b></div>}
+                </>
+              )}
+            </div>
+
             <div className="w-bottles">
               {bottles.map((b) => (
                 <div key={b.id} className="w-bottle">
