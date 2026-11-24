@@ -330,6 +330,32 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .cabgain b{color:#fff;font-weight:700}
 @media(max-width:760px){.cab{grid-template-columns:1fr;gap:10px;padding:28px 0}.cabnum{padding-top:0}}
 
+
+/* Ce soir sans / ce soir avec */
+#aujourdhui{padding:100px 0 10px}
+.versus{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:38px}
+.vcol{border:1px solid var(--line);border-radius:22px;padding:26px 26px 30px;background:var(--card)}
+.vcol h3{margin:0 0 18px;font-size:17px;letter-spacing:.01em}
+.vcol ul{margin:0;padding:0;list-style:none;display:grid;gap:14px}
+.vcol li{position:relative;padding-left:28px;font-size:15.5px;line-height:1.55;color:#c7ccd6}
+.vcol li::before{position:absolute;left:0;top:0;font-weight:900}
+.vold{background:#0c0c10}
+.vold h3{color:var(--mute)}
+.vold li{color:#8b909b}
+.vold li::before{content:"×";color:#6b7280;font-size:18px;line-height:1.35}
+.vnew{border-color:color-mix(in srgb,var(--ok) 42%,var(--line));background:linear-gradient(160deg,color-mix(in srgb,var(--ok) 7%,var(--card)),var(--card))}
+.vnew li::before{content:"✓";color:var(--ok)}
+@media(max-width:860px){.versus{grid-template-columns:1fr}}
+
+/* Mise en route */
+#pret{padding:96px 0 10px}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:38px}
+.steps3 article{border:1px solid var(--line);border-radius:20px;padding:26px;background:var(--card);display:grid;gap:10px;align-content:start}
+.steps3 span{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:900 15px var(--f);color:#0a0a0c;background:var(--holo);background-size:200% 100%;animation:hs 7s linear infinite}
+.steps3 h3{margin:4px 0 0;font-size:18px;letter-spacing:-.01em}
+.steps3 p{margin:0;color:var(--mute);font-size:15px;line-height:1.6}
+@media(max-width:860px){.steps3{grid-template-columns:1fr}}
+
 /* Les étapes de la configuration */
 .bsteps{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .bsteps li{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border-radius:14px;color:var(--mute);transition:.3s}
@@ -357,12 +383,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   <a href="#" class="logo"><span class="dot"></span>tablo</a>
   <div class="links">
     <a href="#demo">La réservation</a>
-    <a href="#benefices">Ce que ça rapporte</a>
+    <a href="#aujourdhui">Ce que ça change</a>
     <a href="#espace-club">Côté club</a>
     <a href="#construire">À mes couleurs</a>
     <a href="/connexion">Connexion</a>
   </div>
-  <a href="/inscription" class="btn main sm" id="nCta">Construire mon espace</a>
+  <a href="/inscription" class="btn main sm" id="nCta">Mettre mes carrés en ligne</a>
 </nav>
 
 <main>
@@ -373,13 +399,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <h1>Vos carrés se réservent sur votre site. Pas dans vos DM.</h1>
       <p class="lead">Le client choisit son carré, ses bouteilles, son show, et verse l'acompte. Votre manager, lui, continue de vendre — avec de quoi vendre plus cher. Zéro commission.</p>
       <div class="ctas">
-        <a href="#construire" class="btn main">Voir ce que ça donnerait chez moi</a>
-        <a href="#benefices" class="btn">Ce que ça rapporte</a>
+        <a href="#construire" class="btn main">Mettre mes carrés en ligne</a>
       </div>
       <div class="proofs">
-        <span><i>✓</i> Votre première soirée est offerte</span>
-        <span><i>✓</i> Zéro commission sur vos ventes</span>
-        <span><i>✓</i> Une ligne à coller sur votre site</span>
+        <span><i>✓</i> Prêt pour samedi prochain</span>
+        <span><i>✓</i> Vos managers gardent leurs clients</span>
+        <span><i>✓</i> Première soirée offerte, sans carte bancaire</span>
       </div>
     </div>
 
@@ -447,6 +472,38 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     </div>
 
     <div class="scrollhint" id="scrollhint"><span>Faites défiler</span><i></i></div>
+  </div>
+</section>
+
+<section id="aujourdhui">
+  <div class="wrap">
+    <div class="eyebrow rv">Ce soir</div>
+    <h2 class="rv">Votre samedi se vend déjà. Mal.</h2>
+    <p class="sub rv">Rien de ce qui suit n'est nouveau pour vous. C'est juste la première fois que quelqu'un l'écrit.</p>
+    <div class="versus rv">
+      <div class="vcol vold">
+        <h3>Sans Tablo</h3>
+        <ul>
+          <li>La demande tombe en DM à 2 h du matin</li>
+          <li>Le minimum se négocie de vive voix, et se rediscute à table</li>
+          <li>Votre manager promet, vous découvrez le lendemain</li>
+          <li>Un carré bloqué peut très bien ne jamais venir</li>
+          <li>Le serveur cherche qui a commandé quoi</li>
+          <li>Vos meilleurs clients, vous les reconnaissez de visage</li>
+        </ul>
+      </div>
+      <div class="vcol vnew">
+        <h3>Avec Tablo</h3>
+        <ul>
+          <li>Elle arrive pendant que vous dormez, acompte versé</li>
+          <li>Il est écrit, accepté et encaissé avant l'entrée</li>
+          <li>Son offre est chiffrée, datée, tracée — et plus chère</li>
+          <li>L'acompte est pris, la carte reste en garantie</li>
+          <li>L'envoi est numéroté sur son téléphone</li>
+          <li>Leur fiche se remplit toute seule, soirée après soirée</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -597,6 +654,19 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </div>
 </section>
 
+<section id="pret">
+  <div class="wrap">
+    <div class="eyebrow rv">Mise en route</div>
+    <h2 class="rv">Une soirée de travail. Pas un chantier.</h2>
+    <div class="steps3">
+      <article class="rv"><span>1</span><h3>Vous placez vos carrés</h3><p>Une photo de votre plan suffit. Vous posez les carrés à la souris, vous fixez les minimums. La vue 3D se fabrique toute seule.</p></article>
+      <article class="rv"><span>2</span><h3>Vous chargez votre carte</h3><p>Bouteilles, formats, shows, pancarte. Vos prix, vos marques, rien de pré-rempli par nous.</p></article>
+      <article class="rv"><span>3</span><h3>Vous collez une ligne</h3><p>Sur votre site, ou dans votre bio si vous n'en avez pas. Le bouton apparaît, et vos carrés sont ouverts.</p></article>
+    </div>
+    <p class="sub rv" style="margin-top:26px">Et vous ne payez rien tant que vous n'avez pas vu une vraie nuit tourner.</p>
+  </div>
+</section>
+
 <section id="construire">
   <div class="wrap">
     <div class="eyebrow rv">Étape 1 sur 4 · L'apparence</div>
@@ -667,7 +737,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
           <li><span class="num">3</span><div><b>Votre carte</b><em>Bouteilles, shows, pancarte</em></div></li>
           <li><span class="num">4</span><div><b>En ligne</b><em>Le code à coller, ou le lien pour la bio</em></div></li>
         </ol>
-        <a href="/inscription" class="btn main" id="bCta">Ouvrir mon espace &rarr;</a>
+        <a href="/inscription" class="btn main" id="bCta">Mettre mes carrés en ligne &rarr;</a>
         <small id="bSmall">Gratuit pour construire votre espace. Vous ne payez qu&apos;au moment d&apos;ouvrir les réservations.</small>
       </aside>
     </div>
@@ -696,8 +766,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     <h2 class="rv">Votre prochain samedi, vendu d'avance.</h2>
     <p class="sub rv" style="margin:0 auto 28px">Construisez votre espace, placez vos carrés, voyez-le sur votre site. Puis choisissez la soirée que vous voulez tester : <b>la première est offerte</b>, sans carte bancaire. Vous déciderez le lendemain, vos chiffres en main.</p>
     <div class="ctas rv">
-      <a href="/inscription" class="btn main" id="fCta">Construire mon espace</a>
-      <a href="#construire" class="btn">Le mettre à mes couleurs</a>
+      <a href="/inscription" class="btn main" id="fCta">Mettre mes carrés en ligne</a>
     </div>
   </div>
 </section>
