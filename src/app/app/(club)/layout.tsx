@@ -6,7 +6,7 @@ import { ROLE_LABEL, isManagement } from "@/lib/roles";
 
 
 export default async function ClubLayout({ children }: { children: React.ReactNode }) {
-  const { user, membership, venue } = await requireMembership();
+  const { user, membership, venue, demo } = await requireMembership();
   return (
     <div className="shell">
       <aside className="side">
@@ -17,7 +17,19 @@ export default async function ClubLayout({ children }: { children: React.ReactNo
         {isManagement(membership.role) && <a className="nav" href={`/w/${venue.slug}`} target="_blank" rel="noreferrer">Voir mon widget ↗</a>}
         <form action={logout}><button className="btn btn-out" style={{ width: "100%", marginTop: 8 }}>Se déconnecter</button></form>
       </aside>
-      <main className="main">{children}</main>
+      <main className="main">
+        {demo && (
+          <div className="demobar">
+            <span className="tag">Démonstration</span>
+            <div>
+              <b>Vous visitez un club inventé.</b>
+              <em>Les soirées, les carrés et les réservations sont fictifs. Touchez à tout : rien n&apos;est réel.</em>
+            </div>
+            <a className="btn btn-main" href="/inscription">Créer mon espace</a>
+          </div>
+        )}
+        {children}
+      </main>
     </div>
   );
 }

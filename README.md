@@ -61,6 +61,17 @@ Sans ces clés, tout marche avec email et mot de passe ; le bouton Google n'appa
 4. Le script `vercel-build` génère Prisma, applique les migrations puis construit le site. Rien à lancer à la main.
 5. Dans Google Cloud, ajouter l'URI de redirection `https://<adresse-vercel>/auth/google/callback`.
 
+## La démo sans compte
+
+`/demo-club` ouvre l'espace club **sans inscription ni mot de passe** : pratique pour montrer le produit à un patron de boîte, ou pour laisser quelqu'un regarder sans rien créer. Un bouton y mène depuis la page d'accueil.
+
+Pour l'activer, mets `DEMO_LOGIN=1` dans l'environnement (en local comme sur Vercel). Sans ça, le lien renvoie vers la page de connexion.
+
+Trois garde-fous :
+- la session de démo ne dure **qu'une heure** et ne donne accès qu'à l'établissement marqué `isDemo` (« Le Velours » du seed) ;
+- les actions qui touchent au compte, à l'équipe ou à l'abonnement sont **refusées** (inviter, changer un rôle, retirer quelqu'un, choisir la soirée d'essai) ;
+- tout le reste est manipulable : c'est l'intérêt. Pour remettre la démo à neuf, supprime le club et relance `npm run db:seed`.
+
 ## Travailler à deux
 
 **Sur GitHub** : *Settings > Collaborators > Add people*, mettre le pseudo GitHub de ton pote. Il reçoit une invitation par email.

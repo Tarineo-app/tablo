@@ -154,3 +154,11 @@ table.list td { padding: 12px 8px; border-bottom: 1px solid var(--line); vertica
 .trialnums div { padding: 12px 14px; border-radius: 12px; background: var(--card2); border: 1px solid var(--line); }
 .trialnums b { display: block; font-size: 22px; letter-spacing: -.02em; }
 .trialnums span { font-size: 12.5px; color: var(--mute); }
+
+/* Bandeau de démonstration */
+.demobar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin: 0 0 20px; padding: 14px 18px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--ok) 45%, transparent); background: color-mix(in srgb, var(--ok) 10%, var(--card)); }
+.demobar > div { flex: 1; min-width: 240px; }
+.demobar b { display: block; font-size: 15px; letter-spacing: -.01em; }
+.demobar em { display: block; margin-top: 3px; font-style: normal; font-size: 13.5px; color: var(--mute); line-height: 1.5; }
+.demobar .tag { flex: 0 0 auto; align-self: center; width: auto; background: var(--ok); color: #06240f; font-weight: 800; }
+.demobar .btn { min-height: 40px; padding: 0 18px; font-size: 14px; }

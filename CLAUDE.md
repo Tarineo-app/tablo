@@ -118,3 +118,6 @@ Les réservations et les billets payants restent en « à payer » tant que Stri
 
 ## Tunnel d'inscription
 Les réglages pris sur la page d'accueil voyagent ainsi : URL `/inscription?club=…&site=…` → champs cachés `look_*` du formulaire (`AuthForm`) → cookie `tablo_look` posé **dans l'action `signup`** (jamais pendant le rendu d'une page) → `readLook()` dans `createVenue`.
+
+## Démonstration sans compte
+`/demo-club` (route handler) crée une session portant `demo: true` pour le propriétaire de l'établissement `isDemo`. Trois conditions : `DEMO_LOGIN=1`, l'établissement porte `isDemo`, et `requireMembership` renvoie vers `/connexion` si un jeton de démo tombe sur un autre établissement. La session dure 1 h. `refuseInDemo()` dans `src/lib/auth.ts` bloque les actions d'équipe, de compte et d'abonnement — **l'ajouter à toute nouvelle action qui envoie un email, engage de l'argent ou touche aux accès**. Le reste reste manipulable volontairement.

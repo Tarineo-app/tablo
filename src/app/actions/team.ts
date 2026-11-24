@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { MANAGE, requireMembership } from "@/lib/auth";
+import { MANAGE, requireMembership, refuseInDemo } from "@/lib/auth";
 import { readInvite, signInvite } from "@/lib/invite";
 import { createSession } from "@/lib/session";
 import { INVITABLE, ROLE_LABEL } from "@/lib/roles";
@@ -49,6 +49,8 @@ const InviteSchema = z.object({
 });
 
 export async function inviteMember(_: InviteState, form: FormData): Promise<InviteState> {
+  const no = await refuseInDemo();
+  if (no) return no;
   const { venue, membership } = await requireMembership(MANAGE);
   const p = InviteSchema.safeParse(Object.fromEntries(form));
   if (!p.success) return { error: p.error.issues[0].message };
@@ -72,6 +74,8 @@ export async function inviteMember(_: InviteState, form: FormData): Promise<Invi
 }
 
 export async function newInviteLink(membershipId: string): Promise<InviteState> {
+  const no = await refuseInDemo();
+  if (no) return no;
   const { venue } = await requireMembership(MANAGE);
   const m = await db.membership.findFirst({ where: { id: membershipId, venueId: venue.id }, include: { user: true } });
   if (!m) return { error: "Membre introuvable." };
@@ -80,6 +84,8 @@ export async function newInviteLink(membershipId: string): Promise<InviteState> 
 }
 
 export async function changeRole(membershipId: string, role: Role) {
+  const no = await refuseInDemo();
+  if (no) return no;
   const { venue, membership } = await requireMembership(MANAGE);
   if (!INVITABLE.includes(role)) return { error: "Rôle invalide." };
   const m = await db.membership.findFirst({ where: { id: membershipId, venueId: venue.id } });
@@ -92,6 +98,8 @@ export async function changeRole(membershipId: string, role: Role) {
 }
 
 export async function setCommission(membershipId: string, pct: number) {
+  const no = await refuseInDemo();
+  if (no) return no;
   const { venue } = await requireMembership(MANAGE);
   const v = Math.max(0, Math.min(50, Math.round(pct)));
   await db.membership.updateMany({ where: { id: membershipId, venueId: venue.id, role: "MANAGER" }, data: { commissionPct: v } });
@@ -100,6 +108,8 @@ export async function setCommission(membershipId: string, pct: number) {
 }
 
 export async function removeMember(membershipId: string) {
+  const no = await refuseInDemo();
+  if (no) return no;
   const { venue, membership } = await requireMembership(MANAGE);
   const m = await db.membership.findFirst({ where: { id: membershipId, venueId: venue.id } });
   if (!m || m.role === "OWNER") return { error: "Impossible de retirer le propriétaire." };

@@ -93,6 +93,8 @@ model Venue {
   ticketBuybackHours Int       @default(24) // jusqu'à X heures avant la soirée
   ticketBuybackPct   Int       @default(100) // part remboursée
   websiteUrl         String? // le site du club, où l'extension est posée
+  /// Établissement de démonstration : visible sans compte, données fictives.
+  isDemo             Boolean   @default(false)
   /// Facturation : on ouvre tout gratuitement, le club choisit une soirée d'essai,
   /// et le paiement n'est demandé qu'après cette nuit-là.
   billing            Billing   @default(SETUP)

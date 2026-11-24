@@ -10,6 +10,22 @@ export async function currentUser() {
   return db.user.findUnique({ where: { id: s.userId } });
 }
 
+/** Vrai quand la session vient du lien de démonstration (aucun compte créé). */
+export async function isDemoSession() {
+  return (await readSession())?.demo === true;
+}
+
+/**
+ * Refus commun aux actions qu'on ne laisse pas faire en démonstration :
+ * tout ce qui touche au compte, à l'équipe ou à l'abonnement. Le reste
+ * (plan, carte, soirées, service) reste manipulable : c'est l'intérêt de la démo.
+ */
+export async function refuseInDemo(): Promise<{ error: string } | null> {
+  return (await isDemoSession())
+    ? { error: "Mode démonstration : cette action est désactivée. Créez votre espace pour l'utiliser." }
+    : null;
+}
+
 export async function requireUser() {
   const user = await currentUser();
   if (!user) redirect("/connexion");
@@ -22,10 +38,13 @@ export async function requireUser() {
  */
 export async function requireMembership(roles?: Role[]) {
   const user = await requireUser();
+  const demo = await isDemoSession();
   const membership = await db.membership.findFirst({ where: { userId: user.id }, include: { venue: true }, orderBy: { createdAt: "asc" } });
   if (!membership) redirect("/app/nouveau-club");
   if (roles && !roles.includes(membership.role)) redirect("/app?erreur=acces");
-  return { user, membership, venue: membership.venue };
+  // Garde-fou : un jeton de démonstration ne donne accès qu'à l'établissement de démonstration.
+  if (demo && !membership.venue.isDemo) redirect("/connexion");
+  return { user, membership, venue: membership.venue, demo };
 }
 
 export const MANAGE: Role[] = ["OWNER", "DIRECTOR"];

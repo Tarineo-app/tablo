@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { MANAGE, requireMembership, requireUser } from "@/lib/auth";
+import { MANAGE, requireMembership, requireUser, refuseInDemo } from "@/lib/auth";
 import { toCents } from "@/lib/money";
 import { forgetLook, readLook, themeFromLook } from "@/lib/look";
 import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme } from "@/lib/theme";
@@ -292,6 +292,8 @@ export async function deleteEvent(id: string) {
 
 /** Le club choisit la nuit qu'il veut tester : elle est offerte, tout y fonctionne. */
 export async function pickTrialEvent(eventId: string): Promise<ActionState> {
+  const no = await refuseInDemo();
+  if (no) return no;
   const { venue } = await requireMembership(MANAGE);
   if (venue.billing === "ACTIVE") return { error: "Votre abonnement est déjà actif." };
   if (venue.billing !== "SETUP") return { error: "Votre soirée d'essai a déjà été choisie." };

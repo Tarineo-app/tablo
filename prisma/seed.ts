@@ -17,7 +17,7 @@ async function main() {
   const user = await db.user.upsert({ where: { email }, update: {}, create: { email, name: "Démo Tablo", passwordHash: await bcrypt.hash("tablo-demo", 10) } });
   const venue = await db.venue.create({
     data: {
-      slug: "le-velours", name: "Le Velours", city: "Rouen", kind: "club", theme: defaultTheme("club"),
+      slug: "le-velours", name: "Le Velours", city: "Rouen", kind: "club", theme: defaultTheme("club"), isDemo: true, billing: "ACTIVE",
       rules: "Soirée Velvet : tenue chic exigée, 18 ans et plus. Au-delà de 20 personnes, appelez-nous.",
       memberships: { create: [{ userId: user.id, role: "OWNER" }] },
     },

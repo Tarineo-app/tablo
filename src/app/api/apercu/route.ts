@@ -25,9 +25,8 @@ function meta(html: string, name: string) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!rateLimit("apercu", await callerIp(), 20, 10 * 60_000)) {
-    return NextResponse.json({ error: "Trop de demandes, réessayez dans quelques minutes." }, { status: 429 });
-  }
+  const tooMany = await rateLimit("apercu", await callerIp(), 20, 10 * 60_000);
+  if (tooMany) return NextResponse.json({ error: tooMany }, { status: 429 });
   const raw = String(((await req.json().catch(() => ({}))) as { url?: string }).url ?? "").trim();
   if (!raw || raw.length > 300) return NextResponse.json({ error: "Adresse manquante." }, { status: 400 });
 
