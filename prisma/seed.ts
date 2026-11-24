@@ -44,10 +44,22 @@ async function ensureEvents(venueId: string) {
 
 async function main() {
   const email = "demo@tablo.club";
-  const existing = await db.venue.findUnique({ where: { slug: "le-velours" } });
+  const existing = await db.venue.findUnique({
+    where: { slug: "le-velours" },
+    include: { memberships: { where: { role: "OWNER" }, select: { user: { select: { id: true, email: true } } } } },
+  });
   if (existing) {
-    if (existing.isDemo) await ensureEvents(existing.id);
-    console.log("Le Velours existe déjà.");
+    // Un « Le Velours » créé avant l'arrivée de isDemo : on le reconnaît à son propriétaire de démo.
+    const demoOwner = existing.memberships.find((m) => m.user.email === email)?.user;
+    if (!demoOwner) {
+      console.log("Le Velours existe déjà et n'appartient pas au compte de démo : on n'y touche pas.");
+      return;
+    }
+    if (!existing.isDemo) await db.venue.update({ where: { id: existing.id }, data: { isDemo: true } });
+    // En ligne, le mot de passe connu « tablo-demo » ne doit pas ouvrir l'espace sans les garde-fous de la démo.
+    if (!local) await db.user.update({ where: { id: demoOwner.id }, data: { passwordHash: await bcrypt.hash(demoPassword, 10) } });
+    await ensureEvents(existing.id);
+    console.log("Le Velours existe déjà, prêt pour la démo.");
     return;
   }
   const user = await db.user.upsert({ where: { email }, update: {}, create: { email, name: "Démo Tablo", passwordHash: await bcrypt.hash(demoPassword, 10) } });
