@@ -150,3 +150,12 @@
 .w-accept:disabled { opacity: .6; cursor: wait; }
 .w-ghost { min-height: 46px; border-radius: 999px; border: 1px solid var(--w-line); background: none; color: var(--w-mute); font: 600 14px var(--w-font); cursor: pointer; }
 .w-legal { margin: 18px 0 0; font-size: 11.5px; color: var(--w-mute); opacity: .85; }
+.w-ask { display: grid; gap: 4px; text-align: left; padding: 14px 16px; border-radius: 16px; border: 1px dashed color-mix(in srgb, var(--w-accent) 50%, var(--w-line)); background: color-mix(in srgb, var(--w-accent) 7%, transparent); color: var(--w-ink); cursor: pointer; font: inherit; }
+.w-ask b { font-size: 14.5px; }
+.w-ask small { color: var(--w-mute); font-size: 13px; line-height: 1.5; }
+.w-asked { display: grid; gap: 4px; border-color: color-mix(in srgb, var(--w-accent) 45%, var(--w-line)); }
+.w-asked p { margin: 0; color: var(--w-mute); line-height: 1.55; }
+.w-reline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.w-reline .w-sel { flex: 1; min-width: 140px; }
+.w-modes button { min-height: 38px; padding: 0 16px; border-radius: 999px; border: 0; background: none; color: var(--w-mute); font: 700 14px var(--w-font); cursor: pointer; }
+.w-modes button.on { background: var(--w-btn); color: var(--w-on); }

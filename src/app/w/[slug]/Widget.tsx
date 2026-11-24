@@ -8,6 +8,7 @@ import { bottleCount, bottleOptionUnlocked, depositCents, priceShows } from "@/l
 import { themeVars } from "@/lib/theme";
 import type { WidgetData } from "@/lib/widget";
 import ModeTabs from "./ModeTabs";
+import AskOffer from "./AskOffer";
 import Plan3D, { type Box } from "./Plan3D";
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: c % 100 ? 2 : 0 });
@@ -137,6 +138,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
                 </div>
                 <h2 style={{ fontSize: 16 }}>Nombre de personnes</h2>
                 <div className="w-qty"><button onClick={() => setGuests(Math.max(1, guests - 1))} aria-label="Moins">−</button><b>{guests} pers.</b><button onClick={() => setGuests(Math.min(40, guests + 1))} aria-label="Plus">+</button></div>
+                {eventId && <AskOffer slug={venue.slug} eventId={eventId} tableId={tableId} guests={guests} managerCode={managerCode} />}
               </>
             )}
           </>

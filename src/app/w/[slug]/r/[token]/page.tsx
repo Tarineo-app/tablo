@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { db } from "@/lib/db";
 import { itemLabel } from "@/lib/orderitem";
+import Reorder from "./Reorder";
 import { eur } from "@/lib/money";
 import { readTheme, themeVars } from "@/lib/theme";
 import "../../../widget.css";
@@ -22,6 +23,16 @@ export default async function Page({ params }: Props) {
     },
   });
   if (!r || r.venue.slug !== slug) notFound();
+
+  // Carte du soir : ce que le client peut encore commander depuis sa table.
+  const [bottles, shows] = await Promise.all([
+    db.bottle.findMany({ where: { venueId: r.venueId, active: true }, orderBy: { name: "asc" }, include: { sizes: { orderBy: { priceCents: "asc" } } } }),
+    db.show.findMany({ where: { venueId: r.venueId, active: true, isSign: false, minBottles: 0 }, orderBy: { priceCents: "asc" }, select: { id: true, name: true, priceCents: true } }),
+  ]);
+  const options = [
+    ...bottles.flatMap((b) => b.sizes.map((z) => ({ id: z.id, label: `${b.name} ${z.label}`, priceCents: z.priceCents, kind: "bottle" as const, flavors: b.flavors }))),
+    ...shows.map((sh) => ({ id: sh.id, label: sh.name, priceCents: sh.priceCents, kind: "show" as const, flavors: [] as string[] })),
+  ];
   const theme = readTheme(r.venue.theme, r.venue.kind);
   const qr = await QRCode.toDataURL(token, { margin: 1, width: 300 });
   const date = r.event.date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
@@ -45,6 +56,8 @@ export default async function Page({ params }: Props) {
         </div>
         {r.garageItem && <div className="w-card w-rules">Votre bouteille gardée au club ({r.garageItem.bottleSize.bottle.name} {r.garageItem.bottleSize.label}) vous sera remontée avec votre première commande.</div>}
         <div className="w-card w-rules">Le paiement en ligne de l&apos;acompte arrive très bientôt. En attendant, le club vous contacte au {r.organizerPhone} pour confirmer votre réservation.</div>
+        <Reorder token={token} options={options} hasManager={r.managerId !== null} />
+
         <p className="w-legal">L&apos;abus d&apos;alcool est dangereux pour la santé, à consommer avec modération.</p>
       </section>
     </main>
