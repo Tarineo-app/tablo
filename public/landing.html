@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tablo — Vos carrés VIP se vendent sur votre site, sans commission</title>
-<meta name="description" content="Tablo installe la réservation de carrés VIP et la billetterie sur le site de votre club. Acompte, cagnotte, shows, app serveur. 79 € par mois, 0 % de commission.">
+<meta name="description" content="Tablo installe la réservation de carrés VIP sur le site de votre club. Acompte, shows, offres du manager, app serveur. Zéro commission, première soirée offerte.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;600;700;800&family=Cinzel:wght@600;700&family=Fraunces:ital,wght@1,600;1,800&family=Monoton&family=Bungee&display=swap">
 <style>
@@ -71,10 +71,6 @@ h1{font:900 clamp(38px,7vw,82px)/.98 Unbounded,system-ui,sans-serif;letter-spaci
 .skin .amb.on{background:#fff;color:#08080a;border-color:#fff;outline:0}
 
 /* Bénéfices */
-.gains{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
-.gain{border:1px solid var(--line);border-radius:22px;background:var(--card);padding:28px;display:grid;gap:12px;align-content:start}
-.gain .big{font:900 clamp(34px,4vw,48px)/1 Unbounded,system-ui,sans-serif}
-.gain p{margin:0;color:var(--mute);font-size:15.5px;line-height:1.65}
 @media(max-width:860px){.gains{grid-template-columns:1fr}}
 
 /* Bande « aussi inclus » */
@@ -324,6 +320,20 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .siteafter small{color:var(--mute);font-size:13.5px}
 @media(max-width:860px){.sitebody{height:auto;grid-template-columns:1fr}.sitebody.open{grid-template-columns:1fr}.sitebody.open .sitepage{display:none}.sitepanel{border-left:0;height:520px}.sitebody:not(.open) .sitepanel{height:0}}
 
+
+/* Bénéfices : la douleur, ce qu'on fait, ce que ça rapporte */
+#benefices{padding:110px 0 30px}
+.cab{display:grid;grid-template-columns:64px minmax(0,1fr);gap:24px;align-items:start;padding:38px 0;border-top:1px solid var(--line)}
+.cab:first-of-type{border-top:0}
+.cabnum{font:800 15px var(--f);letter-spacing:.18em;color:var(--mute);padding-top:6px}
+.cab h3{margin:0 0 14px;font-size:clamp(23px,2.7vw,34px);line-height:1.15;letter-spacing:-.02em}
+.cab p{margin:0 0 13px;line-height:1.7;color:#c7ccd6;font-size:16.5px;max-width:72ch}
+.cab p:last-child{margin-bottom:0}
+.pain{position:relative;margin:0 0 20px!important;padding:13px 18px;max-width:64ch!important;border-left:2px solid color-mix(in srgb,var(--accent) 70%,transparent);background:rgba(255,255,255,.028);border-radius:0 12px 12px 0;color:#9aa0ad!important;font-size:15.5px!important;font-style:italic}
+.cabgain{color:#e9ecf2!important}
+.cabgain b{color:#fff;font-weight:700}
+@media(max-width:760px){.cab{grid-template-columns:1fr;gap:10px;padding:28px 0}.cabnum{padding-top:0}}
+
 /* Les étapes de la configuration */
 .bsteps{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .bsteps li{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border-radius:14px;color:var(--mute);transition:.3s}
@@ -351,6 +361,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   <a href="#" class="logo"><span class="dot"></span>tablo</a>
   <div class="links">
     <a href="#demo">La réservation</a>
+    <a href="#benefices">Ce que ça rapporte</a>
     <a href="#espace-club">Côté club</a>
     <a href="#construire">À mes couleurs</a>
     <a href="/connexion">Connexion</a>
@@ -362,16 +373,16 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <header class="hero">
   <div class="wrap">
     <span class="badge"><b>Pour les clubs et beach clubs</b></span>
-    <h1>La réservation de vos carrés,<br>directement sur votre site.</h1>
-    <p class="lead">Un bouton sur votre site, et le client réserve son carré, choisit ses bouteilles, son show, puis paie l'acompte. Sans vous appeler, sans commission.</p>
+    <h1>Vos carrés se réservent<br>sur votre site. Pas dans vos DM.</h1>
+    <p class="lead">Le client choisit son carré, ses bouteilles, son show, et verse l'acompte. Votre manager, lui, continue de vendre — avec de quoi vendre plus cher. Zéro commission.</p>
     <div class="ctas">
       <a href="#construire" class="btn main">Voir ce que ça donnerait chez moi</a>
       <a href="#demo" class="btn">Essayer la réservation</a>
     </div>
     <div class="proofs">
+      <span><i>✓</i> Votre première soirée est offerte</span>
       <span><i>✓</i> Zéro commission sur vos ventes</span>
       <span><i>✓</i> Une ligne à coller sur votre site</span>
-      <span><i>✓</i> Rien à installer pour votre équipe</span>
     </div>
   </div>
 </header>
@@ -386,8 +397,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         <button data-s="1">Plan des carrés</button>
         <button data-s="2">Vos bouteilles</button>
         <button data-s="3">Shows et pancarte</button>
-        <button data-s="4">Cagnotte entre amis</button>
-        <button data-s="5">Billetterie</button>
+        <button data-s="4">Le garage</button>
+        <button data-s="5">Acompte</button>
       </div>
       <p class="storyNote">Elle vit sur votre site, à vos couleurs. Essayez-la, c'est la vraie.</p>
     </div>
@@ -414,36 +425,61 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </div>
 </section>
 
-<section id="gains">
+<section id="benefices">
   <div class="wrap">
-    <div class="eyebrow rv">Ce que ça change</div>
-    <h2 class="rv">Trois raisons de passer en ligne.</h2>
-    <div class="gains">
-      <article class="gain rv">
-        <span class="big holo">0 %</span>
-        <h3>De commission</h3>
-        <p>79 € par mois, quoi que vous vendiez. L'argent des réservations arrive directement sur le compte du club, pas sur le nôtre.</p>
-      </article>
-      <article class="gain rv">
-        <span class="big chrome">Acompte</span>
-        <h3>Fini les carrés fantômes</h3>
-        <p>Acompte obligatoire par catégorie, carte enregistrée en garantie. Un carré bloqué est un carré payé.</p>
-      </article>
-      <article class="gain rv">
-        <span class="big chrome">+ panier</span>
-        <h3>Les extras se vendent tout seuls</h3>
-        <p>Bouteilles, couronnes, shows et pancarte au prénom : le client ajoute lui-même, avant la soirée, sans qu'un serveur ait à vendre.</p>
-      </article>
-    </div>
+    <div class="eyebrow rv">Ce que ça rapporte</div>
+    <h2 class="rv">Quatre choses qui vous coûtent de l'argent ce soir.</h2>
+    <p class="sub rv">Pas une liste de fonctions. Ce que chacune change pour vous, en euros et en nuits plus calmes.</p>
+
+    <article class="cab rv">
+      <span class="cabnum">01</span>
+      <div>
+        <p class="pain">« Mon meilleur manager vend par WhatsApp. Je ne sais ni ce qu'il a promis, ni à quel prix. Et lui ne veut pas d'un logiciel qui le court-circuite. »</p>
+        <h3>Votre manager vend plus cher — et il garde la main.</h3>
+        <p>Il compose la soirée de son client : le carré, les bouteilles, les shows, la pancarte au prénom. Il coche ce qu'il offre, il fixe <b>son</b> prix, il envoie un lien. Le client voit la valeur à la carte barrée, le prix du manager, et ce qu'on lui offre. Il accepte d'un pouce.</p>
+        <p class="cabgain"><b>Le panier monte</b>, parce qu'un bon commercial vend mieux qu'un formulaire. <b>Le manager y gagne</b> : sa commission suit son lien, et il a enfin de quoi faire un geste sans vous appeler. <b>Vous, vous gardez la trace</b> de ce qui a été promis, à qui, et à combien.</p>
+      </div>
+    </article>
+
+    <article class="cab rv">
+      <span class="cabnum">02</span>
+      <div>
+        <p class="pain">« Trois carrés bloqués samedi. Deux ne sont jamais venus. Personne n'avait rien payé. »</p>
+        <h3>Un carré bloqué devient un carré payé.</h3>
+        <p>Chaque catégorie porte son minimum et son acompte. Le client ne peut pas valider en dessous, et il verse l'acompte en ligne — ou laisse sa carte en garantie. L'argent arrive directement sur le compte du club.</p>
+        <p class="cabgain"><b>Les carrés fantômes disparaissent</b>, et le minimum n'est plus une discussion à une heure du matin : il est écrit, accepté, encaissé avant que la soirée commence.</p>
+      </div>
+    </article>
+
+    <article class="cab rv">
+      <span class="cabnum">03</span>
+      <div>
+        <p class="pain">« À une heure, plus personne ne sait qui est arrivé, ni quelle bouteille part où. On court, et on vend moins. »</p>
+        <h3>La soirée se tient toute seule.</h3>
+        <p>Le plan de salle en direct : libre, réservé, arrivé, absent. Les envois tombent sur le téléphone des serveurs, numérotés, dans l'ordre. À la porte, un QR code et c'est réglé. Et depuis sa table, le client recommande une bouteille ou un deuxième show sans chercher personne.</p>
+        <p class="cabgain"><b>Chaque minute gagnée au service est une bouteille de plus vendue.</b> Vos serveurs arrêtent de chercher, vos clients arrêtent d'attendre.</p>
+      </div>
+    </article>
+
+    <article class="cab rv">
+      <span class="cabnum">04</span>
+      <div>
+        <p class="pain">« Je ne sais pas qui sont mes vingt meilleurs clients. Je les reconnais de visage, c'est tout. »</p>
+        <h3>Votre fichier client se remplit sans que personne le saisisse.</h3>
+        <p>Chaque réservation nourrit une fiche : combien de venues, combien dépensé, quelles bouteilles, quel manager, quelles occasions. Rien à taper, rien à importer.</p>
+        <p class="cabgain"><b>Vous appelez les bons en premier</b> pour le prochain gros samedi, et vos managers savent à qui proposer quoi.</p>
+      </div>
+    </article>
+
     <div class="strip rv">
-      <span>Cagnotte entre amis</span>
-      <span>Billetterie : prix selon l'heure</span>
+      <span>Garage : la bouteille gardée au club</span>
+      <span>Couronnes et shows liés aux bouteilles</span>
+      <span>Plan de salle en 3D</span>
       <span>Liens managers et commissions</span>
       <span>Contrôle à l'entrée par QR</span>
       <span>App serveur</span>
-      <span>Garage : la bouteille gardée au club</span>
-      <span>Revente du billet à un proche</span>
       <span>Fichier clients automatique</span>
+      <span>Zéro commission, toujours</span>
     </div>
   </div>
 </section>
@@ -658,8 +694,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     <div class="faq">
       <details class="rv"><summary>Combien de temps pour être en ligne ?</summary><p>Une soirée de travail. Vous créez vos catégories, placez vos carrés sur une photo de votre plan, chargez votre carte des bouteilles, puis collez une ligne de code sur votre site. Si vous n'avez pas de site, le lien et le QR code suffisent.</p></details>
       <details class="rv"><summary>Vous prenez une commission sur les réservations ?</summary><p>Non, jamais. L'argent des clients arrive sur le compte du club ; seuls les frais bancaires du paiement s'appliquent, comme pour un terminal. Vous payez un abonnement mensuel, sans engagement, et vous le découvrez au moment de mettre vos réservations en ligne.</p></details>
+      <details class="rv"><summary>Mes managers vont-ils perdre leurs clients ?</summary><p>C'est l'inverse. Chaque manager a son lien : tout ce qui passe par lui lui reste attribué, et sa commission se calcule toute seule. Il peut composer une offre à son prix, offrir un show ou la pancarte, et l'envoyer par WhatsApp. Il garde la relation, il gagne un outil pour vendre plus cher — et vous, vous voyez enfin ce qui a été promis.</p></details>
       <details class="rv"><summary>Et si un client ne vient pas ?</summary><p>L'acompte est encaissé à la réservation et sa carte reste en garantie. Vous fixez le pourcentage par catégorie, et votre politique d'annulation s'affiche dans le widget.</p></details>
       <details class="rv"><summary>Mes serveurs doivent installer quelque chose ?</summary><p>Non. Ils ouvrent un lien sur leur téléphone et voient les envois de la soirée, avec « Je prends » puis « Servi ». Le videur scanne les QR codes depuis le même espace.</p></details>
+      <details class="rv"><summary>Je vends aussi des entrées simples, vous le faites ?</summary><p>Ce n'est pas notre métier, et c'est déjà bien servi ailleurs. Tablo s'occupe de ce qui rapporte le plus : le carré, les bouteilles, les shows. Si vous y tenez, la billetterie existe et s'ouvre sur demande.</p></details>
       <details class="rv"><summary>Je peux garder une bouteille pour un client ?</summary><p>Oui. Une bouteille entamée part au garage avec un code. Le client le saisit la fois suivante et la récupère, à condition d'en racheter le nombre que vous avez fixé.</p></details>
     </div>
   </div>
@@ -668,7 +706,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <section class="final">
   <div class="wrap">
     <h2 class="rv">Votre prochain samedi, vendu d'avance.</h2>
-    <p class="sub rv" style="margin:0 auto 28px">Construisez votre espace, placez vos carrés, collez une ligne sur votre site. Vous voyez le résultat avant de décider.</p>
+    <p class="sub rv" style="margin:0 auto 28px">Construisez votre espace, placez vos carrés, voyez-le sur votre site. Puis choisissez la soirée que vous voulez tester : <b>la première est offerte</b>, sans carte bancaire. Vous déciderez le lendemain, vos chiffres en main.</p>
     <div class="ctas rv">
       <a href="/inscription" class="btn main" id="fCta">Construire mon espace</a>
       <a href="#construire" class="btn">Le mettre à mes couleurs</a>
@@ -685,7 +723,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 <footer>
   <div class="wrap">
-    <span>© Tablo — réservation de carrés VIP et billetterie pour la nuit.</span>
+    <span>© Tablo — la réservation de carrés VIP pour la nuit.</span>
     <span><a href="/connexion">Connexion</a> · <a href="/demo">Démo complète</a></span>
   </div>
 </footer>

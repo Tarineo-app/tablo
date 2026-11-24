@@ -47,9 +47,13 @@ et donne toujours la commande exacte à lancer.
 - Cache Turbopack corrompu → supprimer `.next` et relancer.
 - Tests sur mobile en réseau local → `allowedDevOrigins` dans `next.config`.
 
-## Hors MVP (ne pas construire maintenant)
-Plan 3D (le MVP utilise un plan 2D), bouteilles 3D, shows générés par IA, détourage automatique,
-fidélité et classement, objectifs par soirée, tarifs par soirée avancés, vues 360°.
+## Hors périmètre (décidé le 24/11/2026)
+- **La cagnotte** (paiement à plusieurs) sort du produit : trop de construction pour le départ.
+  L'enum `PayMode.POOL` et les colonnes `poolToken`/`poolDeadline` restent en base, dormantes.
+- **La billetterie** est fermée par défaut (`Venue.ticketsEnabled`). Shotgun sert déjà l'entrée simple ;
+  le cœur du produit, c'est le carré. Le code reste entier, un interrupteur suffit à la rouvrir.
+- Toujours hors sujet : bouteilles 3D, shows générés par IA, détourage automatique, fidélité et classement,
+  objectifs par soirée, vues 360°.
 
 ## Où en est le code
 
@@ -121,3 +125,31 @@ Les réglages pris sur la page d'accueil voyagent ainsi : URL `/inscription?club
 
 ## Démonstration sans compte
 `/demo-club` (route handler) crée une session portant `demo: true` pour le propriétaire de l'établissement `isDemo`. Trois conditions : `DEMO_LOGIN=1`, l'établissement porte `isDemo`, et `requireMembership` renvoie vers `/connexion` si un jeton de démo tombe sur un autre établissement. La session dure 1 h. `refuseInDemo()` dans `src/lib/auth.ts` bloque les actions d'équipe, de compte et d'abonnement — **l'ajouter à toute nouvelle action qui envoie un email, engage de l'argent ou touche aux accès**. Le reste reste manipulable volontairement.
+
+## Offres du manager (le cœur commercial)
+`src/lib/offers.ts`, `src/app/actions/offers.ts`, `/app/offres`, page publique `/o/[code]`.
+Le manager compose la soirée d'un client (carré, bouteilles, shows, pancarte), coche ce qui est **offert**,
+fixe **son** prix (`Offer.priceCents`) pendant que `listCents` garde la valeur à la carte. L'écart entre les
+deux est ce qu'il offre, et c'est ce qu'on montre au client. À l'acceptation, la réservation est créée au prix
+du manager, les lignes offertes à 0 €, l'envoi n°1 monté avec les bouteilles.
+Sens inverse : `requestOffer` (widget) et `askManager` (page de réservation) créent une offre `REQUESTED`
+que le manager chiffre ensuite. **Les prix sont toujours relus en base, jamais pris du navigateur.**
+
+Principe à ne pas perdre de vue : l'outil ne doit jamais court-circuiter le manager. C'est son argument
+de vente, pas son remplaçant.
+
+## Recommander en soirée
+`src/app/actions/reorder.ts`. Depuis `/w/[slug]/r/[token]`, le client ajoute bouteilles et shows :
+un nouvel `Order` numéroté à la suite part au service. `OrderItem.bottleSizeId` est désormais
+**nullable** et `showId` existe — tout affichage d'un article passe par `itemLabel()` (`src/lib/orderitem.ts`).
+La fenêtre est la nuit même : de la veille au lendemain midi.
+
+## Landing
+Reconstruite le 24/11/2026 autour des bénéfices (CAB) : chaque bloc `.cab` porte la douleur en citation,
+ce que fait l'outil, puis ce que ça rapporte. **Le manager est le bénéfice n°1.** Pas de prix sur la page.
+La règle d'avant tient toujours : ne pas la ré-alourdir, une nouvelle fonction entre dans la bande
+« aussi inclus » ou dans la FAQ.
+
+### Migrations (suite)
+- `20261123180000_vue_3d`, `20261123190000_essai_par_soiree`, `20261123200000_demo`
+- `20261124200000_offres_manager` (Offer, OfferItem, OrderItem.showId, ticketsEnabled, payModes sans POOL)
