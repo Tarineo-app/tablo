@@ -130,7 +130,8 @@ sans email (c'est ce qui la distingue d'une vraie réservation en ligne), ce qui
 `releaseTable` la passe en `CANCELLED` et le carré repart à la vente.
 
 ## Démonstration sans compte
-`/demo-club` (route handler) crée une session portant `demo: true` pour le propriétaire de l'établissement `isDemo`. Trois conditions : `DEMO_LOGIN=1`, l'établissement porte `isDemo`, et `requireMembership` renvoie vers `/connexion` si un jeton de démo tombe sur un autre établissement. La session dure 1 h. `refuseInDemo()` dans `src/lib/auth.ts` bloque les actions d'équipe, de compte et d'abonnement — **l'ajouter à toute nouvelle action qui envoie un email, engage de l'argent ou touche aux accès**. Le reste reste manipulable volontairement.
+`/demo-club` (route handler) crée une session portant `demo: true` pour le propriétaire de l'établissement `isDemo`. Trois conditions : `DEMO_LOGIN=1`, l'établissement porte `isDemo`, et `requireMembership` renvoie vers `/connexion` si un jeton de démo tombe sur un autre établissement. La session dure 1 h.
+En ligne (https://tablo-club.vercel.app, projet Vercel `tablo-club`, équipe Tarineo-Team), `vercel-build` lance le seed quand `DEMO_LOGIN=1` : il crée « Le Velours » une seule fois (mot de passe aléatoire hors base locale, on entre par `/demo-club`) et recrée des soirées dès qu'il n'en reste plus à venir. `refuseInDemo()` dans `src/lib/auth.ts` bloque les actions d'équipe, de compte et d'abonnement — **l'ajouter à toute nouvelle action qui envoie un email, engage de l'argent ou touche aux accès**. Le reste reste manipulable volontairement.
 
 ## Offres du manager (le cœur commercial)
 `src/lib/offers.ts`, `src/app/actions/offers.ts`, `/app/offres`, page publique `/o/[code]`.

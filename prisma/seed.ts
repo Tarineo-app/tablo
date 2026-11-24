@@ -1,6 +1,7 @@
 // Données de démo : le club fictif « Le Velours » (Rouen) avec un compte propriétaire.
 // Lancer avec : npx prisma db seed
 import "dotenv/config";
+import { randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
@@ -8,13 +9,48 @@ import { defaultTheme } from "../src/lib/theme";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
 
+// En local, mot de passe connu pour se connecter facilement. En ligne, mot de passe
+// aléatoire jamais affiché : on entre dans la démo par /demo-club, qui bride les actions sensibles.
+const local = /@(localhost|127\.0\.0\.1)[:/]/.test(process.env.DATABASE_URL ?? "");
+const demoPassword = local ? "tablo-demo" : randomBytes(24).toString("base64url");
+
+// Soirées de démo : on en recrée dès qu'il n'en reste plus à venir, pour que la démo ne vieillisse pas.
+async function ensureEvents(venueId: string) {
+  const upcoming = await db.event.count({ where: { venueId, date: { gte: new Date() } } });
+  if (upcoming > 0) return;
+  const next = new Date();
+  const dates: [number, string][] = [[5, "Afro Night"], [6, "Velvet Gold"], [6, "Nuit Vénitienne"]];
+  for (const [weekday, name] of dates) {
+    const d = new Date(next);
+    d.setUTCDate(d.getUTCDate() + ((weekday - d.getUTCDay() + 7) % 7 || 7) + (name === "Nuit Vénitienne" ? 7 : 0));
+    d.setUTCHours(12, 0, 0, 0);
+    await db.event.create({
+      data: {
+        venueId, date: d, name,
+        // Billetterie : le prix monte avec l'heure d'arrivée.
+        ticketTiers: {
+          create: [
+            { name: "Early", priceCents: 0, drinks: 0, untilTime: "23:30", quota: 80, sortOrder: 0 },
+            { name: "Avant minuit", priceCents: 1000, drinks: 0, untilTime: "00:30", sortOrder: 1 },
+            { name: "Avant minuit + conso", priceCents: 1500, drinks: 1, untilTime: "00:30", sortOrder: 2 },
+            { name: "Entrée + conso", priceCents: 2000, drinks: 1, untilTime: null, sortOrder: 3 },
+          ],
+        },
+      },
+    });
+  }
+  console.log("Soirées de démo ajoutées.");
+}
+
 async function main() {
   const email = "demo@tablo.club";
-  if (await db.venue.findUnique({ where: { slug: "le-velours" } })) {
-    console.log("Le Velours existe déjà, rien à faire.");
+  const existing = await db.venue.findUnique({ where: { slug: "le-velours" } });
+  if (existing) {
+    if (existing.isDemo) await ensureEvents(existing.id);
+    console.log("Le Velours existe déjà.");
     return;
   }
-  const user = await db.user.upsert({ where: { email }, update: {}, create: { email, name: "Démo Tablo", passwordHash: await bcrypt.hash("tablo-demo", 10) } });
+  const user = await db.user.upsert({ where: { email }, update: {}, create: { email, name: "Démo Tablo", passwordHash: await bcrypt.hash(demoPassword, 10) } });
   const venue = await db.venue.create({
     data: {
       slug: "le-velours", name: "Le Velours", city: "Rouen", kind: "club", theme: defaultTheme("club"), isDemo: true, billing: "ACTIVE",
@@ -82,28 +118,10 @@ async function main() {
     });
   }
 
-  const next = new Date();
-  const dates: [number, string][] = [[5, "Afro Night"], [6, "Velvet Gold"], [6, "Nuit Vénitienne"]];
-  for (const [weekday, name] of dates) {
-    const d = new Date(next);
-    d.setUTCDate(d.getUTCDate() + ((weekday - d.getUTCDay() + 7) % 7 || 7) + (name === "Nuit Vénitienne" ? 7 : 0));
-    d.setUTCHours(12, 0, 0, 0);
-    await db.event.create({
-      data: {
-        venueId: venue.id, date: d, name,
-        // Billetterie : le prix monte avec l'heure d'arrivée.
-        ticketTiers: {
-          create: [
-            { name: "Early", priceCents: 0, drinks: 0, untilTime: "23:30", quota: 80, sortOrder: 0 },
-            { name: "Avant minuit", priceCents: 1000, drinks: 0, untilTime: "00:30", sortOrder: 1 },
-            { name: "Avant minuit + conso", priceCents: 1500, drinks: 1, untilTime: "00:30", sortOrder: 2 },
-            { name: "Entrée + conso", priceCents: 2000, drinks: 1, untilTime: null, sortOrder: 3 },
-          ],
-        },
-      },
-    });
-  }
-  console.log("Le Velours créé. Connexion : demo@tablo.club / tablo-demo · Widget : /w/le-velours");
+  await ensureEvents(venue.id);
+  console.log(local
+    ? "Le Velours créé. Connexion : demo@tablo.club / tablo-demo · Widget : /w/le-velours"
+    : "Le Velours créé. Entrée par /demo-club · Widget : /w/le-velours");
 }
 
 main().finally(() => db.$disconnect());
