@@ -9,7 +9,7 @@ import { themeVars } from "@/lib/theme";
 import type { WidgetData } from "@/lib/widget";
 import ModeTabs from "./ModeTabs";
 import AskOffer from "./AskOffer";
-import Plan3D, { type Box } from "./Plan3D";
+import Plan3D, { kindOf, type Box } from "./Plan3D";
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: c % 100 ? 2 : 0 });
 const day = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/Paris" });
@@ -151,33 +151,20 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
             {venue.tour3dUrl && (
               <a className="w-tour" href={venue.tour3dUrl} target="_blank" rel="noreferrer">Visiter la salle en 3D ↗</a>
             )}
-            {venue.plan3d ? (
-              <Plan3D
-                planImageUrl={venue.planImageUrl} wallColor={venue.wallColor} tilt={venue.planTilt}
-                selected={tableId} onSelect={setTableId}
-                boxes={tables.map<Box>((t) => ({
+            <Plan3D
+              planImageUrl={venue.planImageUrl} wallColor={venue.wallColor} tilt={venue.planTilt || 52}
+              selected={tableId} onSelect={setTableId} beach={venue.kind === "beach"} startFlat={!venue.plan3d}
+              boxes={tables.map<Box>((t) => {
+                const taken = !!event?.taken.includes(t.id), small = guests > t.capacity;
+                return {
                   id: t.id, name: t.name,
-                  sub: event?.taken.includes(t.id) ? "Réservé" : `min ${eur(event?.prices[t.id] ?? t.minSpendCents)}`,
+                  sub: taken ? "Réservé" : small ? `max ${t.capacity} pers.` : `min ${eur(event?.prices[t.id] ?? t.minSpendCents)}`,
                   x: t.x, y: t.y, w: t.w, h: t.h,
                   elevation: t.elevation, color: t.color, photoUrl: t.photoUrl,
-                  taken: !!event?.taken.includes(t.id), small: guests > t.capacity,
-                }))}
-              />
-            ) : (
-              <div className="w-plan" style={{ backgroundImage: venue.planImageUrl ? `url(${venue.planImageUrl})` : undefined }}>
-                {tables.map((t) => {
-                  const taken = event?.taken.includes(t.id);
-                  const small = guests > t.capacity;
-                  return (
-                    <button key={t.id} className={`w-t ${t.id === tableId ? "on" : ""}`} disabled={taken || small}
-                      title={taken ? "Déjà réservé" : small ? `${t.capacity} pers. maximum` : undefined}
-                      style={{ left: `${t.x}%`, top: `${t.y}%`, width: `${t.w}%`, height: `${t.h}%` }} onClick={() => setTableId(t.id)}>
-                      <span>{t.name}<small>{taken ? "Réservé" : `min ${eur(event?.prices[t.id] ?? t.minSpendCents)}`}</small></span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+                  taken, small, kind: kindOf(categories.find((c) => c.id === t.categoryId)?.name, t.name),
+                };
+              })}
+            />
             <div className="w-legend"><span>Libre</span><span>● Votre choix</span><span>▨ Indisponible ou trop petit</span></div>
             {venue.garage.enabled && (
               <div className="w-garage">

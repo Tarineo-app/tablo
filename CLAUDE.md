@@ -115,8 +115,15 @@ Reste : billets payants en ligne (la billetterie est fermée par défaut), CGV e
 
 À appliquer avec `npx prisma migrate deploy`.
 
-## Vue 3D du plan
-`src/app/w/[slug]/Plan3D.tsx` : pas de bibliothèque 3D, uniquement du CSS 3D. La scène est `rotateX(planTilt) rotateZ(rot)`. Chaque carré est un cuboïde : la face du dessus est `translateZ(z)`, les quatre murs ont `transform-origin: 0 0` et `translateZ(z) rotateX(-90deg)` (plus `rotateY(-90deg)` pour les côtés). Les dimensions sont calculées en pixels depuis un ResizeObserver, pas en pourcentages, pour que les murs tombent juste. `TableCategory.color` et `elevation` pilotent la couleur et la hauteur, `VenueTable.photoUrl` la photo affichée à la sélection, `Venue.tour3dUrl` une vraie visite externe.
+## Plan des carrés (3D et vue de dessus)
+`src/app/w/[slug]/Plan3D.tsx` (+ `.p3-*` dans `src/app/w/widget.css`), utilisé **toujours** par le widget : `Venue.plan3d` ne décide plus que la vue d'ouverture (3D ou vue de dessus).
+Pas de bibliothèque 3D, uniquement du CSS 3D. La scène est `rotateX(planTilt) rotateZ(rot)` ; les positions sont en % **du sol** (`.p3-stage`, mesuré par ResizeObserver), pas du cadre.
+Chaque emplacement reçoit son **mobilier**, déduit du nom de la catégorie ou du carré par `kindOf()` : banquette en U et table lumineuse (par défaut), table haute avec tabourets (« haute », « mange-debout »),
+cabana avec toile et poteaux (« cabana »), lit balinais avec parasol (« bali », « lit », « daybed »). `Venue.kind === "beach"` passe en bois, sable et toile.
+Le nom et le prix sont sur une **étiquette debout** (`.p3-pin`, contre-rotation `rotateZ(-rot) rotateX(-tilt)`), pas écrits sur le sol.
+Pièges : **jamais de `filter` ni d'`opacity` sur un élément qui porte du 3D** (le navigateur l'aplatit ; on grise les enfants) ; en vue de dessus, les murs et pieds (vus de profil) sont retirés et l'étiquette montée de 18 px, sinon le tri des plans se trompe.
+`TableCategory.color` et `elevation` pilotent la couleur et la hauteur, `VenueTable.photoUrl` la photo affichée à la sélection, `Venue.tour3dUrl` une vraie visite externe.
+La démo (`public/demo.html`, `stepCarre`) suit le même principe avec son propre décor (piste LED, cabine DJ et bar en relief, mer, piscine, palmiers).
 
 ## Facturation
 `src/lib/billing.ts` : `gateFor(venue, eventId)` décide si le public peut réserver. Elle est appelée dans le widget **et** dans `reserve.ts` / `tickets.ts` — ne jamais se contenter de griser un bouton. `closeTrialIfOver` passe le club en `LOCKED` le lendemain 8 h de sa soirée d'essai.
