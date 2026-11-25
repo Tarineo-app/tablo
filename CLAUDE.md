@@ -159,6 +159,9 @@ son écran change, puis la page reprend son cours**. Cinq étapes (`.step`, `--n
 (`demo.html?embed=1`, pilotée par `postMessage({tour})` : 0 carré, 2 panier/shows, 3 acompte). La fenêtre est rendue à
 375 px puis réduite (`--k`) pour ne pas se tasser. Sur mobile : texte court en haut, téléphone dessous, barre de progression.
 Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), constructeur (étape 1 du tunnel), 4 questions, appel final.
+**Haut de page (25/11/2026, soir)** : accroche « Plus de shows. Plus de bouteilles. Sur chaque carré. » (le but : vendre shows, bouteilles, montées en gamme).
+L'en-tête du site du club dans le téléphone est un teaser de soirée **dessiné en canvas** (`#pVid` : faisceaux, lasers sur les temps forts, fumée, foule en ombre chinoise), aux couleurs `--accent`, masqué si le club a une vraie image (`.has-img`), arrêté hors écran et figé si `prefers-reduced-motion`.
+À l'étape 0, toucher « Réserver une table » ouvre la vraie réservation **dans le téléphone pour l'essayer soi-même** (`tryIt()`, classe `try`, croix `#pClose`) ; dès qu'on fait défiler, la séquence reprend.
 **Lien personnalisé pour la prospection** : `/?club=Le%20Rex&site=lerex.fr` met le nom du club et sa vraie page dans le téléphone
 (via `/api/apercu`) et préremplit l'inscription. Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` ou la FAQ.
 
