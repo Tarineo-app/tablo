@@ -13,7 +13,7 @@ export const maxDuration = 60;
  * et on envoie les relances. Vercel signe l'appel avec CRON_SECRET ; sans ce secret, rien ne tourne.
  */
 export async function GET(req: Request) {
-  const secret = process.env.CRON_SECRET;
+  const secret = process.env.CRON_SECRET?.trim();
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Non autorisé." }, { status: 401 });
   }

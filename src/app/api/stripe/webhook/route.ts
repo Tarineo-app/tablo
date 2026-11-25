@@ -14,7 +14,8 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(req: Request) {
   const s = stripe();
-  const secrets = [process.env.STRIPE_WEBHOOK_SECRET, process.env.STRIPE_CONNECT_WEBHOOK_SECRET].filter((x): x is string => !!x);
+  // .trim() : un retour à la ligne collé avec la clé casserait la vérification de signature.
+  const secrets = [process.env.STRIPE_WEBHOOK_SECRET, process.env.STRIPE_CONNECT_WEBHOOK_SECRET].map((x) => x?.trim()).filter((x): x is string => !!x);
   if (!s || secrets.length === 0) return NextResponse.json({ error: "Stripe n'est pas configuré." }, { status: 503 });
 
   const sig = req.headers.get("stripe-signature");

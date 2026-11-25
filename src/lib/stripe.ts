@@ -9,12 +9,12 @@ let client: Stripe | null | undefined;
 
 export function stripe(): Stripe | null {
   if (client !== undefined) return client;
-  const key = process.env.STRIPE_SECRET_KEY;
+  const key = process.env.STRIPE_SECRET_KEY?.trim();
   client = key ? new Stripe(key, { appInfo: { name: "Tablo" }, maxNetworkRetries: 2 }) : null;
   return client;
 }
 
-export const stripeConfigured = () => !!process.env.STRIPE_SECRET_KEY;
+export const stripeConfigured = () => !!process.env.STRIPE_SECRET_KEY?.trim();
 
 /** Le club peut-il encaisser en ligne ? Clé Tablo présente et compte du club activé par Stripe. */
 export function paymentsReady(venue: { stripeAccountId: string | null; stripeChargesEnabled: boolean }) {

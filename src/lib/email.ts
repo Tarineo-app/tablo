@@ -5,12 +5,12 @@ import "server-only";
  * Sans RESEND_API_KEY, rien ne part et rien ne casse : on renvoie `false`
  * pour que l'appelant affiche un lien à copier à la place.
  */
-export const emailConfigured = () => !!process.env.RESEND_API_KEY;
+export const emailConfigured = () => !!process.env.RESEND_API_KEY?.trim();
 
 type Mail = { to: string; subject: string; html: string; text: string; replyTo?: string; idempotencyKey?: string };
 
 export async function sendEmail(m: Mail): Promise<boolean> {
-  const key = process.env.RESEND_API_KEY;
+  const key = process.env.RESEND_API_KEY?.trim();
   if (!key || !m.to) return false;
   try {
     const res = await fetch("https://api.resend.com/emails", {
