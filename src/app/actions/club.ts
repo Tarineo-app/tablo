@@ -8,7 +8,7 @@ import { MANAGE, requireMembership, requireUser, refuseInDemo } from "@/lib/auth
 import { toCents } from "@/lib/money";
 import { forgetLook, readLook, themeFromLook } from "@/lib/look";
 import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme } from "@/lib/theme";
-import { isImageValue, persistImage } from "@/lib/storage";
+import { imageFromForm, isImageValue, persistImage } from "@/lib/storage";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
 
@@ -207,8 +207,12 @@ export async function addBottle(_: ActionState, form: FormData): Promise<ActionS
     .filter((s) => s.label && s.priceCents > 0)
     .map((s) => ({ label: s.label, volume: s.volume || "—", priceCents: s.priceCents, stock: s.stockRaw ? Math.max(0, parseInt(s.stockRaw, 10) || 0) : null }));
   if (!sizes.length) return { error: "Ajoutez au moins un format avec un prix." };
-  const photoUrl = String(form.get("photoUrl") || "").trim();
-  if (photoUrl && !/^https:\/\//.test(photoUrl)) return { error: "La photo doit être une adresse https://" };
+  // Photo : un fichier choisi sur l'ordinateur, ou à défaut une adresse https.
+  const upload = await imageFromForm(venue.id, form.get("photo"));
+  if ("error" in upload) return { error: upload.error };
+  const typed = String(form.get("photoUrl") || "").trim();
+  if (typed && !/^https:\/\//.test(typed)) return { error: "La photo doit être une adresse https://" };
+  const photoUrl = upload.url ?? typed;
   await db.bottle.create({
     data: {
       venueId: venue.id, name, type: String(form.get("type") || "").trim() || null, photoUrl: photoUrl || null,
@@ -241,8 +245,11 @@ export async function addShow(_: ActionState, form: FormData): Promise<ActionSta
   const { venue } = await requireMembership(MANAGE);
   const name = String(form.get("name") || "").trim();
   if (name.length < 2) return { error: "Nom du show requis." };
-  const mediaUrl = String(form.get("mediaUrl") || "").trim();
-  if (mediaUrl && !/^https:\/\//.test(mediaUrl)) return { error: "Le média doit être une adresse https://" };
+  const upload = await imageFromForm(venue.id, form.get("photo"));
+  if ("error" in upload) return { error: upload.error };
+  const typed = String(form.get("mediaUrl") || "").trim();
+  if (typed && !/^https:\/\//.test(typed)) return { error: "Le média doit être une adresse https://" };
+  const mediaUrl = upload.url ?? typed;
   const catIds = form.getAll("categories").map(String);
   const valid = await db.tableCategory.findMany({ where: { venueId: venue.id, id: { in: catIds } }, select: { id: true } });
   // Option liée aux bouteilles (« couronne de 3 champagnes ») : proposée à l'étape des bouteilles.

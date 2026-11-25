@@ -61,7 +61,7 @@ export default async function Page({ searchParams }: Props) {
       <section className="card" style={{ marginTop: 16, display: "grid", gap: 6 }}>
         <h2 style={{ fontSize: 17, margin: 0 }}>Comment ça se passe pour vos clients</h2>
         <p className="mute" style={{ margin: 0 }}>
-          Le client choisit son carré et paie l&apos;acompte prévu par la catégorie (ou tout, s&apos;il le souhaite) sur une page sécurisée. Son carré est tenu 30 minutes pendant le paiement.
+          Le client choisit son carré et paie l&apos;acompte prévu par la catégorie (ou tout, s&apos;il le souhaite) sur une page sécurisée. Son carré lui est réservé 5 minutes pendant le paiement (30 minutes s&apos;il accepte l&apos;offre d&apos;un manager).
           Dès que Stripe confirme, la réservation passe en « confirmée », il reçoit son QR code par email, et le reste se règle au club.
         </p>
       </section>

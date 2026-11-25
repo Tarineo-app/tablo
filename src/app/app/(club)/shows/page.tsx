@@ -44,7 +44,8 @@ export default async function Page() {
           <div className="grid3">
             <label className="field">Nom<input className="input" name="name" placeholder="Ex. Parade de sparklers" required /></label>
             <label className="field">Prix (€)<input className="input" name="price" inputMode="decimal" placeholder="80" /></label>
-            <label className="field">Photo ou vidéo d&apos;aperçu (https)<input className="input" name="mediaUrl" placeholder="https://…" /></label>
+            <label className="field">Photo du show<input className="input" type="file" name="photo" accept="image/jpeg,image/png,image/webp" /></label>
+            <label className="field">ou adresse d&apos;une photo ou vidéo en ligne<input className="input" name="mediaUrl" placeholder="https://…" /></label>
           </div>
           <label className="field">Description<input className="input" name="description" placeholder="Ex. 6 sparklers apportés à la table avec la bouteille" /></label>
           <label className="row" style={{ gap: 8, fontSize: 14 }}><input type="checkbox" name="isSign" /> C&apos;est la pancarte du club (le client écrit son texte)</label>

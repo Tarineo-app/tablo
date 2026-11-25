@@ -25,6 +25,11 @@ export function appUrl() {
   return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
 }
 
-/** Temps laissé au client pour payer : son carré est tenu pendant ce temps. Stripe impose 30 min minimum. */
-export const HOLD_MINUTES = 31;
-export const holdFromNow = () => new Date(Date.now() + HOLD_MINUTES * 60_000);
+/**
+ * Temps pendant lequel le carré est tenu le temps que le client paie :
+ * 5 min quand il réserve seul, 30 min quand il accepte l'offre d'un manager.
+ * (La page Stripe, elle, reste ouverte 30 min, le minimum imposé par Stripe : si le client paie après
+ * que son carré a été repris par quelqu'un d'autre, le webhook le rembourse automatiquement.)
+ */
+export const HOLD_MINUTES = { direct: 5, offer: 30 } as const;
+export const holdFromNow = (kind: keyof typeof HOLD_MINUTES = "direct") => new Date(Date.now() + HOLD_MINUTES[kind] * 60_000);

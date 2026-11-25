@@ -11,13 +11,13 @@ const PAID = ["CONFIRMED", "FULLY_PAID", "CHECKED_IN", "COMPLETED"] as const;
 /**
  * Ouvre (ou rouvre) le paiement d'une réservation sur la page sécurisée de Stripe.
  * Le paiement est fait directement sur le compte Stripe du club : Tablo ne prend rien dessus.
- * Le carré est tenu pendant 30 minutes ; si le délai est passé, on le reprend seulement s'il est encore libre.
+ * Le carré est tenu 5 min (30 min pour une offre de manager) ; si le délai est passé, on le reprend seulement s'il est encore libre.
  */
 export async function openReservationCheckout(token: string, slug: string): Promise<PayOutcome> {
   const s = stripe();
   const r = await db.reservation.findUnique({
     where: { qrToken: token },
-    include: { venue: true, event: true, table: { include: { category: true } } },
+    include: { venue: true, event: true, table: { include: { category: true } }, offer: { select: { id: true } } },
   });
   if (!r || r.venue.slug !== slug) return { error: "annulee" };
   if (!s || !paymentsReady(r.venue) || !r.venue.stripeAccountId) return { error: "indisponible" };
@@ -32,7 +32,7 @@ export async function openReservationCheckout(token: string, slug: string): Prom
     try {
       const old = await s.checkout.sessions.retrieve(r.stripeSessionId, {}, ctx);
       if (old.status === "complete") return { error: "deja" };
-      if (old.status === "open" && old.url && r.holdUntil && r.holdUntil.getTime() > Date.now() + 2 * 60_000) return { url: old.url };
+      if (old.status === "open" && old.url && r.holdUntil && r.holdUntil.getTime() > Date.now() + 30_000) return { url: old.url };
     } catch {
       /* session introuvable : on en ouvre une autre */
     }
@@ -45,7 +45,8 @@ export async function openReservationCheckout(token: string, slug: string): Prom
     return { error: "pris" };
   }
 
-  const hold = holdFromNow();
+  // 5 min quand il réserve seul, 30 min quand il accepte l'offre de son manager.
+  const hold = holdFromNow(r.offer ? "offer" : "direct");
   const date = r.event.date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
   const what = r.payMode === "FULL" || r.depositCents >= r.totalCents ? "Réservation" : "Acompte";
   const back = `${appUrl()}/w/${slug}/r/${token}`;

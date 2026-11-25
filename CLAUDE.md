@@ -161,7 +161,6 @@ son écran change, puis la page reprend son cours**. Cinq étapes (`.step`, `--n
 Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), constructeur (étape 1 du tunnel), 4 questions, appel final.
 **Lien personnalisé pour la prospection** : `/?club=Le%20Rex&site=lerex.fr` met le nom du club et sa vraie page dans le téléphone
 (via `/api/apercu`) et préremplit l'inscription. Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` ou la FAQ.
-À corriger : `demo.html` montre de vraies marques de bouteilles (noms et photos, dont une étiquette Moët) — à remplacer par des visuels génériques.
 
 ### Migrations (suite)
 - `20261123180000_vue_3d`, `20261123190000_essai_par_soiree`, `20261123200000_demo`
@@ -171,7 +170,8 @@ Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), c
 ## Paiements, abonnement, emails, photos (25/11/2026)
 - **Paiement des clients** : `src/lib/stripe.ts` (client paresseux, `paymentsReady(venue)`), `src/lib/checkout.ts`, route `POST /w/[slug]/r/[token]/payer`.
   Stripe Checkout en **direct charge sur le compte Express du club** (`stripeContext`), aucune commission. Le montant payé est `depositCents`.
-  Quand le club peut encaisser, la réservation (widget ou offre acceptée) naît en `PENDING_PAYMENT` avec `holdUntil` = +31 min.
+  Quand le club peut encaisser, la réservation naît en `PENDING_PAYMENT` avec `holdUntil` : **5 min** en réservation directe, **30 min** pour une offre de manager
+  (`HOLD_MINUTES` dans `src/lib/stripe.ts`). La page Stripe reste ouverte 30 min (minimum Stripe) : un paiement arrivé après reprise du carré est remboursé par le webhook.
   **Toute vérification « carré libre » passe par `occupying()` (`src/lib/holds.ts`)** : un `PENDING_PAYMENT` dont le délai est passé ne tient plus le carré.
 - **Webhook** `POST /api/stripe/webhook`, deux secrets (`STRIPE_WEBHOOK_SECRET` plateforme, `STRIPE_CONNECT_WEBHOOK_SECRET` comptes connectés),
   logique dans `src/lib/stripe-events.ts` : paiement reçu → `CONFIRMED`/`FULLY_PAID` + email ; doublon → remboursé ; carré pris entre-temps → annulé, remboursé, garage libéré ;
@@ -184,7 +184,7 @@ Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), c
   demande d'offre (au manager), offre au client (bouton « Par email » sur `/app/offres`), invitations d'équipe.
 - **Relances du matin** : `GET /api/cron/daily` (Vercel Cron, `vercel.json`, protégé par `CRON_SECRET`) : ferme les soirées test terminées,
   envoie le bilan (une seule fois, `trialReportSentAt`), « placez vos carrés » à J+1, « soirée test » à J-2.
-- **Photos** : `src/lib/storage.ts`. À l'enregistrement du plan et du logo, les images `data:` partent dans le bucket privé `tablo`
+- **Photos** : `src/lib/storage.ts`. Bouteilles et shows : champ fichier `photo` (`imageFromForm`), ou une adresse https. À l'enregistrement du plan et du logo, les images `data:` partent dans le bucket privé `tablo`
   (`venueId/sha256.ext`) et la base garde `/media/…`, servi par `src/app/media/[...path]/route.ts` (cache immuable, SVG en bac à sable).
 - **Démo** (`public/demo.html`) : plus aucune marque ni photo de bouteille (127 Ko au lieu de 2,4 Mo).
 

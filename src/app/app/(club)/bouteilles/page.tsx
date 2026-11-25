@@ -43,7 +43,10 @@ export default async function Page() {
             <label className="field">Type<input className="input" name="type" placeholder="Champagne, vodka…" /></label>
             <label className="field">Goûts (séparés par des virgules)<input className="input" name="flavors" placeholder="Original, Pêche, Ananas" /></label>
           </div>
-          <label className="field">Photo (adresse https, facultatif)<input className="input" name="photoUrl" placeholder="https://…" /></label>
+          <div className="grid2" style={{ gap: 12 }}>
+            <label className="field">Photo de la bouteille (facultatif)<input className="input" type="file" name="photo" accept="image/jpeg,image/png,image/webp" /></label>
+            <label className="field">ou adresse d&apos;une image en ligne<input className="input" name="photoUrl" placeholder="https://…" /></label>
+          </div>
           {PRESETS.map(([l, v], i) => (
             <div key={i} className="grid2" style={{ gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
               <label className="field">Format {i + 1}<input className="input" name={`label${i}`} defaultValue={i === 0 ? l : ""} placeholder={l} /></label>

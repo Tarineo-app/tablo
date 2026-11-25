@@ -67,3 +67,22 @@ export async function readMedia(path: string) {
   if (!res.ok) return null;
   return Buffer.from(await res.arrayBuffer());
 }
+
+/**
+ * Photo choisie dans un formulaire (bouteille, show) : rangée dans le stockage, ou gardée en base si
+ * le stockage n'est pas branché. Renvoie l'adresse à enregistrer, `null` s'il n'y a pas de fichier,
+ * ou une erreur à afficher.
+ */
+export async function imageFromForm(venueId: string, file: FormDataEntryValue | null): Promise<{ url: string | null } | { error: string }> {
+  if (!file || typeof file === "string" || file.size === 0) return { url: null };
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return { error: "Photo au format JPG, PNG ou WebP." };
+  // Sans stockage, l'image reste dans la base : on la garde légère.
+  const max = storageReady() ? MAX_BYTES : 800 * 1024;
+  if (file.size > max) return { error: `Photo trop lourde : ${Math.round(max / 1024 / 1024 * 10) / 10} Mo maximum.` };
+  const dataUrl = `data:${file.type};base64,${Buffer.from(await file.arrayBuffer()).toString("base64")}`;
+  try {
+    return { url: await persistImage(venueId, dataUrl) };
+  } catch {
+    return { error: "Photo trop lourde." };
+  }
+}

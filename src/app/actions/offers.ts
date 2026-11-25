@@ -201,7 +201,7 @@ export async function acceptOffer(code: string, payMode: "FULL" | "CASH"): Promi
     const r = await tx.reservation.create({
       data: {
         venueId: offer.venueId, eventId: offer.eventId, tableId: offer.tableId!, managerId: offer.managerId,
-        status: online ? "PENDING_PAYMENT" : "DRAFT", holdUntil: online ? holdFromNow() : null, payMode, guests: offer.guests,
+        status: online ? "PENDING_PAYMENT" : "DRAFT", holdUntil: online ? holdFromNow("offer") : null, payMode, guests: offer.guests,
         organizerName: offer.clientName!, organizerEmail: offer.clientEmail!, organizerPhone: offer.clientPhone!,
         signText: offer.signText,
         totalCents: offer.priceCents, depositCents: deposit,

@@ -72,7 +72,7 @@ export default async function Page({ params, searchParams }: Props) {
       <div className="w-total"><span>{label}</span><span>{eur(r.depositCents)}</span></div>
       <button className="w-accept" type="submit">{label} · {eur(r.depositCents)}</button>
       <span className="w-paynote">
-        {holdLeft > 60_000 ? `Votre carré est tenu jusqu'à ${holdTime}. ` : "Le délai est passé : votre carré sera repris s'il est encore libre. "}
+        {holdLeft > 30_000 ? `Votre carré vous est réservé jusqu'à ${holdTime}. ` : "Le délai est passé : votre carré sera repris s'il est encore libre. "}
         Paiement sécurisé par Stripe, versé directement au club.
       </span>
     </form>
