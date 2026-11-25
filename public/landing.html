@@ -295,6 +295,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .bpreview .screen iframe{display:block;width:375px;height:calc(100% / .8267);border:0;transform:scale(.8267);transform-origin:0 0}
 .bpreview .screen{width:310px}
 #faq{padding:70px 0}
+/* Constructeur : le téléphone a sa propre colonne, les étapes passent sous les réglages (sinon il les recouvre en défilant) */
+.builder .bcontrols{grid-column:1;grid-row:1}
+.builder .bnext{grid-column:1;grid-row:2}
+.builder .bpreview{grid-column:2;grid-row:1 / span 2;align-self:start}
+.bnext .btn{width:100%}
+@media(max-width:900px){.builder .bcontrols,.builder .bnext,.builder .bpreview{grid-column:auto;grid-row:auto}}
 
 </style></head>
 <body>
