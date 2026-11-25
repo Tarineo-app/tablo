@@ -1,4 +1,5 @@
 import "server-only";
+import { GARANTIE_JOURS } from "@/lib/legal";
 import { db } from "./db";
 import { eur } from "./money";
 import { appUrl } from "./stripe";
@@ -102,6 +103,20 @@ export async function sendNudgeTables(venueId: string) {
     button: { label: "Reprendre la configuration", url: `${appUrl()}/app/configuration` },
   });
   const r = await Promise.all((await ownersOf(v.id)).map((to) => sendEmail({ to, subject: `${v.name} · plus que vos carrés à placer`, html, text, idempotencyKey: `nudge-tables-${v.id}-${to}` })));
+  return r.some(Boolean);
+}
+
+/** Club configuré (carrés posés) mais pas encore en ligne, 3 jours après l'inscription : une seule relance. */
+export async function sendReadyToLaunch(venueId: string) {
+  const v = await db.venue.findUnique({ where: { id: venueId } });
+  if (!v || v.billing !== "SETUP") return false;
+  const { html, text } = layout({
+    venue: v.name,
+    title: "Votre plan est prêt. Il ne manque que la mise en ligne.",
+    intro: `Vos carrés sont posés. Dès que vous mettez en ligne, vos clients peuvent réserver leur carré, leurs bouteilles et leurs shows, avec l'acompte encaissé sur votre compte. ${GARANTIE_JOURS} jours satisfait ou remboursé : si ça ne vous convient pas, on vous rembourse le premier mois, sans question.`,
+    button: { label: "Mettre mes carrés en ligne", url: `${appUrl()}/app/configuration` },
+  });
+  const r = await Promise.all((await ownersOf(v.id)).map((to) => sendEmail({ to, subject: `${v.name} · prêt à ouvrir vos réservations`, html, text, idempotencyKey: `ready-launch-${v.id}-${to}` })));
   return r.some(Boolean);
 }
 

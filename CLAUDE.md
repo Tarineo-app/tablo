@@ -204,6 +204,8 @@ Ensuite : 3 bénéfices (`#benefices`) + bande « aussi inclus » (`.strip`), l'
 **Lien personnalisé pour la prospection** : `/?club=Le%20Rex&site=lerex.fr` met le nom du club et sa vraie page dans le téléphone (via `/api/apercu`) et préremplit le questionnaire.
 **DA du tunnel** : questionnaire, connexion, création du club et configuration reprennent la landing à l'identique (bloc « Tunnel de vente » en fin de `globals.css`). Ne pas s'en écarter.
 Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` ou la FAQ.
+**Prix visible** (audit du 25/11) : « 200 € par mois, sans engagement » dans les preuves du haut, première question de la FAQ, ticket de prix `.ticket` dans l'appel final.
+Partage : balises Open Graph + `public/og.png` (1200×630), données structurées `SoftwareApplication`, `public/robots.txt`, `public/sitemap.xml`.
 
 ### Migrations (suite)
 - `20261123180000_vue_3d`, `20261123190000_essai_par_soiree`, `20261123200000_demo`
@@ -229,7 +231,7 @@ Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` o
 - **Emails** : `src/lib/email.ts` (API Resend en HTTP, gabarit `layout()`), `src/lib/notify.ts` : confirmation de réservation, remboursement,
   demande d'offre (au manager), offre au client (bouton « Par email » sur `/app/offres`), invitations d'équipe.
 - **Relances du matin** : `GET /api/cron/daily` (Vercel Cron, `vercel.json`, protégé par `CRON_SECRET`) : ferme les soirées test terminées,
-  envoie le bilan (une seule fois, `trialReportSentAt`), « placez vos carrés » à J+1, « soirée test » à J-2.
+  envoie le bilan (une seule fois, `trialReportSentAt`), « placez vos carrés » à J+1, **« prêt à ouvrir vos réservations » à J+3** si des carrés sont posés et le club toujours en `SETUP` (`sendReadyToLaunch`), « soirée test » à J-2.
 - **Photos** : `src/lib/storage.ts`. Bouteilles et shows : champ fichier `photo` (`imageFromForm`), ou une adresse https. À l'enregistrement du plan et du logo, les images `data:` partent dans le bucket privé `tablo`
   (`venueId/sha256.ext`) et la base garde `/media/…`, servi par `src/app/media/[...path]/route.ts` (cache immuable, SVG en bac à sable).
 - **Démo** (`public/demo.html`) : plus aucune marque ni photo de bouteille (127 Ko au lieu de 2,4 Mo).

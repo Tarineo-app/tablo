@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /api/
+Disallow: /o/
+Disallow: /invitation/
+Disallow: /demo-club
+Sitemap: https://tablo-club.vercel.app/sitemap.xml

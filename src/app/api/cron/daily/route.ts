@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { closeTrialIfOver, trialReport } from "@/lib/billing";
 import { emailConfigured } from "@/lib/email";
-import { sendNudgeTables, sendTrialReport, sendTrialSoon } from "@/lib/notify";
+import { sendNudgeTables, sendReadyToLaunch, sendTrialReport, sendTrialSoon } from "@/lib/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Non autorisé." }, { status: 401 });
   }
   const now = Date.now();
-  const out = { closed: 0, reports: 0, nudges: 0, soon: 0 };
+  const out = { closed: 0, reports: 0, nudges: 0, soon: 0, ready: 0 };
 
   // 1. Soirées test terminées : on referme, puis le bilan part une seule fois.
   for (const v of await db.venue.findMany({ where: { billing: "TRIAL", trialEventId: { not: null } }, select: { id: true } })) {
@@ -41,6 +41,13 @@ export async function GET(req: Request) {
       select: { id: true },
     });
     for (const v of fresh) if (await sendNudgeTables(v.id)) out.nudges++;
+
+    // 2 bis. Inscrits il y a trois jours, carrés posés, pas encore en ligne.
+    const ready = await db.venue.findMany({
+      where: { isDemo: false, billing: "SETUP", createdAt: { gte: new Date(now - 4 * 864e5), lt: new Date(now - 3 * 864e5) }, tables: { some: {} } },
+      select: { id: true },
+    });
+    for (const v of ready) if (await sendReadyToLaunch(v.id)) out.ready++;
 
     // 3. Soirée test dans deux jours.
     const soon = await db.venue.findMany({

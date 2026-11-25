@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tablo — Plus de shows, plus de bouteilles, sur chaque carré VIP</title>
 <meta name="description" content="Vos carrés VIP se réservent sur votre site : carré, bouteilles, acompte. Vos managers vendent plus cher. Zéro commission, satisfait ou remboursé 30 jours.">
+<link rel="canonical" href="https://tablo-club.vercel.app/">
+<meta name="theme-color" content="#060607">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tablo">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:url" content="https://tablo-club.vercel.app/">
+<meta property="og:title" content="Tablo — Plus de shows, plus de bouteilles, sur chaque carré VIP">
+<meta property="og:description" content="La réservation de carrés VIP pour clubs et beach clubs : plan, bouteilles, shows et acompte, sur votre site. Zéro commission, 200 € par mois.">
+<meta property="og:image" content="https://tablo-club.vercel.app/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tablo","applicationCategory":"BusinessApplication","operatingSystem":"Web","inLanguage":"fr","description":"Réservation de carrés VIP en ligne pour discothèques et beach clubs : plan, bouteilles, shows, acompte, offres des managers.","offers":{"@type":"Offer","price":"200","priceCurrency":"EUR","description":"Abonnement mensuel par établissement, sans engagement, sans commission"},"url":"https://tablo-club.vercel.app/"}</script>
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>
 :root{--bg:#060607;--bg2:#0f0f12;--card:#121216;--card2:#17171d;--line:rgba(255,255,255,.09);--text:#f3f2f7;--mute:#8e8c99;--ok:#3ddc97;
@@ -108,6 +121,13 @@ h1{font:900 clamp(38px,7vw,82px)/.98 Unbounded,system-ui,sans-serif;letter-spaci
 .faq p{margin:12px 0 0;color:var(--mute);line-height:1.65;font-size:15px}
 
 /* Fin */
+.ticket{display:flex;gap:28px;align-items:center;justify-content:center;flex-wrap:wrap;margin:30px auto 6px;max-width:720px;padding:24px 30px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,#141419,#0d0d11);text-align:left}
+.tk-price{display:flex;align-items:baseline;gap:10px}
+.tk-price b{font:900 54px/1 Unbounded,system-ui,sans-serif;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#a9a7b4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tk-price span{color:var(--mute);font-size:13.5px;line-height:1.35}
+.ticket ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:14.5px;color:#d6d4df}
+.ticket li::before{content:"✓";color:var(--ok);font-weight:900;margin-right:9px}
+@media(max-width:620px){.ticket{padding:20px;gap:16px}.tk-price b{font-size:44px}}
 .final{text-align:center;padding:100px 0 110px;border-top:1px solid var(--line);background:radial-gradient(900px 300px at 50% 0%,rgba(169,112,255,.14),transparent)}
 footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -313,6 +333,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     <p class="lead">Tablo présente vos shows, vos pancartes et vos bouteilles au moment où le client réserve. Il les ajoute lui-même et verse l'acompte. Votre manager, lui, peut toujours faire mieux.</p>
     <div class="ctas"><a href="/inscription" class="btn main" id="hCta">Mettre mes carrés en ligne</a><a href="#demo" class="btn">Essayer la démo</a></div>
     <div class="proofs">
+      <span><i>✓</i> 200 € par mois, sans engagement</span>
       <span><i>✓</i> Zéro commission</span>
       <span><i>✓</i> Satisfait ou remboursé 30 jours</span>
       <span><i>✓</i> En ligne en une soirée</span>
@@ -512,6 +533,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   <div class="wrap">
     <h2 class="rv">Questions</h2>
     <div class="faq">
+      <details class="rv" open><summary>Combien ça coûte ?</summary><p>200 € par mois et par établissement, tout compris : widget, plan, offres des managers, app serveur, contrôle à l'entrée, statistiques. Sans engagement, zéro commission. Vous configurez tout gratuitement et vous ne payez qu'au moment de mettre en ligne. Un groupe de plusieurs lieux ? On fait un tarif sur mesure.</p></details>
       <details class="rv"><summary>Vous prenez une commission ?</summary><p>Non, jamais. L'argent des clients arrive sur le compte du club ; seuls les frais bancaires du paiement s'appliquent, comme pour un terminal. Vous payez un abonnement mensuel, sans engagement.</p></details>
       <details class="rv"><summary>Mes managers vont-ils perdre leurs clients ?</summary><p>C'est l'inverse. Chaque manager a son lien : ce qui passe par lui lui reste attribué, et sa commission se calcule toute seule. Il compose ses offres à son prix et les envoie lui-même. Il garde la relation, vous voyez enfin ce qui a été promis.</p></details>
       <details class="rv"><summary>Et si le client ne vient pas ?</summary><p>L'acompte est encaissé à la réservation. Vous fixez le pourcentage par catégorie de carré, et votre politique d'annulation s'affiche avant le paiement.</p></details>
@@ -524,8 +546,17 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <section class="final">
   <div class="wrap">
     <h2 class="rv">Votre prochain samedi, vendu d'avance.</h2>
+    <div class="ticket rv">
+      <div class="tk-price"><b>200 €</b><span>par mois<br>par établissement</span></div>
+      <ul>
+        <li>Tout est inclus, sans option payante</li>
+        <li>Zéro commission : l'argent arrive sur votre compte</li>
+        <li>Configuration gratuite, vous payez à la mise en ligne</li>
+        <li>Satisfait ou remboursé 30 jours, puis sans engagement</li>
+      </ul>
+    </div>
     <div class="ctas rv"><a href="/inscription" class="btn main" id="fCta">Mettre mes carrés en ligne</a></div>
-    <p class="sub rv" style="margin:18px auto 0;text-align:center">Zéro commission. Satisfait ou remboursé 30 jours.</p>
+    <p class="sub rv" style="margin:18px auto 0;text-align:center">Un carré vendu en plus dans le mois, et l'abonnement est payé.</p>
   </div>
 </section>
 </main>
