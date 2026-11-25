@@ -151,19 +151,16 @@ un nouvel `Order` numéroté à la suite part au service. `OrderItem.bottleSizeI
 **nullable** et `showId` existe — tout affichage d'un article passe par `itemLabel()` (`src/lib/orderitem.ts`).
 La fenêtre est la nuit même : de la veille au lendemain midi.
 
-## Landing
-Le haut de page : **texte à gauche, un téléphone à droite**. Le visiteur tape l'adresse de son site
-dans la barre du téléphone (`#pUrl` → `POST /api/apercu`), sa vraie page s'affiche dedans, et la
-réservation s'ouvre par-dessus en feuille (`.psheet`) comme une vraie extension. Elle s'ouvre toute
-seule au bout de 2,6 s à la première vue — la démonstration doit se jouer sans qu'on clique.
-L'ancienne section « votre site » a été supprimée : son travail est fait par le téléphone.
-Attention aux noms de classes : les anciennes règles `.phone` (maquette précédente) ont été retirées
-parce qu'elles écrasaient le nouveau téléphone.
-
-Reconstruite le 24/11/2026 autour des bénéfices (CAB) : chaque bloc `.cab` porte la douleur en citation,
-ce que fait l'outil, puis ce que ça rapporte. **Le manager est le bénéfice n°1.** Pas de prix sur la page.
-La règle d'avant tient toujours : ne pas la ré-alourdir, une nouvelle fonction entre dans la bande
-« aussi inclus » ou dans la FAQ.
+## Landing (version 4, 25/11/2026)
+Une seule séquence en haut de page (`#comment`, `.scrolly`) : **le téléphone reste fixe pendant qu'on fait défiler,
+son écran change, puis la page reprend son cours**. Cinq étapes (`.step`, `--n:5`) : 0 le site du club avec le bouton
+« Réserver une table », 1 le message WhatsApp du manager avec son offre (`.pchat`), 2 à 4 la vraie fenêtre de réservation
+(`demo.html?embed=1`, pilotée par `postMessage({tour})` : 0 carré, 2 panier/shows, 3 acompte). La fenêtre est rendue à
+375 px puis réduite (`--k`) pour ne pas se tasser. Sur mobile : texte court en haut, téléphone dessous, barre de progression.
+Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), constructeur (étape 1 du tunnel), 4 questions, appel final.
+**Lien personnalisé pour la prospection** : `/?club=Le%20Rex&site=lerex.fr` met le nom du club et sa vraie page dans le téléphone
+(via `/api/apercu`) et préremplit l'inscription. Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` ou la FAQ.
+À corriger : `demo.html` montre de vraies marques de bouteilles (noms et photos, dont une étiquette Moët) — à remplacer par des visuels génériques.
 
 ### Migrations (suite)
 - `20261123180000_vue_3d`, `20261123190000_essai_par_soiree`, `20261123200000_demo`
