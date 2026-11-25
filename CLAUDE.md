@@ -169,7 +169,8 @@ Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), c
 
 ## Paiements, abonnement, emails, photos (25/11/2026)
 - **Paiement des clients** : `src/lib/stripe.ts` (client paresseux, `paymentsReady(venue)`), `src/lib/checkout.ts`, route `POST /w/[slug]/r/[token]/payer`.
-  Stripe Checkout en **direct charge sur le compte Express du club** (`stripeContext`), aucune commission. Le montant payé est `depositCents`.
+  Stripe Checkout en **direct charge sur le compte connecté du club** (`stripeContext`), aucune commission. Compte créé avec `controller`
+  (tableau de bord Stripe complet, frais payés par le club, pertes couvertes par Stripe) : Stripe **refuse `type: "express"`** avec le modèle choisi sur la plateforme. Le montant payé est `depositCents`.
   Quand le club peut encaisser, la réservation naît en `PENDING_PAYMENT` avec `holdUntil` : **5 min** en réservation directe, **30 min** pour une offre de manager
   (`HOLD_MINUTES` dans `src/lib/stripe.ts`). La page Stripe reste ouverte 30 min (minimum Stripe) : un paiement arrivé après reprise du carré est remboursé par le webhook.
   **Toute vérification « carré libre » passe par `occupying()` (`src/lib/holds.ts`)** : un `PENDING_PAYMENT` dont le délai est passé ne tient plus le carré.
@@ -177,7 +178,7 @@ Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), c
   logique dans `src/lib/stripe-events.ts` : paiement reçu → `CONFIRMED`/`FULLY_PAID` + email ; doublon → remboursé ; carré pris entre-temps → annulé, remboursé, garage libéré ;
   session expirée → `CANCELLED` ; `account.updated` → `stripeChargesEnabled` ; abonnement → `billing` ACTIVE/LOCKED.
   Un événement de réservation doit venir du compte du club (`event.account === venue.stripeAccountId`) ; un abonnement, jamais d'un compte connecté.
-- **Espace club** : `/app/paiements` (activer le compte Express, voir les virements), `/app/abonnement` (Checkout abonnement 200 €/mois, portail Stripe).
+- **Espace club** : `/app/paiements` (activer le compte Stripe du club, lien vers son tableau de bord Stripe), `/app/abonnement` (Checkout abonnement 200 €/mois, portail Stripe).
   Actions dans `src/app/actions/stripe.ts`, toutes derrière `refuseInDemo()`. Les relectures Stripe au retour sont dans `src/lib/stripe-sync.ts` (pas des server actions).
 - **Recommande en soirée** : se règle à table (`Order.cashDueCents`), quel que soit le mode de la réservation.
 - **Emails** : `src/lib/email.ts` (API Resend en HTTP, gabarit `layout()`), `src/lib/notify.ts` : confirmation de réservation, remboursement,
@@ -187,4 +188,4 @@ Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), c
 - **Photos** : `src/lib/storage.ts`. Bouteilles et shows : champ fichier `photo` (`imageFromForm`), ou une adresse https. À l'enregistrement du plan et du logo, les images `data:` partent dans le bucket privé `tablo`
   (`venueId/sha256.ext`) et la base garde `/media/…`, servi par `src/app/media/[...path]/route.ts` (cache immuable, SVG en bac à sable).
 - **Démo** (`public/demo.html`) : plus aucune marque ni photo de bouteille (127 Ko au lieu de 2,4 Mo).
-
+- **Stripe (test)** : compte « Tablo », environnement de test `acct_1UfMaXLiMqi0CTao`. Webhooks `tablo-abonnements` (compte) et `tablo-paiements-clubs` (comptes connectés) vers `/api/stripe/webhook`, tous deux vérifiés le 25/11/2026 (200 OK).

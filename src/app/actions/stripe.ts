@@ -10,7 +10,7 @@ export type StripeState = { error?: string } | undefined;
 /** Prix de l'abonnement Club, en centimes. Un prix créé dans Stripe (STRIPE_PRICE_CLUB) a priorité. */
 const CLUB_MONTHLY_CENTS = 20000;
 
-/** « Activer les paiements » : on ouvre (ou reprend) l'inscription du club chez Stripe. */
+/** « Activer les paiements » : on ouvre (ou reprend) l'inscription du club chez Stripe (compte connecté du club). */
 export async function connectPayments(): Promise<StripeState> {
   const { venue, user } = await requireMembership(MANAGE);
   const demo = await refuseInDemo();
@@ -20,8 +20,16 @@ export async function connectPayments(): Promise<StripeState> {
 
   let accountId = venue.stripeAccountId;
   if (!accountId) {
+    // Modèle choisi sur la plateforme : le club encaisse directement, paie lui-même les frais Stripe,
+    // Stripe couvre les pertes, et le club a son propre tableau de bord Stripe complet.
+    // (Stripe refuse `type: "express"` avec ce modèle.)
     const acct = await s.accounts.create({
-      type: "express",
+      controller: {
+        stripe_dashboard: { type: "full" },
+        fees: { payer: "account" },
+        losses: { payments: "stripe" },
+        requirement_collection: "stripe",
+      },
       country: "FR",
       email: user.email,
       default_currency: "eur",
@@ -58,8 +66,8 @@ export async function openStripeDashboard(): Promise<StripeState> {
   if (demo) return demo;
   const s = stripe();
   if (!s || !venue.stripeAccountId) return { error: "Activez d'abord les paiements." };
-  const login = await s.accounts.createLoginLink(venue.stripeAccountId);
-  redirect(login.url);
+  // Le club a son propre tableau de bord Stripe complet : il s'y connecte avec l'email donné à l'activation.
+  redirect("https://dashboard.stripe.com/");
 }
 
 /** Abonnement Club : page de paiement Stripe, 200 € par mois, sans engagement. */

@@ -42,8 +42,8 @@ export default async function Page({ searchParams }: Props) {
         </div>
         {ready ? (
           <>
-            <p style={{ margin: 0 }}>Vos clients paient leur acompte ou leur réservation en ligne : carte, Apple Pay, Google Pay. Les virements arrivent sur votre compte bancaire.</p>
-            <StripeButton action={openStripeDashboard} label="Voir mes virements chez Stripe" main={false} />
+            <p style={{ margin: 0 }}>Vos clients paient leur acompte ou leur réservation en ligne : carte, Apple Pay, Google Pay. Les virements arrivent sur votre compte bancaire. Vos paiements, remboursements et relevés sont dans votre tableau de bord Stripe, avec l&apos;email donné à l&apos;activation.</p>
+            <StripeButton action={openStripeDashboard} label="Ouvrir mon tableau de bord Stripe" main={false} />
           </>
         ) : (
           <>
