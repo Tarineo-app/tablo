@@ -54,8 +54,8 @@ export const GRADIENTS: Record<Exclude<Theme["grad"], "">, { label: string; css:
 
 export const HEAD_FONTS = ["Unbounded", "Montserrat", "Playfair Display", "Cinzel", "Fraunces", "Monoton", "Bungee", "Inter"];
 export const TEXT_FONTS = ["Manrope", "Inter", "Montserrat"];
-export const FONTS_URL =
-  "https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800;900&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;600;800&family=Montserrat:wght@500;700;800&family=Playfair+Display:wght@600;700&family=Cinzel:wght@600;700&family=Fraunces:ital,wght@1,600;1,800&family=Monoton&family=Bungee&display=swap";
+/** Polices hébergées sur le site (public/fonts) : aucune adresse IP de visiteur n'est envoyée à Google. */
+export const FONTS_URL = "/fonts/fonts.css";
 
 export function defaultTheme(kind: string): Theme {
   const a = AMBIANCES[kind === "beach" ? "pool" : "tablo"];

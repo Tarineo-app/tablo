@@ -328,6 +328,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
               {modes.map((m) => <button key={m} className={`w-opt ${payMode === m ? "on" : ""}`} onClick={() => setPayMode(m as "FULL")}><b>{PAY[m][0]}</b><small>{PAY[m][1]}</small></button>)}
             </div>
             <div className="w-card w-line"><span>{payMode === "FULL" ? "À payer maintenant" : `Acompte obligatoire (${cat?.depositPct ?? 0} %, catégorie ${cat?.name})`}</span><b>{eur(deposit)}</b></div>
+            <p className="w-legal">En réservant, vous acceptez les <a href="/cgu" target="_blank" rel="noopener">conditions d&apos;utilisation</a> et les conditions du club. Vos coordonnées sont transmises au club (<a href="/confidentialite" target="_blank" rel="noopener">confidentialité</a>).</p>
             {error && <p className="w-err" role="alert">{error}</p>}
           </>
         )}
@@ -362,7 +363,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
         {priced.map((p) => { const s = shows.find((x) => x.id === p.id)!; return <div key={p.id} className="w-line"><span>{s.name}{s.isSign && signText ? ` « ${signText} »` : ""}</span><b>{p.included ? "Offert" : eur(p.priceCents)}</b></div>; })}
         <div className="w-total"><span>Total</span><span>{eur(total)}</span></div>
         {table && total > 0 && payMode !== "FULL" && <div className="w-line"><span>Acompte ({cat?.depositPct} %)</span><b>{eur(deposit)}</b></div>}
-        <p className="w-legal">L&apos;abus d&apos;alcool est dangereux pour la santé, à consommer avec modération. Réservation réservée aux 18 ans et plus. Propulsé par Tablo.</p>
+        <p className="w-legal">L&apos;abus d&apos;alcool est dangereux pour la santé, à consommer avec modération. Réservation réservée aux 18 ans et plus. Propulsé par Tablo · <a href="/cgu" target="_blank" rel="noopener">CGU</a> · <a href="/confidentialite" target="_blank" rel="noopener">Confidentialité</a></p>
       </aside>
 
       <div className="w-foot">

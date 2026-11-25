@@ -95,7 +95,7 @@ Fait :
 Branché le 25/11/2026 (voir « Paiements, abonnement, emails, photos » plus bas) : Stripe Connect, Stripe Billing, emails Resend,
 relances du matin, photos sur Supabase Storage. **Tout s'active avec des variables d'environnement** (`.env.example`) :
 sans clé, le site marche comme avant (réservations « à payer », liens à copier, photos en base).
-Reste : billets payants en ligne (la billetterie est fermée par défaut), CGV et mentions légales, Stripe en production.
+Reste : billets payants en ligne (la billetterie est fermée par défaut), Stripe en production, relecture des CGV par un juriste.
 
 ### Sécurité (audit du 23/11/2026, voir le doc « Tablo — audit de sécurité » du projet)
 - Les cookies de session portent `purpose: "session"` ; `readSession()` refuse tout autre jeton signé avec `SESSION_SECRET`
@@ -234,3 +234,10 @@ Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` o
   (`venueId/sha256.ext`) et la base garde `/media/…`, servi par `src/app/media/[...path]/route.ts` (cache immuable, SVG en bac à sable).
 - **Démo** (`public/demo.html`) : plus aucune marque ni photo de bouteille (127 Ko au lieu de 2,4 Mo).
 - **Stripe (test)** : compte « Tablo », environnement de test `acct_1UfMaXLiMqi0CTao`. Webhooks `tablo-abonnements` (compte) et `tablo-paiements-clubs` (comptes connectés) vers `/api/stripe/webhook`, tous deux vérifiés le 25/11/2026 (200 OK).
+
+## Pages légales (25/11/2026)
+`src/app/(legal)/` : `/mentions-legales`, `/cgv` (abonnement des clubs, satisfait ou remboursé, Tablo sous-traitant RGPD), `/cgu` (clients qui réservent : contrat avec le club),
+`/confidentialite` (liste des prestataires), `/cookies` (inventaire réel). **Identité de l'éditeur dans `src/lib/legal.ts`** : les valeurs entre crochets s'affichent surlignées tant qu'elles ne sont pas remplies ;
+`GARANTIE_JOURS` y est la seule source (utilisée aussi par la configuration). Liens dans le pied de la landing, le widget (étape des coordonnées et mention), le questionnaire, l'inscription, la mise en ligne et le menu de l'espace club.
+**Aucun bandeau cookies** : le site ne pose que des cookies indispensables (`tablo_session`, `tablo_look`, `tablo_oauth_*`) et les polices sont servies depuis `public/fonts/` (plus de Google Fonts).
+Tout nouveau cookie, outil de mesure ou pixel publicitaire → mettre à jour `/cookies` **et** ajouter un vrai bandeau de consentement.

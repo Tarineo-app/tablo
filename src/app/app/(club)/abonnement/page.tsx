@@ -120,7 +120,7 @@ export default async function Page({ searchParams }: Props) {
       )}
       <p className="mute" style={{ marginTop: 14, fontSize: 13.5 }}>
         {stripeConfigured()
-          ? "Sans engagement : vous résiliez quand vous voulez, vos soirées restent ouvertes jusqu'à la fin du mois payé. Facture envoyée chaque mois."
+          ? "Sans engagement : vous résiliez quand vous voulez, vos soirées restent ouvertes jusqu'à la fin du mois payé. Facture envoyée chaque mois. En vous abonnant, vous acceptez les CGV (tablo-club.vercel.app/cgv)."
           : "Le paiement par carte s'ouvre dans quelques jours. En attendant, vos données restent intactes : vos carrés, votre carte, vos clients et vos soirées passées vous attendent."}
       </p>
     </>

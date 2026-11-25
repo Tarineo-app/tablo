@@ -177,6 +177,7 @@ export default function Onboarding({ look, google }: { look: Look; google: boole
               <label className="field">Mot de passe<input className="input" type="password" name="password" autoComplete="new-password" required minLength={8} /></label>
               {state?.error && <p className="err" role="alert">{state.error}</p>}
               <button className="btn btn-main" disabled={pending}>{pending ? "Un instant…" : "Créer mon accès"}</button>
+              <p className="consent">En créant votre accès, vous acceptez les <Link href="/cgv" target="_blank">conditions générales de vente</Link> et la <Link href="/confidentialite" target="_blank">politique de confidentialité</Link>. Rien à payer avant la mise en ligne.</p>
               {google && (
                 <>
                   <div className="sep-or"><span>ou</span></div>

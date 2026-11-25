@@ -9,6 +9,7 @@ import { connectPayments, startSubscription } from "@/app/actions/stripe";
 import StripeButton from "@/components/StripeButton";
 import Plan3D, { type Box } from "@/app/w/[slug]/Plan3D";
 import { samplePlan } from "@/lib/sample-plan";
+import { GARANTIE_JOURS } from "@/lib/legal";
 import { AMBIANCES, themeVars, type Theme } from "@/lib/theme";
 
 export type SetupData = {
@@ -27,7 +28,6 @@ export type SetupData = {
 };
 
 /** Garantie affichée au moment de payer. À changer ici si la durée change (et dans les CGV). */
-const GARANTIE_JOURS = 30;
 
 const STEPS = [
   { key: "ambiance", t: "Ambiance" },
@@ -384,7 +384,7 @@ function Launch({ data, ready, doneOf, go }: { data: SetupData; ready: boolean; 
           <span>Si Tablo ne vous convient pas dans les {GARANTIE_JOURS} jours qui suivent votre premier paiement, on vous rembourse ce premier mois, sans question.</span>
         </div>
         <StripeButton action={startSubscription} label={`Mettre mes ${data.venue.kind === "beach" ? "emplacements" : "carrés"} en ligne · 200 €`} disabled={!ready} />
-        <small className="mute">Paiement sécurisé par Stripe. Facture au nom du club.</small>
+        <small className="mute">Paiement sécurisé par Stripe. Facture au nom du club. En payant, vous acceptez les <Link href="/cgv" target="_blank" style={{ color: "inherit" }}>conditions générales de vente</Link>.</small>
       </section>
     </>
   );

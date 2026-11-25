@@ -40,6 +40,7 @@ export default function AuthForm({ mode, action, google, notice, noticeKind = "e
             <a className="btn btn-out btn-google" href="/auth/google"><GoogleIcon />Continuer avec Google</a>
           </>
         )}
+        {signup && <p className="consent">En créant votre compte, vous acceptez les <Link href="/cgv" target="_blank">CGV</Link> et la <Link href="/confidentialite" target="_blank">politique de confidentialité</Link>.</p>}
         <p className="mute" style={{ fontSize: 14, margin: 0 }}>
           {signup ? <>Déjà un compte ? <Link href="/connexion">Se connecter</Link></> : <>Pas encore de compte ? <Link href="/inscription">Créer l&apos;espace de mon club</Link></>}
         </p>

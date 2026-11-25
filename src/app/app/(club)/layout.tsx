@@ -16,6 +16,7 @@ export default async function ClubLayout({ children }: { children: React.ReactNo
         <div style={{ flex: 1 }} />
         {isManagement(membership.role) && <a className="nav" href={`/w/${venue.slug}`} target="_blank" rel="noreferrer">Voir mon widget ↗</a>}
         <form action={logout}><button className="btn btn-out" style={{ width: "100%", marginTop: 8 }}>Se déconnecter</button></form>
+        <p className="side-legal"><Link href="/cgv">CGV</Link> · <Link href="/confidentialite">Confidentialité</Link> · <Link href="/mentions-legales">Mentions</Link></p>
       </aside>
       <main className="main">
         {demo && (
