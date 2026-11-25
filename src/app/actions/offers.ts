@@ -4,9 +4,14 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { gateFor } from "@/lib/billing";
-import { requireMembership } from "@/lib/auth";
+import { refuseInDemo, requireMembership } from "@/lib/auth";
 import { listTotal, offerCode } from "@/lib/offers";
 import { callerIp, rateLimit } from "@/lib/ratelimit";
+import { depositCents } from "@/lib/pricing";
+import { occupying } from "@/lib/holds";
+import { holdFromNow, paymentsReady } from "@/lib/stripe";
+import { emailConfigured } from "@/lib/email";
+import { sendOfferRequested, sendOfferToClient } from "@/lib/notify";
 
 export type OfferState = { error?: string; ok?: string; code?: string } | undefined;
 
@@ -146,13 +151,14 @@ export async function requestOffer(raw: z.infer<typeof Ask>): Promise<OfferState
     : null;
 
   const code = offerCode();
-  await db.offer.create({
+  const created = await db.offer.create({
     data: {
       venueId: venue.id, eventId: d.eventId, tableId: d.tableId, managerId: manager?.id ?? null,
       status: "REQUESTED", code, guests: d.guests, askNote: d.note,
       clientName: d.name, clientPhone: d.phone, clientEmail: d.email,
     },
   });
+  await sendOfferRequested(created.id);
   revalidatePath("/app/offres");
   return { ok: "C'est noté. Votre manager revient vers vous avec une proposition.", code };
 }
@@ -178,12 +184,16 @@ export async function acceptOffer(code: string, payMode: "FULL" | "CASH"): Promi
   if (!offer.venue.payModes.includes(payMode)) return { error: "Ce mode de paiement n'est pas proposé par le club." };
 
   const taken = await db.reservation.findFirst({
-    where: { eventId: offer.eventId, tableId: offer.tableId, status: { notIn: ["CANCELLED", "NO_SHOW"] } },
+    where: { eventId: offer.eventId, tableId: offer.tableId, ...occupying(["NO_SHOW"]) },
     select: { id: true },
   });
   if (taken) return { error: "Ce carré vient d'être réservé. Votre manager va vous en proposer un autre." };
 
-  const deposit = payMode === "FULL" ? offer.priceCents : Math.ceil(offer.priceCents * 0.3);
+  // L'acompte suit la règle de la catégorie du carré, appliquée au prix du manager.
+  const table = await db.venueTable.findFirst({ where: { id: offer.tableId, venueId: offer.venueId }, include: { category: true } });
+  if (!table) return { error: "Ce carré n'existe plus. Votre manager va vous en proposer un autre." };
+  const deposit = payMode === "FULL" ? offer.priceCents : depositCents(offer.priceCents, table.category.depositPct);
+  const online = paymentsReady(offer.venue) && deposit > 0;
   const bottles = offer.items.filter((i) => i.bottleSizeId);
   const shows = offer.items.filter((i) => i.showId);
 
@@ -191,7 +201,7 @@ export async function acceptOffer(code: string, payMode: "FULL" | "CASH"): Promi
     const r = await tx.reservation.create({
       data: {
         venueId: offer.venueId, eventId: offer.eventId, tableId: offer.tableId!, managerId: offer.managerId,
-        status: "PENDING_PAYMENT", payMode, guests: offer.guests,
+        status: online ? "PENDING_PAYMENT" : "DRAFT", holdUntil: online ? holdFromNow() : null, payMode, guests: offer.guests,
         organizerName: offer.clientName!, organizerEmail: offer.clientEmail!, organizerPhone: offer.clientPhone!,
         signText: offer.signText,
         totalCents: offer.priceCents, depositCents: deposit,
@@ -220,4 +230,19 @@ export async function declineOffer(code: string): Promise<OfferState> {
   if (r.count === 0) return { error: "Cette offre n'est plus en attente." };
   revalidatePath("/app/offres");
   return { ok: "C'est noté, merci de votre réponse." };
+}
+
+/** Le manager envoie l'offre par email au client (si son email est renseigné). */
+export async function emailOffer(id: string): Promise<OfferState> {
+  const { venue } = await requireMembership();
+  const demo = await refuseInDemo();
+  if (demo) return demo;
+  if (!emailConfigured()) return { error: "L'envoi d'emails n'est pas encore branché. Envoyez le lien par WhatsApp." };
+  const offer = await db.offer.findFirst({ where: { id, venueId: venue.id }, select: { id: true, status: true, clientEmail: true } });
+  if (!offer) return { error: "Cette offre n'existe pas." };
+  if (offer.status !== "SENT") return { error: "Seule une offre prête peut être envoyée." };
+  if (!offer.clientEmail) return { error: "Ajoutez l'email du client à l'offre." };
+  const tooMany = await rateLimit("offre-mail", id, 3, 60 * 60_000);
+  if (tooMany) return { error: tooMany };
+  return (await sendOfferToClient(offer.id)) ? { ok: "Offre envoyée par email." } : { error: "L'email n'a pas pu partir. Réessayez." };
 }

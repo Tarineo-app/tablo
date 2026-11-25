@@ -56,7 +56,7 @@ export default async function Page() {
                   <span>{day(o.event.date)} · {o.guests} personnes{o.table ? ` · ${o.table.name}` : ""}{o.clientPhone ? ` · ${o.clientPhone}` : ""}</span>
                   {o.askNote && <em>« {o.askNote} »</em>}
                 </div>
-                <OfferRow offer={{ id: o.id, code: o.code, status: o.status }} />
+                <OfferRow offer={{ id: o.id, code: o.code, status: o.status, clientEmail: o.clientEmail }} />
               </div>
             ))}
           </div>
@@ -86,7 +86,7 @@ export default async function Page() {
                     <td><small className="mute">{o.items.slice(0, 3).map((i) => lineLabel(i)).join(", ")}{o.items.length > 3 ? "…" : ""}</small></td>
                     <td><b>{eur(o.priceCents)}</b>{o.listCents > o.priceCents && <><br /><small className="mute">offert {eur(o.listCents - o.priceCents)}</small></>}</td>
                     <td><span className={`pill ${o.status.toLowerCase()}`}>{LABEL[o.status]}</span></td>
-                    <td><OfferRow offer={{ id: o.id, code: o.code, status: o.status }} /></td>
+                    <td><OfferRow offer={{ id: o.id, code: o.code, status: o.status, clientEmail: o.clientEmail }} /></td>
                   </tr>
                 ))}
               </tbody>

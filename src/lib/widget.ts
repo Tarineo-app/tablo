@@ -3,6 +3,7 @@ import { db } from "./db";
 import { gateFor } from "./billing";
 import { readTheme } from "./theme";
 import { SOLD, tierDeadline } from "./tickets";
+import { occupying } from "./holds";
 
 /** Tout ce dont le widget public a besoin, en données simples (envoyées au navigateur). */
 export async function loadWidget(slug: string) {
@@ -19,7 +20,7 @@ export async function loadWidget(slug: string) {
       orderBy: { date: "asc" },
       take: 12,
       include: {
-        reservations: { where: { status: { notIn: ["CANCELLED"] } }, select: { tableId: true } }, prices: true,
+        reservations: { where: occupying(), select: { tableId: true } }, prices: true,
         ticketTiers: { where: { active: true }, orderBy: [{ sortOrder: "asc" }, { priceCents: "asc" }], include: { tickets: { where: { status: { in: [...SOLD] } }, select: { quantity: true } } } },
       },
     }),

@@ -178,6 +178,7 @@ export async function lookupCode(code: string): Promise<DoorResult> {
   if (r) {
     const warnings: string[] = [];
     if (r.status === "CANCELLED") warnings.push("Réservation annulée.");
+    if (r.status === "PENDING_PAYMENT") warnings.push("Paiement non reçu.");
     if (!sameNight(r.event.date)) warnings.push("Réservation pour une autre soirée.");
     if (r.status === "CHECKED_IN") warnings.push("Ce carré est déjà arrivé.");
     return { kind: "table", id: r.id, name: r.organizerName, detail: `Carré ${r.table.name} · ${r.guests} personnes`, quantity: r.guests, checkedIn: r.status === "CHECKED_IN" ? r.guests : 0, warnings, ok: warnings.length === 0 };

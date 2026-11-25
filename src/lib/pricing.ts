@@ -14,7 +14,7 @@ export function priceShows(chosen: { id: string; priceCents: number; categoryIds
 export const depositCents = (totalCents: number, pct: number) => Math.ceil((totalCents * pct) / 100);
 
 /**
- * Options liées aux bouteilles (« couronne de 3 Moët ») : un show avec `minBottles > 0`
+ * Options liées aux bouteilles (« couronne de 3 champagnes ») : un show avec `minBottles > 0`
  * n'est proposé que si le client a commandé assez de bouteilles.
  * `bottleId` à null = n'importe quelle bouteille du panier.
  */

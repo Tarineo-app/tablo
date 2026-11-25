@@ -12,7 +12,7 @@ export default async function Page() {
 
   const orders = event
     ? await db.order.findMany({
-        where: { venueId: venue.id, reservation: { eventId: event.id, status: { notIn: ["CANCELLED"] } } },
+        where: { venueId: venue.id, reservation: { eventId: event.id, status: { notIn: ["CANCELLED", "PENDING_PAYMENT"] } } },
         orderBy: [{ status: "asc" }, { createdAt: "asc" }],
         include: {
           reservation: { include: { table: { include: { category: true } } } },
@@ -25,6 +25,8 @@ export default async function Page() {
   // Le reste à encaisser vaut pour tout le carré : on ne l'affiche que sur le premier envoi.
   const firstOrderOf = new Map<string, string>();
   for (const o of [...orders].sort((a, b) => a.number - b.number)) if (!firstOrderOf.has(o.reservationId)) firstOrderOf.set(o.reservationId, o.id);
+  const laterDue = new Map<string, number>();
+  for (const o of orders) if (firstOrderOf.get(o.reservationId) !== o.id) laterDue.set(o.reservationId, (laterDue.get(o.reservationId) ?? 0) + o.cashDueCents);
 
   const envois: Envoi[] = orders.map((o) => ({
     id: o.id,
@@ -34,8 +36,9 @@ export default async function Page() {
     category: o.reservation.table.category.name,
     organizer: o.reservation.organizerName,
     guests: o.reservation.guests,
-    cashDueCents: firstOrderOf.get(o.reservationId) === o.id && o.reservation.payMode === "CASH"
-      ? Math.max(0, o.reservation.totalCents - o.reservation.paidCents)
+    // Envoi n°1 : ce qui reste dû sur la réservation elle-même (hors recommandes, qui portent leur propre montant).
+    cashDueCents: firstOrderOf.get(o.reservationId) === o.id
+      ? Math.max(0, o.reservation.totalCents - o.reservation.paidCents - (laterDue.get(o.reservationId) ?? 0))
       : o.cashDueCents,
     takenBy: o.takenBy?.user.name ?? null,
     mine: o.takenById === membership.id,

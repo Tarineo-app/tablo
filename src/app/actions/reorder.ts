@@ -34,6 +34,7 @@ export async function reorder(raw: z.infer<typeof Input>): Promise<ReorderState>
   });
   if (!r) return { error: "Réservation introuvable." };
   if (r.status === "CANCELLED" || r.status === "NO_SHOW") return { error: "Cette réservation n'est plus active." };
+  if (r.status === "PENDING_PAYMENT") return { error: "Réglez d'abord votre réservation : la carte du soir s'ouvre ensuite." };
 
   // La recommande n'a de sens que la nuit même : de la veille au lendemain midi.
   const start = r.event.date.getTime() - 864e5;
@@ -64,7 +65,8 @@ export async function reorder(raw: z.infer<typeof Input>): Promise<ReorderState>
     await tx.order.create({
       data: {
         venueId: r.venueId, reservationId: r.id, number: (last?.number ?? 0) + 1,
-        cashDueCents: r.payMode === "CASH" ? total : 0,
+        // Ce qui est recommandé dans la nuit se règle à table, quel que soit le mode de la réservation.
+        cashDueCents: total,
         items: { create: items },
       },
     });

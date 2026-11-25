@@ -1,6 +1,10 @@
 import { MANAGE, requireMembership } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { trialReport } from "@/lib/billing";
+import { stripeConfigured } from "@/lib/stripe";
+import { syncSubscription } from "@/lib/stripe-sync";
+import { openBillingPortal, startSubscription } from "@/app/actions/stripe";
+import StripeButton from "@/components/StripeButton";
 
 export const metadata = { title: "Abonnement · Tablo" };
 
@@ -32,17 +36,47 @@ const PLANS = [
   },
 ];
 
-export default async function Page() {
+type Props = { searchParams: Promise<{ ok?: string }> };
+
+export default async function Page({ searchParams }: Props) {
   const { venue } = await requireMembership(MANAGE);
-  const v = await db.venue.findUniqueOrThrow({ where: { id: venue.id }, select: { billing: true, trialEventId: true } });
+  const { ok } = await searchParams;
+  // Retour de la page de paiement : on relit Stripe tout de suite, sans attendre le webhook.
+  if (ok && venue.stripeCustomerId) await syncSubscription(venue.id, venue.stripeCustomerId);
+  const v = await db.venue.findUniqueOrThrow({
+    where: { id: venue.id },
+    select: { billing: true, trialEventId: true, subscriptionStatus: true, currentPeriodEnd: true, cancelAtPeriodEnd: true, stripeCustomerId: true },
+  });
+  const subscribed = !!v.subscriptionStatus && ["active", "trialing", "past_due"].includes(v.subscriptionStatus);
+  const until = v.currentPeriodEnd?.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" });
+  const contact = process.env.CONTACT_EMAIL;
   const report = v.trialEventId ? await trialReport(venue.id, v.trialEventId) : null;
 
   return (
     <>
       <header>
-        <h1>Ouvrir les prochaines soirées</h1>
+        <h1>{subscribed ? "Votre abonnement" : "Ouvrir les prochaines soirées"}</h1>
         <p>Pas de commission, jamais. Ce que vos clients dépensent est à vous. Vous payez l&apos;outil, pas vos propres réservations.</p>
       </header>
+
+      {subscribed && (
+        <section className="card" style={{ marginBottom: 16, display: "grid", gap: 10 }}>
+          <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+            <h2 style={{ fontSize: 18, margin: 0 }}>Club · 200 € / mois</h2>
+            <span className={`pill ${v.subscriptionStatus === "past_due" ? "sent" : "accepted"}`}>{v.subscriptionStatus === "past_due" ? "Paiement en retard" : v.cancelAtPeriodEnd ? "Résiliation prévue" : "Actif"}</span>
+          </div>
+          <p style={{ margin: 0 }}>
+            {v.subscriptionStatus === "past_due"
+              ? "Le dernier prélèvement n'est pas passé. Mettez à jour votre carte pour garder vos soirées ouvertes."
+              : v.cancelAtPeriodEnd
+                ? `Vos soirées restent ouvertes jusqu'au ${until}. Vous pouvez reprendre l'abonnement à tout moment avant cette date.`
+                : `Toutes vos soirées sont ouvertes. Prochain prélèvement le ${until}.`}
+          </p>
+          <StripeButton action={openBillingPortal} label="Factures, carte et résiliation" main={false} />
+        </section>
+      )}
+
+      {ok && !subscribed && <section className="card" style={{ marginBottom: 16 }}><b>Merci ! Stripe confirme votre paiement.</b> <span className="mute">Cette page se met à jour dans quelques secondes.</span><meta httpEquiv="refresh" content="4" /></section>}
 
       {report && report.tables + report.entries > 0 && (
         <section className="card" style={{ marginBottom: 16 }}>
@@ -66,12 +100,22 @@ export default async function Page() {
             <ul style={{ display: "grid", gap: 6, margin: "6px 0 0", padding: 0, listStyle: "none", lineHeight: 1.5 }}>
               {p.lines.map((l) => <li key={l}>· {l}</li>)}
             </ul>
-            <button className="btn btn-main" disabled style={{ marginTop: 8 }}>{p.name === "Club" ? "Payer par carte" : "Nous écrire"}</button>
+            <div style={{ marginTop: 8 }}>
+              {p.name === "Club" ? (
+                subscribed ? <span className="pill accepted">Votre formule</span> : <StripeButton action={startSubscription} label="S'abonner · 200 € / mois" disabled={!stripeConfigured()} />
+              ) : contact ? (
+                <a className="btn" href={`mailto:${contact}?subject=${encodeURIComponent(`Tablo sur mesure · ${venue.name}`)}`}>Nous écrire</a>
+              ) : (
+                <span className="mute">Parlons-en : répondez simplement à l&apos;email de bienvenue.</span>
+              )}
+            </div>
           </section>
         ))}
       </div>
       <p className="mute" style={{ marginTop: 14, fontSize: 13.5 }}>
-        Le paiement par carte s&apos;ouvre dans quelques jours. En attendant, vos données restent intactes : vos carrés, votre carte, vos clients et vos soirées passées vous attendent.
+        {stripeConfigured()
+          ? "Sans engagement : vous résiliez quand vous voulez, vos soirées restent ouvertes jusqu'à la fin du mois payé. Facture envoyée chaque mois."
+          : "Le paiement par carte s'ouvre dans quelques jours. En attendant, vos données restent intactes : vos carrés, votre carte, vos clients et vos soirées passées vous attendent."}
       </p>
     </>
   );

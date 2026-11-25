@@ -27,6 +27,7 @@ const LINKS: [string, string, Role[]][] = [
   ["/app/shows", "Shows et pancarte", MGMT],
   ["/app/integrer", "Intégrer le widget", MGMT],
   ["/app/reglages", "Informations du club", MGMT],
+  ["/app/paiements", "Paiements", MGMT],
   ["/app/abonnement", "Abonnement", MGMT],
 ];
 

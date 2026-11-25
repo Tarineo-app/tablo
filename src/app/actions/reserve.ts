@@ -6,6 +6,8 @@ import { db } from "@/lib/db";
 import { gateFor } from "@/lib/billing";
 import { bottleCount, bottleOptionUnlocked, depositCents, priceShows } from "@/lib/pricing";
 import { rateLimit } from "@/lib/ratelimit";
+import { occupying } from "@/lib/holds";
+import { holdFromNow, paymentsReady } from "@/lib/stripe";
 
 const Input = z.object({
   slug: z.string().min(1),
@@ -92,11 +94,13 @@ export async function createReservation(raw: z.infer<typeof Input>): Promise<Res
 
   const manager = d.managerCode ? await db.membership.findFirst({ where: { managerCode: d.managerCode, venueId: venue.id, role: "MANAGER" } }) : null;
   const token = randomBytes(12).toString("base64url");
+  // Paiement en ligne si le club l'a activé : le carré est tenu le temps que le client paie.
+  const online = paymentsReady(venue) && deposit > 0;
 
   try {
     await db.$transaction(async (tx) => {
       // Vérification au dernier moment, dans la transaction : un carré, une réservation par soirée.
-      const taken = await tx.reservation.count({ where: { eventId: event.id, tableId: table.id, status: { notIn: ["CANCELLED"] } } });
+      const taken = await tx.reservation.count({ where: { eventId: event.id, tableId: table.id, ...occupying() } });
       if (taken) throw new Error("TAKEN");
       if (garage) {
         // Relecture dans la transaction : deux personnes ne peuvent pas reprendre la même bouteille.
@@ -106,7 +110,7 @@ export async function createReservation(raw: z.infer<typeof Input>): Promise<Res
       const r = await tx.reservation.create({
         data: {
           venueId: venue.id, eventId: event.id, tableId: table.id, managerId: manager?.id ?? null,
-          status: "DRAFT", payMode: d.payMode, guests: d.guests,
+          status: online ? "PENDING_PAYMENT" : "DRAFT", holdUntil: online ? holdFromNow() : null, payMode: d.payMode, guests: d.guests,
           organizerName: d.name, organizerEmail: d.email, organizerPhone: d.phone,
           signText: d.signText || null, totalCents: total, depositCents: deposit, qrToken: token,
           garageItemId: garage?.id ?? null,

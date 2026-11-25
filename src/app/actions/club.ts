@@ -8,6 +8,7 @@ import { MANAGE, requireMembership, requireUser, refuseInDemo } from "@/lib/auth
 import { toCents } from "@/lib/money";
 import { forgetLook, readLook, themeFromLook } from "@/lib/look";
 import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme } from "@/lib/theme";
+import { isImageValue, persistImage } from "@/lib/storage";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
 
@@ -81,8 +82,10 @@ export async function saveTheme(theme: Theme): Promise<ActionState> {
   const clean: Theme = {
     amb: theme.amb, accent: theme.accent, grad: theme.grad, mode: theme.mode, font: theme.font, head: theme.head, btn: theme.btn,
     fab: String(theme.fab || "Réserver").slice(0, 28),
-    logoUrl: theme.logoUrl && /^(https:\/\/|data:image\/(png|jpeg|webp|svg\+xml);base64,)/.test(theme.logoUrl) && theme.logoUrl.length < 600_000 ? theme.logoUrl : null,
+    logoUrl: theme.logoUrl && isImageValue(theme.logoUrl, true) && theme.logoUrl.length < 600_000 ? theme.logoUrl : null,
   };
+  // Le logo envoyé par le navigateur est rangé dans le stockage (s'il est branché) : la base ne garde qu'un lien.
+  try { clean.logoUrl = await persistImage(venue.id, clean.logoUrl); } catch { return { error: "Logo trop lourd." }; }
   await db.venue.update({ where: { id: venue.id }, data: { theme: clean } });
   revalidatePath(`/w/${venue.slug}`);
   return { ok: "Ambiance enregistrée. Le widget est à jour." };
@@ -149,10 +152,17 @@ export async function savePlan(input: z.infer<typeof PlanSchema>): Promise<Actio
   if (!p.success) return { error: "Plan invalide : vérifiez le nom et la catégorie de chaque carré." };
   const cats = new Set((await db.tableCategory.findMany({ where: { venueId: venue.id }, select: { id: true } })).map((c) => c.id));
   if (p.data.tables.some((t) => !cats.has(t.categoryId))) return { error: "Un carré a une catégorie inconnue." };
-  const img = p.data.planImageUrl;
-  const okImg = (v: string) => /^(https:\/\/|data:image\/(png|jpeg|webp);base64,)/.test(v);
-  if (img && !okImg(img)) return { error: "Image de plan invalide." };
+  const okImg = (v: string) => isImageValue(v);
+  if (p.data.planImageUrl && !okImg(p.data.planImageUrl)) return { error: "Image de plan invalide." };
   if (p.data.tables.some((t) => t.photoUrl && !okImg(t.photoUrl))) return { error: "Photo de carré invalide." };
+  // Photos envoyées par le navigateur : rangées dans le stockage, la base ne garde qu'un lien court.
+  let img: string | null;
+  try {
+    img = await persistImage(venue.id, p.data.planImageUrl);
+    for (const t of p.data.tables) t.photoUrl = await persistImage(venue.id, t.photoUrl);
+  } catch {
+    return { error: "Une photo est trop lourde (3 Mo maximum)." };
+  }
   const tour = (p.data.tour3dUrl ?? "").trim();
   if (tour && !/^https:\/\//.test(tour)) return { error: "Le lien de la visite 3D doit commencer par https://" };
 
@@ -235,7 +245,7 @@ export async function addShow(_: ActionState, form: FormData): Promise<ActionSta
   if (mediaUrl && !/^https:\/\//.test(mediaUrl)) return { error: "Le média doit être une adresse https://" };
   const catIds = form.getAll("categories").map(String);
   const valid = await db.tableCategory.findMany({ where: { venueId: venue.id, id: { in: catIds } }, select: { id: true } });
-  // Option liée aux bouteilles (« couronne de 3 Moët ») : proposée à l'étape des bouteilles.
+  // Option liée aux bouteilles (« couronne de 3 champagnes ») : proposée à l'étape des bouteilles.
   const minBottles = Math.max(0, Math.min(50, parseInt(String(form.get("minBottles") || "0"), 10) || 0));
   const wantedBottle = String(form.get("bottleId") || "").trim();
   const bottle = wantedBottle ? await db.bottle.findFirst({ where: { id: wantedBottle, venueId: venue.id }, select: { id: true } }) : null;

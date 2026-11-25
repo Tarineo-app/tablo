@@ -92,9 +92,10 @@ Fait :
   **Règle : ne pas la ré-alourdir.** Toute nouvelle fonction entre dans la bande « aussi inclus » ou dans la FAQ, pas dans une section de plus.
 - Données de démo : `npm run db:seed` crée « Le Velours » (demo@tablo.club / tablo-demo) avec 4 tarifs d'entrée par soirée.
 
-À faire ensuite : **étape 4 (Stripe Connect : acompte et paiement complet)**, puis cagnotte `/c/[token]`, abonnement Stripe Billing,
-emails Resend (invitations et confirmations), photos sur Supabase Storage (aujourd'hui en data URL).
-Les réservations et les billets payants restent en « à payer » tant que Stripe n'est pas branché.
+Branché le 25/11/2026 (voir « Paiements, abonnement, emails, photos » plus bas) : Stripe Connect, Stripe Billing, emails Resend,
+relances du matin, photos sur Supabase Storage. **Tout s'active avec des variables d'environnement** (`.env.example`) :
+sans clé, le site marche comme avant (réservations « à payer », liens à copier, photos en base).
+Reste : billets payants en ligne (la billetterie est fermée par défaut), CGV et mentions légales, Stripe en production.
 
 ### Sécurité (audit du 23/11/2026, voir le doc « Tablo — audit de sécurité » du projet)
 - Les cookies de session portent `purpose: "session"` ; `readSession()` refuse tout autre jeton signé avec `SESSION_SECRET`
@@ -165,3 +166,25 @@ Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), c
 ### Migrations (suite)
 - `20261123180000_vue_3d`, `20261123190000_essai_par_soiree`, `20261123200000_demo`
 - `20261124200000_offres_manager` (Offer, OfferItem, OrderItem.showId, ticketsEnabled, payModes sans POOL)
+- `20261125160000_paiements` (Venue : état du compte Stripe, abonnement, `trialReportSentAt` ; Reservation : `holdUntil`, `stripeSessionId`, `stripePaymentIntentId`, `paidAt`)
+
+## Paiements, abonnement, emails, photos (25/11/2026)
+- **Paiement des clients** : `src/lib/stripe.ts` (client paresseux, `paymentsReady(venue)`), `src/lib/checkout.ts`, route `POST /w/[slug]/r/[token]/payer`.
+  Stripe Checkout en **direct charge sur le compte Express du club** (`stripeContext`), aucune commission. Le montant payé est `depositCents`.
+  Quand le club peut encaisser, la réservation (widget ou offre acceptée) naît en `PENDING_PAYMENT` avec `holdUntil` = +31 min.
+  **Toute vérification « carré libre » passe par `occupying()` (`src/lib/holds.ts`)** : un `PENDING_PAYMENT` dont le délai est passé ne tient plus le carré.
+- **Webhook** `POST /api/stripe/webhook`, deux secrets (`STRIPE_WEBHOOK_SECRET` plateforme, `STRIPE_CONNECT_WEBHOOK_SECRET` comptes connectés),
+  logique dans `src/lib/stripe-events.ts` : paiement reçu → `CONFIRMED`/`FULLY_PAID` + email ; doublon → remboursé ; carré pris entre-temps → annulé, remboursé, garage libéré ;
+  session expirée → `CANCELLED` ; `account.updated` → `stripeChargesEnabled` ; abonnement → `billing` ACTIVE/LOCKED.
+  Un événement de réservation doit venir du compte du club (`event.account === venue.stripeAccountId`) ; un abonnement, jamais d'un compte connecté.
+- **Espace club** : `/app/paiements` (activer le compte Express, voir les virements), `/app/abonnement` (Checkout abonnement 200 €/mois, portail Stripe).
+  Actions dans `src/app/actions/stripe.ts`, toutes derrière `refuseInDemo()`. Les relectures Stripe au retour sont dans `src/lib/stripe-sync.ts` (pas des server actions).
+- **Recommande en soirée** : se règle à table (`Order.cashDueCents`), quel que soit le mode de la réservation.
+- **Emails** : `src/lib/email.ts` (API Resend en HTTP, gabarit `layout()`), `src/lib/notify.ts` : confirmation de réservation, remboursement,
+  demande d'offre (au manager), offre au client (bouton « Par email » sur `/app/offres`), invitations d'équipe.
+- **Relances du matin** : `GET /api/cron/daily` (Vercel Cron, `vercel.json`, protégé par `CRON_SECRET`) : ferme les soirées test terminées,
+  envoie le bilan (une seule fois, `trialReportSentAt`), « placez vos carrés » à J+1, « soirée test » à J-2.
+- **Photos** : `src/lib/storage.ts`. À l'enregistrement du plan et du logo, les images `data:` partent dans le bucket privé `tablo`
+  (`venueId/sha256.ext`) et la base garde `/media/…`, servi par `src/app/media/[...path]/route.ts` (cache immuable, SVG en bac à sable).
+- **Démo** (`public/demo.html`) : plus aucune marque ni photo de bouteille (127 Ko au lieu de 2,4 Mo).
+

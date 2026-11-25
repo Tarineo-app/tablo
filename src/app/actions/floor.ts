@@ -6,6 +6,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireMembership } from "@/lib/auth";
 import { toCents } from "@/lib/money";
+import { occupying } from "@/lib/holds";
 
 export type FloorState = { error?: string; ok?: string } | undefined;
 
@@ -57,7 +58,7 @@ export async function createWalkIn(_: FloorState, form: FormData): Promise<Floor
   const total = Math.max(0, d.amount ? toCents(d.amount) : 0);
   try {
     await db.$transaction(async (tx) => {
-      const taken = await tx.reservation.count({ where: { eventId: event.id, tableId: table.id, status: { notIn: ["CANCELLED", "NO_SHOW"] } } });
+      const taken = await tx.reservation.count({ where: { eventId: event.id, tableId: table.id, ...occupying(["NO_SHOW"]) } });
       if (taken) throw new Error("TAKEN");
       await tx.reservation.create({
         data: {
@@ -109,7 +110,7 @@ export async function blockTable(_: FloorState, form: FormData): Promise<FloorSt
   const label = d.source ? `${d.name} (${d.source})` : d.name;
   try {
     await db.$transaction(async (tx) => {
-      const taken = await tx.reservation.count({ where: { eventId: event.id, tableId: table.id, status: { notIn: ["CANCELLED", "NO_SHOW"] } } });
+      const taken = await tx.reservation.count({ where: { eventId: event.id, tableId: table.id, ...occupying(["NO_SHOW"]) } });
       if (taken) throw new Error("TAKEN");
       await tx.reservation.create({
         data: {

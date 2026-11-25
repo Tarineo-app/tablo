@@ -80,7 +80,14 @@ model Venue {
   payModes           PayMode[] @default([FULL, CASH])
   poolDeadlineHour   Int       @default(18) // la veille, heure locale
   stripeAccountId    String? // Stripe Connect Express
+  /// Le compte Stripe du club peut encaisser (mis à jour par le webhook account.updated).
+  stripeChargesEnabled Boolean @default(false)
+  stripeDetailsSubmitted Boolean @default(false)
   stripeCustomerId   String? // abonnement Tablo
+  stripeSubscriptionId String? @unique
+  subscriptionStatus String? // active, past_due, canceled… tel que Stripe le donne
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean   @default(false)
   plan               String? // CLUB | PRESTIGE
   /// Garage : les bouteilles non terminées sont gardées au club pour la prochaine fois.
   garageEnabled      Boolean   @default(false)
@@ -104,6 +111,7 @@ model Venue {
   trialEventId       String? // la soirée offerte, choisie par le club
   trialPickedAt      DateTime?
   trialClosedAt      DateTime? // lendemain de la soirée d'essai : le bilan est prêt
+  trialReportSentAt  DateTime? // bilan de la soirée d'essai envoyé par email
   /// Vue 3D du plan : générée depuis le plan 2D, ou vraie visite si le club en a une.
   plan3d             Boolean   @default(true)
   planTilt           Int       @default(52) // inclinaison de départ, en degrés
@@ -277,6 +285,11 @@ model Reservation {
   stripePaymentMethodId String? // carte enregistrée en garantie
   qrToken               String            @unique @default(cuid())
   garageItemId          String? // bouteille du garage récupérée ce soir-là
+  /// Paiement en ligne : le carré est tenu jusqu'à holdUntil pendant que le client paie.
+  holdUntil             DateTime?
+  stripeSessionId       String?           @unique
+  stripePaymentIntentId String?
+  paidAt                DateTime?
   createdAt             DateTime          @default(now())
 
   venue         Venue             @relation(fields: [venueId], references: [id], onDelete: Cascade)

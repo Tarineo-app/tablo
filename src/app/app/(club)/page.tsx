@@ -9,6 +9,7 @@ import ManagerHome from "./ManagerHome";
 import Tonight, { type FloorTable } from "./Tonight";
 import TrialBanner from "@/components/TrialBanner";
 import { closeTrialIfOver, trialReport } from "@/lib/billing";
+import { occupying } from "@/lib/holds";
 
 export const metadata = { title: "Ce soir · Tablo" };
 
@@ -65,7 +66,7 @@ export default async function Page() {
   const [tables, resas, tickets] = await Promise.all([
     db.venueTable.findMany({ where: { venueId: venue.id, active: true }, include: { category: true }, orderBy: { name: "asc" } }),
     db.reservation.findMany({
-      where: { venueId: venue.id, eventId: event.id, status: { not: "CANCELLED" } },
+      where: { venueId: venue.id, eventId: event.id, ...occupying() },
       include: { manager: { include: { user: { select: { name: true } } } }, garageItem: { include: { bottleSize: { include: { bottle: true } } } }, _count: { select: { orders: true } } },
     }),
     db.ticket.aggregate({ where: { eventId: event.id, status: { not: "CANCELLED" } }, _sum: { quantity: true, checkedIn: true, totalCents: true } }),

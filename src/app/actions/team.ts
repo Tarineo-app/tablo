@@ -12,6 +12,7 @@ import { readInvite, signInvite } from "@/lib/invite";
 import { createSession } from "@/lib/session";
 import { INVITABLE, ROLE_LABEL } from "@/lib/roles";
 import type { Role } from "@/generated/prisma/enums";
+import { layout, sendEmail } from "@/lib/email";
 
 export type InviteState = { error?: string; ok?: string; link?: string } | undefined;
 
@@ -24,21 +25,14 @@ async function appOrigin() {
 }
 
 /** Envoie l'invitation par email si Resend est configuré. Sinon, le lien est affiché pour être copié. */
-const esc = (v: string) => v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-
 async function sendInviteEmail(to: string, venueName: string, role: Role, link: string) {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return false;
-  const from = process.env.EMAIL_FROM || "Tablo <onboarding@resend.dev>";
-  const r = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from, to, subject: `${venueName} vous invite sur Tablo`,
-      html: `<p>Bonjour,</p><p>${esc(venueName)} vous invite à rejoindre son espace Tablo en tant que <b>${esc(ROLE_LABEL[role])}</b>.</p><p><a href="${esc(link)}">Activer mon compte</a> (lien valable 7 jours)</p>`,
-    }),
-  }).catch(() => null);
-  return !!r?.ok;
+  const { html, text } = layout({
+    venue: venueName,
+    title: `${venueName} vous invite sur Tablo`,
+    intro: `Vous rejoignez l'équipe en tant que ${ROLE_LABEL[role]}. Créez votre accès en un clic ; le lien est valable 7 jours.`,
+    button: { label: "Activer mon compte", url: link },
+  });
+  return sendEmail({ to, subject: `${venueName} vous invite sur Tablo`, html, text });
 }
 
 const InviteSchema = z.object({

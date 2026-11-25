@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "./db";
 import { now } from "./dates";
+import { occupying } from "./holds";
 
 /**
  * Essai par soirée : le club construit tout gratuitement, choisit UNE soirée
@@ -39,23 +40,24 @@ export function gateFor(venue: VenueGate, eventId?: string | null): Gate {
  * Passe le club en LOCKED une fois sa soirée d'essai terminée, et note la date
  * pour lui montrer son bilan. Appelé à l'ouverture de l'espace club.
  */
-export async function closeTrialIfOver(venueId: string) {
+export async function closeTrialIfOver(venueId: string): Promise<boolean> {
   const v = await db.venue.findUnique({ where: { id: venueId }, select: { billing: true, trialEventId: true, trialClosedAt: true } });
-  if (!v || v.billing !== "TRIAL" || !v.trialEventId) return;
+  if (!v || v.billing !== "TRIAL" || !v.trialEventId) return false;
   const ev = await db.event.findUnique({ where: { id: v.trialEventId }, select: { date: true } });
-  if (!ev) return;
+  if (!ev) return false;
   // la nuit est finie le lendemain à 8 h
   const over = new Date(ev.date);
   over.setDate(over.getDate() + 1);
   over.setHours(8, 0, 0, 0);
-  if (+now() < +over) return;
-  await db.venue.update({ where: { id: venueId }, data: { billing: "LOCKED", trialClosedAt: v.trialClosedAt ?? new Date() } });
+  if (+now() < +over) return false;
+  const done = await db.venue.updateMany({ where: { id: venueId, billing: "TRIAL" }, data: { billing: "LOCKED", trialClosedAt: v.trialClosedAt ?? new Date() } });
+  return done.count > 0;
 }
 
 /** Le bilan de la soirée d'essai : ce qu'on lui montre au moment de payer. */
 export async function trialReport(venueId: string, eventId: string) {
   const [res, tickets] = await Promise.all([
-    db.reservation.findMany({ where: { eventId, venueId, status: { not: "CANCELLED" } }, select: { totalCents: true, guests: true } }),
+    db.reservation.findMany({ where: { eventId, venueId, ...occupying() }, select: { totalCents: true, guests: true } }),
     db.ticket.findMany({ where: { eventId, venueId, status: { in: ["PAID", "CHECKED_IN"] } }, select: { quantity: true, totalCents: true } }),
   ]);
   return {

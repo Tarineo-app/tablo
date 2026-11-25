@@ -56,7 +56,7 @@ export default async function Page() {
               </label>
               <label className="field">Nombre minimum de bouteilles<input className="input" name="minBottles" inputMode="numeric" defaultValue="0" placeholder="3" /></label>
             </div>
-            <p className="mute" style={{ margin: "8px 0 0", fontSize: 13 }}>Laissez 0 pour un show classique. Exemple : « Couronne Moët » avec la bouteille Moët &amp; Chandon et 3 minimum.</p>
+            <p className="mute" style={{ margin: "8px 0 0", fontSize: 13 }}>Laissez 0 pour un show classique. Exemple : « Couronne de champagne » avec votre champagne brut et 3 minimum.</p>
           </fieldset>
           <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
             <legend style={{ marginBottom: 6 }}>Peut être offert pour les catégories</legend>

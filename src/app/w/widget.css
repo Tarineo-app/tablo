@@ -159,3 +159,10 @@
 .w-reline .w-sel { flex: 1; min-width: 140px; }
 .w-modes button { min-height: 38px; padding: 0 16px; border-radius: 999px; border: 0; background: none; color: var(--w-mute); font: 700 14px var(--w-font); cursor: pointer; }
 .w-modes button.on { background: var(--w-btn); color: var(--w-on); }
+
+/* Paiement en ligne */
+.w-paybox{display:grid;gap:12px}
+.w-paybox .w-accept{width:100%}
+.w-paynote{font-size:12.5px;line-height:1.5;opacity:.7}
+.w-paywait,.w-paydone{display:grid;gap:4px;border-color:color-mix(in srgb,#2fd38b 45%,transparent)}
+.w-paywait span,.w-paydone span{font-size:13px;opacity:.75}
