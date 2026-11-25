@@ -139,6 +139,13 @@ Le plan ne dépasse jamais `min(56vh, 540px)` sur ordinateur. Sur mobile (≤ 90
 légende des catégories qui défile à l'horizontale, et le récapitulatif (`.w-aside`) devient un **tiroir** ouvert par le total en bas (`cartOpen`, pastille du nombre d'articles).
 La mention loi Évin est répétée en bas de page sur mobile (`.w-legal-m`) puisque le panneau de droite y est masqué. Tester sur 360×640, 390×844, 820×1180 et 1366×800.
 
+## Ambiance et couleurs (25/11/2026)
+`src/lib/theme.ts`. Six ambiances : Tablo, **Noir et or**, **Velours rouge** (fond `velours` bordeaux), Disco, Pool party, Chic clair
+(« Bal masqué » et « Jungle » retirées, aussi dans `public/demo.html` et le constructeur de la landing ; un ancien thème `jungle` retombe sur le fond noir).
+**Couleurs partie par partie** : `Theme.colors` (`COLOR_PARTS` : titres, fond, cartes, texte, boutons, 2ᵉ couleur des boutons = dégradé, bouton sur le site).
+Une partie absente suit l'ambiance ; `themeVars()` recalcule les nuances voisines (bordures, textes secondaires) avec `mixHex`. Variables ajoutées : `--w-title`, `--w-fab`, `--w-fab-on`
+(le bouton flottant d'`embed.js` lit `--w-fab` via `/embed.js/theme`). `saveTheme` ne garde que les parties connues en `#rrggbb`. Choisir une ambiance remet les couleurs en auto.
+
 ## Facturation
 `src/lib/billing.ts` : `gateFor(venue, eventId)` décide si le public peut réserver. Elle est appelée dans le widget **et** dans `reserve.ts` / `tickets.ts` — ne jamais se contenter de griser un bouton. `closeTrialIfOver` passe le club en `LOCKED` le lendemain 8 h de sa soirée d'essai.
 

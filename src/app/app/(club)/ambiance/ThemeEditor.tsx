@@ -2,9 +2,20 @@
 
 import { useState, useTransition } from "react";
 import { saveTheme } from "@/app/actions/club";
-import { AMBIANCES, GRADIENTS, HEAD_FONTS, MODES, TEXT_FONTS, themeVars, type Theme } from "@/lib/theme";
+import { AMBIANCES, COLOR_PARTS, GRADIENTS, HEAD_FONTS, MODES, TEXT_FONTS, themeVars, type ColorKey, type Theme } from "@/lib/theme";
 import Plan3D, { type Box } from "@/app/w/[slug]/Plan3D";
 import "@/app/w/widget.css";
+
+/** Couleur montrée dans le sélecteur quand une partie suit l'ambiance. */
+function autoColor(t: Theme, k: ColorKey): string {
+  const m = MODES[t.mode] ?? MODES.dark;
+  const hex = (v: string) => (/^#[0-9a-f]{6}$/i.test(v) ? v : t.accent);
+  if (k === "bg") return m.bg;
+  if (k === "panel") return m.panel;
+  if (k === "ink") return m.ink;
+  if (k === "btn2") return t.colors?.btn1 ?? hex(t.accent);
+  return hex(t.accent);
+}
 
 /** Un petit plan d'exemple pour l'aperçu : il prend les couleurs et les polices choisies. */
 const SAMPLE = (kind: string): Box[] => {
@@ -38,7 +49,7 @@ export default function ThemeEditor({ initial, venueName, kind = "club" }: { ini
           <div className="ambs">
             {Object.values(AMBIANCES).map((a) => (
               <button type="button" key={a.amb} className={`amb ${t.amb === a.amb ? "on" : ""}`}
-                onClick={() => set({ amb: a.amb, accent: a.accent, grad: a.grad, mode: a.mode, font: a.font, head: a.head, btn: a.btn })}>
+                onClick={() => set({ amb: a.amb, accent: a.accent, grad: a.grad, mode: a.mode, font: a.font, head: a.head, btn: a.btn, colors: {} })}>
                 <span className="sw" style={{ background: a.swatch }}><em style={{ fontFamily: `'${a.head}'`, color: a.accent === "#16141a" ? "#16141a" : a.amb === "pool" ? "#fff" : a.accent }}>Aa</em></span>
                 {a.name}<small>{a.desc}</small>
               </button>
@@ -79,6 +90,27 @@ export default function ThemeEditor({ initial, venueName, kind = "club" }: { ini
           </div>
         </section>
 
+        <section className="card" style={{ display: "grid", gap: 12 }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
+            <h2 style={{ fontSize: 16 }}>Couleurs, partie par partie</h2>
+            {Object.keys(t.colors ?? {}).length > 0 && <button type="button" className="btn btn-out" onClick={() => set({ colors: {} })}>Tout remettre en auto</button>}
+          </div>
+          <p className="mute" style={{ margin: 0, fontSize: 13, lineHeight: 1.55 }}>Laissez « Auto » pour suivre l&apos;ambiance. Les nuances voisines (bordures, textes secondaires) s&apos;ajustent toutes seules pour rester lisibles.</p>
+          <div className="colorparts">
+            {COLOR_PARTS.map((p) => {
+              const v = t.colors?.[p.key as ColorKey];
+              const shown = v ?? autoColor(t, p.key as ColorKey);
+              return (
+                <label key={p.key} className={`colorpart ${v ? "on" : ""}`}>
+                  <input type="color" value={shown} onChange={(e) => set({ colors: { ...(t.colors ?? {}), [p.key]: e.target.value } })} aria-label={p.label} />
+                  <span><b>{p.label}</b><small>{p.hint}</small></span>
+                  {v ? <button type="button" className="btn btn-out" onClick={(e) => { e.preventDefault(); const c = { ...(t.colors ?? {}) }; delete c[p.key as ColorKey]; set({ colors: c }); }}>Auto</button> : <em>Auto</em>}
+                </label>
+              );
+            })}
+          </div>
+        </section>
+
         <div className="row">
           <button className="btn btn-main" disabled={pending} onClick={() => start(async () => setMsg(await saveTheme(t)))}>{pending ? "Enregistrement…" : "Enregistrer l'ambiance"}</button>
           {msg?.error && <span className="err">{msg.error}</span>}
@@ -93,14 +125,14 @@ export default function ThemeEditor({ initial, venueName, kind = "club" }: { ini
             {t.logoUrl ? <img src={t.logoUrl} alt={venueName} style={{ height: 30, maxWidth: 160, objectFit: "contain" }} /> : <b style={{ fontFamily: "var(--w-head)", fontSize: 18 }}>{venueName}</b>}
             <span style={{ color: "var(--w-mute)", fontSize: 13 }}>✕</span>
           </div>
-          <div style={{ fontFamily: "var(--w-head)", fontSize: 24, lineHeight: 1.1, color: "var(--w-accent)" }}>Choisissez votre carré</div>
+          <div style={{ fontFamily: "var(--w-head)", fontSize: 24, lineHeight: 1.1, color: "var(--w-title)" }}>Choisissez votre carré</div>
           <div style={{ background: "var(--w-panel)", border: "1px solid var(--w-line)", borderRadius: 16, padding: 14, display: "grid", gap: 8, fontSize: 14 }}>
             <div className="row" style={{ justifyContent: "space-between" }}><span>Carré Prestige · 8 pers.</span><b>dès 1 500 €</b></div>
             <div className="row" style={{ justifyContent: "space-between", color: "var(--w-mute)" }}><span>Acompte</span><span>50 %</span></div>
           </div>
           <Plan3D planImageUrl={null} wallColor={null} tilt={50} beach={kind === "beach"} selected={pick} onSelect={setPick} boxes={SAMPLE(kind)} />
           <div style={{ height: 50, borderRadius: "var(--w-radius)", background: "var(--w-btn)", color: "var(--w-on)", display: "grid", placeItems: "center", fontWeight: 800 }}>Continuer</div>
-          <div style={{ justifySelf: "end", marginTop: 6, padding: "12px 18px", borderRadius: "var(--w-radius)", background: "var(--w-btn)", color: "var(--w-on)", fontWeight: 800, fontSize: 14 }}>{t.fab || "Réserver"}</div>
+          <div style={{ justifySelf: "end", marginTop: 6, padding: "12px 18px", borderRadius: "var(--w-radius)", background: "var(--w-fab)", color: "var(--w-fab-on)", fontWeight: 800, fontSize: 14 }}>{t.fab || "Réserver"}</div>
         </div>
       </aside>
     </div>

@@ -562,8 +562,8 @@ function lum(h){const n=parseInt(h.slice(1),16);return((n>>16)*.299+((n>>8)&255)
 function mix(h,w,t){const a=parseInt(h.slice(1),16),r=(a>>16)*(1-t)+w*t,g=((a>>8)&255)*(1-t)+w*t,b=(a&255)*(1-t)+w*t;return '#'+[r,g,b].map(x=>Math.round(x).toString(16).padStart(2,'0')).join('')}
 const AMB={
  tablo:{n:'Tablo',d:'Noir, chrome, arc-en-ciel',accent:'#ffffff',grad:'holo',mode:'dark',font:'Manrope',head:'Unbounded',btn:'pill',sw:'#060607',ex:'#fff'},
- masque:{n:'Bal masqué',d:'Bleu nuit et or',accent:'#e2b860',grad:'gold',mode:'navy',font:'Manrope',head:'Cinzel',btn:'square',sw:'radial-gradient(circle at 50% 0%,#283080,#0c0f33)',ex:'#e2b860'},
- jungle:{n:'Jungle',d:'Vert profond, néon',accent:'#7dffa8',grad:'',mode:'jungle',font:'Manrope',head:'Fraunces',btn:'pill',sw:'radial-gradient(circle at 30% 0%,#0f5a36,#04170e)',ex:'#7dffa8'},
+ or:{n:'Noir et or',d:'Luxe, champagne, doré',accent:'#e2b860',grad:'gold',mode:'dark',font:'Manrope',head:'Cinzel',btn:'square',sw:'radial-gradient(circle at 50% 0%,#4a3812,#060607 72%)',ex:'#e2b860'},
+ velours:{n:'Velours rouge',d:'Bordeaux, rouge, lumière tamisée',accent:'#ff3b5c',grad:'',mode:'velours',font:'Manrope',head:'Playfair Display',btn:'pill',sw:'radial-gradient(circle at 50% 0%,#7a1428,#14050a 75%)',ex:'#ff3b5c'},
  disco:{n:'Disco',d:'Violet, rose, paillettes',accent:'#ff5fa2',grad:'disco',mode:'disco',font:'Manrope',head:'Monoton',btn:'round',sw:'radial-gradient(circle at 50% 0%,#3b1d6e,#0b0716)',ex:'#ff5fa2'},
  pool:{n:'Pool party',d:'Soleil et turquoise',accent:'#0fa3b1',grad:'sun',mode:'beach',font:'Manrope',head:'Bungee',btn:'round',sw:'linear-gradient(180deg,#ffb45f,#ff7aa8 50%,#2bd4c4)',ex:'#fff'},
  chic:{n:'Chic clair',d:'Blanc cassé, noir',accent:'#16141a',grad:'',mode:'light',font:'Inter',head:'Playfair Display',btn:'square',sw:'#f6f5f2',ex:'#16141a'}};
@@ -574,7 +574,7 @@ function applyTheme(){const th=VEN().theme,rt=document.documentElement.style;
  rt.setProperty('--cb',th.grad&&GRAD[th.grad]?GRAD[th.grad]:'var(--c)');
  rt.setProperty('--c',th.accent);rt.setProperty('--c2',mix(th.accent,255,.35));rt.setProperty('--btx',th.grad==='holo'||th.grad==='gold'||lum(th.accent)>.6?'#111':'#fff');
  rt.setProperty('--br',{round:'12px',pill:'999px',square:'2px'}[th.btn]);rt.setProperty('--wf',th.font);rt.setProperty('--hf',th.head);
- const L=th.mode==='light'?{bg:'#f6f5f2',p:'#ffffff',p2:'#f2f0ec',line:'#e3dfd7',ink:'#16141a',mute:'#6b6574',inp:'#ffffff',trk:'#e8e4dc'}:th.mode==='navy'?{bg:'#0b1020',p:'#0f1338',p2:'#171d4a',line:'#2a3270',ink:'#eef1fb',mute:'#9aa3c4',inp:'#0d1430',trk:'#26305a'}:th.mode==='jungle'?{bg:'#04170e',p:'#071f14',p2:'#0c2c1d',line:'#174a31',ink:'#e6fff0',mute:'#8fbfa2',inp:'#051a10',trk:'#174a31'}:th.mode==='disco'?{bg:'#0b0716',p:'#140c26',p2:'#1d1236',line:'#36235c',ink:'#f6eeff',mute:'#b3a2d6',inp:'#100a1f',trk:'#36235c'}:th.mode==='beach'?{bg:'#fff6ec',p:'#fffaf4',p2:'#ffeedd',line:'#f3d9c2',ink:'#08202a',mute:'#5b6f78',inp:'#ffffff',trk:'#f3d9c2'}:{bg:'#060607',p:'#121216',p2:'#19191e',line:'#26262d',ink:'#f3f2f7',mute:'#8e8c99',inp:'#0c0c0f',trk:'#26262d'};
+ const L=th.mode==='light'?{bg:'#f6f5f2',p:'#ffffff',p2:'#f2f0ec',line:'#e3dfd7',ink:'#16141a',mute:'#6b6574',inp:'#ffffff',trk:'#e8e4dc'}:th.mode==='navy'?{bg:'#0b1020',p:'#0f1338',p2:'#171d4a',line:'#2a3270',ink:'#eef1fb',mute:'#9aa3c4',inp:'#0d1430',trk:'#26305a'}:th.mode==='velours'?{bg:'#12050a',p:'#1c0a12',p2:'#2a0f1b',line:'#4a1a2c',ink:'#fff0f3',mute:'#c79aa8',inp:'#160710',trk:'#4a1a2c'}:th.mode==='disco'?{bg:'#0b0716',p:'#140c26',p2:'#1d1236',line:'#36235c',ink:'#f6eeff',mute:'#b3a2d6',inp:'#100a1f',trk:'#36235c'}:th.mode==='beach'?{bg:'#fff6ec',p:'#fffaf4',p2:'#ffeedd',line:'#f3d9c2',ink:'#08202a',mute:'#5b6f78',inp:'#ffffff',trk:'#f3d9c2'}:{bg:'#060607',p:'#121216',p2:'#19191e',line:'#26262d',ink:'#f3f2f7',mute:'#8e8c99',inp:'#0c0c0f',trk:'#26262d'};
  ['#panel','.modal'].forEach(q=>{const e=$(q);if(e)Object.entries(L).forEach(([k,v])=>e.style.setProperty('--'+(k==='inp'?'inp':k==='trk'?'trk':k),v))});
  const f=$('#fab span');if(f)f.textContent=th.fab;}
 const logoHTML=v=>v.theme.logo?`<img class="wlogo" src="${v.theme.logo}" alt="${esc(v.a+' '+v.b)}">`:`${v.a} <b>${v.b}</b>`;
@@ -989,7 +989,7 @@ function studio(){
  <div class="sg"><b>Identité</b><label>Logo (PNG transparent)<input type="file" accept="image/*" data-st="logo"></label>
  <label>Couleur principale<input type="color" value="${th.accent}" data-st="accent" style="width:100%;height:40px;border:0;background:none"></label>
  <div class="sw">${sw.map(c=>`<button class="${th.accent===c?'on':''}" style="background:${c}" data-a="st" data-k="accent" data-v="${c}" aria-label="${c}"></button>`).join('')}</div></div>
- <div class="sg"><b>Fond du widget</b>${seg('mode',[['dark','Noir'],['navy','Bleu nuit'],['jungle','Vert'],['disco','Violet'],['light','Clair'],['beach','Plage']])}</div>
+ <div class="sg"><b>Fond du widget</b>${seg('mode',[['dark','Noir'],['navy','Bleu nuit'],['velours','Bordeaux'],['disco','Violet'],['light','Clair'],['beach','Plage']])}</div>
  <div class="sg"><b>Style des boutons</b>${seg('grad',[['','Couleur unie'],['holo','Arc-en-ciel'],['gold','Or'],['disco','Disco'],['sun','Coucher de soleil']])}</div>
  <div class="sg"><b>Typographie</b><label>Textes${sel('font',['Manrope','Inter','Montserrat'])}</label><label>Titres${sel('head',['Unbounded','Montserrat','Playfair Display','Cinzel','Fraunces','Monoton','Bungee','Inter'])}</label></div>
  <div class="sg"><b>Boutons</b>${seg('btn',[['round','Arrondis'],['pill','Pilule'],['square','Carrés']])}<label>Texte du bouton flottant<input type="text" value="${esc(th.fab)}" data-st="fab" maxlength="28"></label></div>

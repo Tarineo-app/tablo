@@ -206,3 +206,13 @@ table.list td { padding: 12px 8px; border-bottom: 1px solid var(--line); vertica
 .pe .pn { position: relative; z-index: 1; display: grid; gap: 1px; padding: 3px 7px 4px; border-radius: 8px; background: rgba(14,10,20,.86); border: 1px solid rgba(255,255,255,.16); font: 800 10px/1.15 Manrope, system-ui, sans-serif; white-space: nowrap; max-width: 140%; }
 .pe .pn small { font-weight: 700; font-size: 9px; color: var(--c); }
 .pe.beach .pn { background: rgba(255,252,246,.95); color: #2a1d10; border-color: rgba(120,80,30,.25); }
+
+/* Ambiance : couleurs partie par partie */
+.colorparts { display: grid; gap: 8px; }
+.colorpart { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
+.colorpart.on { border-color: rgba(255,255,255,.4); }
+.colorpart input[type="color"] { width: 44px; height: 36px; border: 0; padding: 0; background: none; cursor: pointer; }
+.colorpart span { display: grid; gap: 2px; font-size: 14px; }
+.colorpart small { color: var(--mute); font-size: 12px; }
+.colorpart em { font-style: normal; font-size: 12px; color: var(--mute); padding: 0 8px; }
+.colorpart .btn { min-height: 32px; padding: 0 12px; font-size: 12px; }

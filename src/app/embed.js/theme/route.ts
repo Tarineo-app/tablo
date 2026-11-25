@@ -9,5 +9,5 @@ export async function GET(req: Request) {
   if (!venue) return Response.json({}, { status: 404, headers });
   const t = readTheme(venue.theme, venue.kind);
   const v = themeVars(t);
-  return Response.json({ fab: t.fab, btn: v["--w-btn"], on: v["--w-on"], radius: v["--w-radius"] }, { headers });
+  return Response.json({ fab: t.fab, btn: v["--w-fab"], on: v["--w-fab-on"], radius: v["--w-radius"] }, { headers });
 }

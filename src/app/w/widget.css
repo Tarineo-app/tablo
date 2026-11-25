@@ -9,7 +9,7 @@
 .w-steps button { border: 1px solid var(--w-line); background: none; color: var(--w-mute); border-radius: 999px; padding: 7px 12px; font: 700 12px var(--w-font); cursor: pointer; }
 .w-steps button.on { background: var(--w-accent); color: var(--w-on); border-color: transparent; }
 .w-steps button:disabled { opacity: .45; cursor: default; }
-.w-title { font-size: clamp(24px, 3.4vw, 34px); line-height: 1.08; margin: 4px 0 0; color: var(--w-accent); }
+.w-title { font-size: clamp(24px, 3.4vw, 34px); line-height: 1.08; margin: 4px 0 0; color: var(--w-title, var(--w-accent)); }
 .w-sub { color: var(--w-mute); margin: 0; line-height: 1.6; }
 .w-card { background: var(--w-panel); border: 1px solid var(--w-line); border-radius: 18px; padding: 16px; }
 .w-rules { border-left: 3px solid var(--w-accent); }

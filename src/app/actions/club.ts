@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { MANAGE, requireMembership, requireUser, refuseInDemo } from "@/lib/auth";
 import { toCents } from "@/lib/money";
 import { forgetLook, readLook, themeFromLook } from "@/lib/look";
-import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme } from "@/lib/theme";
+import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme, COLOR_PARTS, isHex } from "@/lib/theme";
 import { imageFromForm, isImageValue, persistImage } from "@/lib/storage";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
@@ -83,6 +83,8 @@ export async function saveTheme(theme: Theme): Promise<ActionState> {
     amb: theme.amb, accent: theme.accent, grad: theme.grad, mode: theme.mode, font: theme.font, head: theme.head, btn: theme.btn,
     fab: String(theme.fab || "Réserver").slice(0, 28),
     logoUrl: theme.logoUrl && isImageValue(theme.logoUrl, true) && theme.logoUrl.length < 600_000 ? theme.logoUrl : null,
+    // Couleurs partie par partie : seules les parties connues, en #rrggbb.
+    colors: Object.fromEntries(COLOR_PARTS.map((p) => [p.key, theme.colors?.[p.key]]).filter(([, v]) => isHex(v))),
   };
   // Le logo envoyé par le navigateur est rangé dans le stockage (s'il est branché) : la base ne garde qu'un lien.
   try { clean.logoUrl = await persistImage(venue.id, clean.logoUrl); } catch { return { error: "Logo trop lourd." }; }

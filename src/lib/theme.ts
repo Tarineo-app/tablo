@@ -4,18 +4,33 @@ export type Theme = {
   amb: string;
   accent: string;
   grad: "" | "holo" | "gold" | "disco" | "sun";
-  mode: "dark" | "navy" | "jungle" | "disco" | "light" | "beach";
+  mode: "dark" | "navy" | "velours" | "disco" | "light" | "beach";
   font: string;
   head: string;
   btn: "round" | "pill" | "square";
   fab: string;
   logoUrl?: string | null;
+  /** Couleurs choisies partie par partie ; une partie absente suit l'ambiance. */
+  colors?: Partial<Record<ColorKey, string>>;
 };
+
+/** Les parties du widget qu'un club peut colorer une à une. */
+export const COLOR_PARTS = [
+  { key: "title", label: "Titres", hint: "« Choisissez votre carré », « Vos bouteilles »…" },
+  { key: "bg", label: "Fond", hint: "Le fond de toute la fenêtre" },
+  { key: "panel", label: "Cartes et encadrés", hint: "Soirées, bouteilles, shows, récapitulatif" },
+  { key: "ink", label: "Texte", hint: "Le texte courant (les textes secondaires suivent)" },
+  { key: "btn1", label: "Boutons", hint: "« Continuer », « Ajouter », « Réserver »" },
+  { key: "btn2", label: "Boutons, 2ᵉ couleur", hint: "Facultatif : fait un dégradé avec la couleur des boutons" },
+  { key: "fab", label: "Bouton sur votre site", hint: "Le bouton flottant « Réserver » posé sur votre site" },
+] as const;
+export type ColorKey = (typeof COLOR_PARTS)[number]["key"];
+export const isHex = (v: unknown): v is string => typeof v === "string" && /^#[0-9a-f]{6}$/i.test(v);
 
 export const AMBIANCES: Record<string, Omit<Theme, "fab" | "logoUrl"> & { name: string; desc: string; swatch: string }> = {
   tablo: { amb: "tablo", name: "Tablo", desc: "Noir, chrome, arc-en-ciel", accent: "#ffffff", grad: "holo", mode: "dark", font: "Manrope", head: "Unbounded", btn: "pill", swatch: "#060607" },
-  masque: { amb: "masque", name: "Bal masqué", desc: "Bleu nuit et or", accent: "#e2b860", grad: "gold", mode: "navy", font: "Manrope", head: "Cinzel", btn: "square", swatch: "radial-gradient(circle at 50% 0%,#283080,#0c0f33)" },
-  jungle: { amb: "jungle", name: "Jungle", desc: "Vert profond, néon", accent: "#7dffa8", grad: "", mode: "jungle", font: "Manrope", head: "Fraunces", btn: "pill", swatch: "radial-gradient(circle at 30% 0%,#0f5a36,#04170e)" },
+  or: { amb: "or", name: "Noir et or", desc: "Luxe, champagne, doré", accent: "#e2b860", grad: "gold", mode: "dark", font: "Manrope", head: "Cinzel", btn: "square", swatch: "radial-gradient(circle at 50% 0%,#4a3812,#060607 72%)" },
+  velours: { amb: "velours", name: "Velours rouge", desc: "Bordeaux, rouge, lumière tamisée", accent: "#ff3b5c", grad: "", mode: "velours", font: "Manrope", head: "Playfair Display", btn: "pill", swatch: "radial-gradient(circle at 50% 0%,#7a1428,#14050a 75%)" },
   disco: { amb: "disco", name: "Disco", desc: "Violet, rose, paillettes", accent: "#ff5fa2", grad: "disco", mode: "disco", font: "Manrope", head: "Monoton", btn: "round", swatch: "radial-gradient(circle at 50% 0%,#3b1d6e,#0b0716)" },
   pool: { amb: "pool", name: "Pool party", desc: "Soleil et turquoise", accent: "#0fa3b1", grad: "sun", mode: "beach", font: "Manrope", head: "Bungee", btn: "round", swatch: "linear-gradient(180deg,#ffb45f,#ff7aa8 50%,#2bd4c4)" },
   chic: { amb: "chic", name: "Chic clair", desc: "Blanc cassé, noir", accent: "#16141a", grad: "", mode: "light", font: "Inter", head: "Playfair Display", btn: "square", swatch: "#f6f5f2" },
@@ -24,7 +39,7 @@ export const AMBIANCES: Record<string, Omit<Theme, "fab" | "logoUrl"> & { name: 
 export const MODES: Record<Theme["mode"], { label: string; bg: string; panel: string; panel2: string; line: string; ink: string; mute: string }> = {
   dark: { label: "Noir", bg: "#060607", panel: "#121216", panel2: "#19191e", line: "#26262d", ink: "#f3f2f7", mute: "#8e8c99" },
   navy: { label: "Bleu nuit", bg: "#0b1020", panel: "#0f1338", panel2: "#171d4a", line: "#2a3270", ink: "#eef1fb", mute: "#9aa3c4" },
-  jungle: { label: "Vert", bg: "#04170e", panel: "#071f14", panel2: "#0c2c1d", line: "#174a31", ink: "#e6fff0", mute: "#8fbfa2" },
+  velours: { label: "Bordeaux", bg: "#12050a", panel: "#1c0a12", panel2: "#2a0f1b", line: "#4a1a2c", ink: "#fff0f3", mute: "#c79aa8" },
   disco: { label: "Violet", bg: "#0b0716", panel: "#140c26", panel2: "#1d1236", line: "#36235c", ink: "#f6eeff", mute: "#b3a2d6" },
   light: { label: "Clair", bg: "#f6f5f2", panel: "#ffffff", panel2: "#f2f0ec", line: "#e3dfd7", ink: "#16141a", mute: "#6b6574" },
   beach: { label: "Plage", bg: "#fff6ec", panel: "#fffaf4", panel2: "#ffeedd", line: "#f3d9c2", ink: "#08202a", mute: "#5b6f78" },
@@ -62,21 +77,46 @@ function luminance(hex: string) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+/** Mélange deux couleurs hexadécimales (t = part de b). */
+function mixHex(a: string, b: string, t: number) {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const c = [16, 8, 0].map((sh) => Math.round(((pa >> sh) & 255) * (1 - t) + ((pb >> sh) & 255) * t));
+  return "#" + c.map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+const onColor = (hex: string) => (luminance(hex) > 0.6 ? "#111111" : "#ffffff");
+
 /** Variables CSS appliquées au widget. */
 export function themeVars(t: Theme): Record<string, string> {
   const m = MODES[t.mode] ?? MODES.dark;
+  const c = t.colors ?? {};
   const grad = t.grad ? GRADIENTS[t.grad]?.css : "";
   const onAccent = t.grad === "holo" || t.grad === "gold" || luminance(t.accent) > 0.6 ? "#111111" : "#ffffff";
+  // Couleurs partie par partie : on recalcule les nuances voisines pour que tout reste lisible.
+  const ink = isHex(c.ink) ? c.ink : m.ink;
+  const bg = isHex(c.bg) ? c.bg : m.bg;
+  const custom = isHex(c.bg) || isHex(c.panel) || isHex(c.ink);
+  const panel = isHex(c.panel) ? c.panel : isHex(c.bg) ? mixHex(bg, ink, 0.06) : m.panel;
+  const panel2 = custom ? mixHex(panel, ink, 0.05) : m.panel2;
+  const line = custom ? mixHex(panel, ink, 0.15) : m.line;
+  const mute = isHex(c.ink) || isHex(c.bg) ? mixHex(ink, bg, 0.42) : m.mute;
+  // Boutons : une couleur, ou un dégradé (la 2ᵉ couleur seule part de la couleur principale).
+  const b1 = isHex(c.btn1) ? c.btn1 : isHex(c.btn2) && isHex(t.accent) ? t.accent : null;
+  const btn = b1 ? (isHex(c.btn2) ? `linear-gradient(110deg, ${b1}, ${c.btn2})` : b1) : grad || t.accent;
+  const on = b1 ? onColor(isHex(c.btn2) ? mixHex(b1, c.btn2, 0.5) : b1) : onAccent;
+  const fab = isHex(c.fab) ? c.fab : btn;
   return {
-    "--w-bg": m.bg,
-    "--w-panel": m.panel,
-    "--w-panel2": m.panel2,
-    "--w-line": m.line,
-    "--w-ink": m.ink,
-    "--w-mute": m.mute,
+    "--w-bg": bg,
+    "--w-panel": panel,
+    "--w-panel2": panel2,
+    "--w-line": line,
+    "--w-ink": ink,
+    "--w-mute": mute,
     "--w-accent": t.accent,
-    "--w-btn": grad || t.accent,
-    "--w-on": onAccent,
+    "--w-title": isHex(c.title) ? c.title : t.accent,
+    "--w-btn": btn,
+    "--w-on": on,
+    "--w-fab": fab,
+    "--w-fab-on": isHex(c.fab) ? onColor(c.fab) : on,
     "--w-radius": { round: "14px", pill: "999px", square: "3px" }[t.btn] ?? "14px",
     "--w-font": `'${t.font}', system-ui, sans-serif`,
     "--w-head": `'${t.head}', system-ui, sans-serif`,
