@@ -3,8 +3,20 @@
 import { useState, useTransition } from "react";
 import { saveTheme } from "@/app/actions/club";
 import { AMBIANCES, GRADIENTS, HEAD_FONTS, MODES, TEXT_FONTS, themeVars, type Theme } from "@/lib/theme";
+import Plan3D, { type Box } from "@/app/w/[slug]/Plan3D";
+import "@/app/w/widget.css";
 
-export default function ThemeEditor({ initial, venueName }: { initial: Theme; venueName: string }) {
+/** Un petit plan d'exemple pour l'aperçu : il prend les couleurs et les polices choisies. */
+const SAMPLE = (kind: string): Box[] => {
+  const b = (id: string, name: string, x: number, y: number, w: number, h: number, color: string, k: Box["kind"], sub: string, taken = false): Box =>
+    ({ id, name, sub, x, y, w, h, elevation: 2, color, photoUrl: null, taken, small: false, kind: k });
+  return kind === "beach"
+    ? [b("a", "Cabana 1", 6, 10, 20, 26, "#4fd8ff", "cabana", "min 600 €"), b("b", "Bali 1", 40, 14, 16, 22, "#ff8a5f", "bali", "min 400 €"), b("c", "Cabana 2", 72, 10, 20, 26, "#4fd8ff", "cabana", "", true), b("d", "Ponton", 34, 60, 32, 24, "#ffd25f", "carre", "min 1 200 €")]
+    : [b("a", "Impérial", 6, 8, 24, 22, "#ffd25f", "carre", "min 1 500 €"), b("b", "Scène", 40, 8, 20, 22, "#ff5fa2", "carre", "", true), b("c", "Lounge 1", 70, 8, 22, 22, "#a970ff", "carre", "min 500 €"), b("d", "Haute 1", 22, 62, 12, 20, "#4fd8ff", "haute", "min 200 €"), b("e", "Lounge 2", 62, 58, 24, 24, "#a970ff", "carre", "min 500 €")];
+};
+
+export default function ThemeEditor({ initial, venueName, kind = "club" }: { initial: Theme; venueName: string; kind?: string }) {
+  const [pick, setPick] = useState<string | null>("c");
   const [t, setT] = useState<Theme>(initial);
   const [msg, setMsg] = useState<{ ok?: string; error?: string }>();
   const [pending, start] = useTransition();
@@ -86,9 +98,7 @@ export default function ThemeEditor({ initial, venueName }: { initial: Theme; ve
             <div className="row" style={{ justifyContent: "space-between" }}><span>Carré Prestige · 8 pers.</span><b>dès 1 500 €</b></div>
             <div className="row" style={{ justifyContent: "space-between", color: "var(--w-mute)" }}><span>Acompte</span><span>50 %</span></div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
-            {["S1", "S2", "VIP", "L1"].map((x, i) => <div key={x} style={{ height: 44, borderRadius: 10, display: "grid", placeItems: "center", fontSize: 12, fontWeight: 700, background: i === 2 ? "var(--w-accent)" : "var(--w-panel2)", color: i === 2 ? "var(--w-on)" : "var(--w-mute)", border: "1px solid var(--w-line)" }}>{x}</div>)}
-          </div>
+          <Plan3D planImageUrl={null} wallColor={null} tilt={50} beach={kind === "beach"} selected={pick} onSelect={setPick} boxes={SAMPLE(kind)} />
           <div style={{ height: 50, borderRadius: "var(--w-radius)", background: "var(--w-btn)", color: "var(--w-on)", display: "grid", placeItems: "center", fontWeight: 800 }}>Continuer</div>
           <div style={{ justifySelf: "end", marginTop: 6, padding: "12px 18px", borderRadius: "var(--w-radius)", background: "var(--w-btn)", color: "var(--w-on)", fontWeight: 800, fontSize: 14 }}>{t.fab || "Réserver"}</div>
         </div>

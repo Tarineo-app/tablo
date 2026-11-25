@@ -181,3 +181,28 @@ table.list td { padding: 12px 8px; border-bottom: 1px solid var(--line); vertica
 .pill.sent { background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); color: var(--ink); }
 .pill.declined, .pill.expired, .pill.cancelled { opacity: .7; }
 @media (max-width: 760px) { .offerprice { grid-template-columns: 1fr; } }
+
+/* « Ce soir » : le plan du widget en mode équipe */
+.floor3d { min-width: 0; font-family: var(--w-font, Manrope, system-ui, sans-serif); }
+.floor3d .p3-view { max-height: min(68vh, 620px); }
+
+/* Éditeur de plan : même allure que le plan des clients, vu de dessus */
+.planwrap.pe { background-color: #120d18; box-shadow: inset 0 0 60px rgba(0,0,0,.5); }
+.planwrap.pe:not([style*="url("]) { background-image: radial-gradient(ellipse at 50% 42%, rgba(169,112,255,.14), transparent 62%), linear-gradient(160deg, #1b1424, #0f0b15); }
+.planwrap.pe.beach:not([style*="url("]) { background-color: #e6c991; background-image: radial-gradient(ellipse at 25% 85%, #f6e2bb, transparent 45%), repeating-radial-gradient(circle at 30% 40%, rgba(120,80,30,.05) 0 1.5px, transparent 1.5px 6px); }
+.planwrap.pe.beach .grid-bg { opacity: .35; }
+.pe .ptable { --c: #a970ff; border: 1.5px solid color-mix(in srgb, var(--c) 70%, transparent); background: linear-gradient(150deg, #2b2136, #17111f); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 30%, transparent); backdrop-filter: none; overflow: visible; }
+.pe.beach .ptable { background: repeating-linear-gradient(90deg, #d2a56b 0 6px, #bb8c55 6px 7px); border-color: #a77a45; box-shadow: 0 4px 10px rgba(80,50,20,.25); }
+.pe .ptable.sel { border-color: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 70%, transparent), 0 0 26px color-mix(in srgb, var(--c) 50%, transparent); }
+.pe .pf { position: absolute; pointer-events: none; }
+.pe .pf.k-carre { inset: 12% 10% 24%; border: 5px solid color-mix(in srgb, var(--c) 35%, #2a1430); border-bottom: 0; border-radius: 6px 6px 2px 2px; }
+.pe .pf.k-carre::after { content: ""; position: absolute; left: 26%; right: 26%; top: 34%; bottom: 0; border-radius: 3px; background: linear-gradient(135deg, rgba(255,255,255,.3), rgba(255,255,255,.05)); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 70%, transparent); }
+.pe.beach .pf.k-carre { border-color: #fbf7ef; }
+.pe.beach .pf.k-carre::after { background: linear-gradient(135deg, #a8743f, #7a5129); box-shadow: none; }
+.pe .pf.k-haute { inset: 22%; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.3), rgba(255,255,255,.06)); border: 1px solid rgba(255,255,255,.3); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 60%, transparent); }
+.pe .ptable:has(.k-haute), .pe .ptable:has(.k-bali) { border-radius: 50%; }
+.pe .pf.k-cabana { inset: 12% 14%; border-radius: 5px; background: repeating-linear-gradient(90deg, rgba(255,252,246,.95) 0 6px, rgba(236,224,204,.95) 6px 12px); box-shadow: 0 3px 8px rgba(60,35,10,.35); }
+.pe .pf.k-bali { inset: 8%; border-radius: 50%; background: repeating-conic-gradient(#fffaf2 0 30deg, var(--c) 30deg 60deg); opacity: .9; }
+.pe .pn { position: relative; z-index: 1; display: grid; gap: 1px; padding: 3px 7px 4px; border-radius: 8px; background: rgba(14,10,20,.86); border: 1px solid rgba(255,255,255,.16); font: 800 10px/1.15 Manrope, system-ui, sans-serif; white-space: nowrap; max-width: 140%; }
+.pe .pn small { font-weight: 700; font-size: 9px; color: var(--c); }
+.pe.beach .pn { background: rgba(255,252,246,.95); color: #2a1d10; border-color: rgba(120,80,30,.25); }

@@ -335,3 +335,20 @@
   .w-info { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) { .w-aside { transition: none; } }
+
+/* Mode équipe (« Ce soir ») : la couleur dit l'état du carré pendant la soirée */
+.p3-box[class*="st-"] { --st: rgba(255,255,255,.18); }
+.p3-box.st-reserve { --st: #a970ff; }
+.p3-box.st-arrive { --st: #3ddc97; }
+.p3-box.st-absent { --st: #ff6b6b; }
+.p3-box[class*="st-"] .top { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--col) 55%, transparent), 0 0 14px color-mix(in srgb, var(--col) 25%, transparent); }
+.p3-box.st-reserve .top, .p3-box.st-arrive .top, .p3-box.st-absent .top { box-shadow: 0 0 0 2.5px var(--st), 0 0 24px color-mix(in srgb, var(--st) 60%, transparent); }
+.p3-box.st-libre .top > i { filter: saturate(.55) brightness(.8); }
+.p3-box.st-absent .top > i { filter: grayscale(.8) brightness(.7); }
+.p3-box[class*="st-"].on .top { box-shadow: 0 0 0 3px #fff, 0 0 30px color-mix(in srgb, var(--st) 80%, transparent) !important; }
+.p3-pin[class*="st-"] > span { border-color: color-mix(in srgb, var(--st, #fff) 70%, transparent); }
+.p3-pin.st-reserve { --st: #a970ff; } .p3-pin.st-arrive { --st: #3ddc97; } .p3-pin.st-absent { --st: #ff6b6b; }
+.p3-pin.st-reserve > span, .p3-pin.st-arrive > span, .p3-pin.st-absent > span { background: color-mix(in srgb, var(--st) 30%, rgba(14,10,20,.92)); }
+.p3-pin.st-libre > .full small { color: rgba(255,255,255,.55); }
+.p3-view .p3-pin[class*="st-"].on > span { background: #fff; color: #111; border-color: transparent; }
+.p3-view .p3-pin[class*="st-"].on small { color: #444; }

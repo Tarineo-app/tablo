@@ -158,6 +158,8 @@ model TableCategory {
   /// Rendu 3D : couleur du carré et hauteur de l'estrade (0 = à plat).
   color         String?
   elevation     Int          @default(2)
+  /// Mobilier dessiné sur le plan : carre (banquette), haute, cabana, bali. Vide = deviné d'après le nom.
+  furniture     String?
   depositPct    Int          @default(0) // 0 à 100
   includedShows Int          @default(0)
   minSpendCents Int          @default(0)

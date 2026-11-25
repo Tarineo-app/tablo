@@ -9,7 +9,8 @@ import { themeVars } from "@/lib/theme";
 import type { WidgetData } from "@/lib/widget";
 import ModeTabs from "./ModeTabs";
 import AskOffer from "./AskOffer";
-import Plan3D, { kindOf, type Box } from "./Plan3D";
+import Plan3D, { type Box } from "./Plan3D";
+import { furnitureOf } from "@/lib/furniture";
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: c % 100 ? 2 : 0 });
 const day = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/Paris" });
@@ -163,7 +164,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
                   sub: taken ? "Réservé" : small ? `max ${t.capacity} pers.` : `min ${eur(event?.prices[t.id] ?? t.minSpendCents)}`,
                   x: t.x, y: t.y, w: t.w, h: t.h,
                   elevation: t.elevation, color: t.color, photoUrl: t.photoUrl,
-                  taken, small, kind: kindOf(categories.find((c) => c.id === t.categoryId)?.name, t.name),
+                  taken, small, kind: furnitureOf(categories.find((c) => c.id === t.categoryId), t.name),
                 };
               })}
             />

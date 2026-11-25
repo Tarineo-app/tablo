@@ -99,6 +99,9 @@ const CatSchema = z.object({
   includedShows: z.coerce.number().int().min(0).max(10),
 });
 
+/** Mobilier qu'un club peut choisir pour une catégorie (vide = deviné d'après le nom). */
+const FURNITURE = ["carre", "haute", "cabana", "bali"];
+
 export async function saveCategory(_: ActionState, form: FormData): Promise<ActionState> {
   const { venue } = await requireMembership(MANAGE);
   const p = CatSchema.safeParse(Object.fromEntries(form));
@@ -109,6 +112,7 @@ export async function saveCategory(_: ActionState, form: FormData): Promise<Acti
     minSpendCents: toCents(form.get("minSpend")),
     color: /^#[0-9a-fA-F]{6}$/.test(color) ? color : null,
     elevation: Math.max(0, Math.min(10, parseInt(String(form.get("elevation") || "2"), 10) || 0)),
+    furniture: FURNITURE.includes(String(form.get("furniture"))) ? String(form.get("furniture")) : null,
   };
   const id = String(form.get("id") || "");
   if (id) await db.tableCategory.updateMany({ where: { id, venueId: venue.id }, data });
@@ -144,6 +148,7 @@ const PlanSchema = z.object({
   planTilt: z.number().int().min(0).max(70).optional(),
   wallColor: z.string().max(9).nullable().optional(),
   tour3dUrl: z.string().max(400).nullable().optional(),
+  kind: z.enum(["club", "beach"]).optional(),
 });
 
 export async function savePlan(input: z.infer<typeof PlanSchema>): Promise<ActionState> {
@@ -175,7 +180,8 @@ export async function savePlan(input: z.infer<typeof PlanSchema>): Promise<Actio
         planImageUrl: img,
         ...(p.data.plan3d === undefined ? {} : { plan3d: p.data.plan3d }),
         ...(p.data.planTilt === undefined ? {} : { planTilt: p.data.planTilt }),
-        ...(p.data.wallColor === undefined ? {} : { wallColor: p.data.wallColor || null }),
+        ...(p.data.wallColor === undefined ? {} : { wallColor: /^#[0-9a-fA-F]{6}$/.test(p.data.wallColor ?? "") ? p.data.wallColor : null }),
+        ...(p.data.kind === undefined ? {} : { kind: p.data.kind }),
         ...(p.data.tour3dUrl === undefined ? {} : { tour3dUrl: tour || null }),
       },
     });

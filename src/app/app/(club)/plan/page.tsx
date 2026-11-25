@@ -1,13 +1,14 @@
 import { MANAGE, requireMembership } from "@/lib/auth";
 import { db } from "@/lib/db";
 import PlanEditor from "./PlanEditor";
+import { readTheme } from "@/lib/theme";
 
 export const metadata = { title: "Plan · Tablo" };
 
 export default async function Page() {
   const { venue } = await requireMembership(MANAGE);
   const [cats, tables] = await Promise.all([
-    db.tableCategory.findMany({ where: { venueId: venue.id }, orderBy: { sortOrder: "asc" }, select: { id: true, name: true, minSpendCents: true, color: true, elevation: true } }),
+    db.tableCategory.findMany({ where: { venueId: venue.id }, orderBy: { sortOrder: "asc" }, select: { id: true, name: true, minSpendCents: true, color: true, elevation: true, furniture: true } }),
     db.venueTable.findMany({ where: { venueId: venue.id, active: true }, orderBy: { name: "asc" } }),
   ]);
   return (
@@ -23,7 +24,8 @@ export default async function Page() {
           categories={cats}
           initialImage={venue.planImageUrl}
           initialTables={tables.map((t) => ({ id: t.id, name: t.name, categoryId: t.categoryId, capacity: t.capacity, minSpendCents: t.minSpendCents, photoUrl: t.photoUrl, x: t.x, y: t.y, w: t.w, h: t.h }))}
-          view={{ plan3d: venue.plan3d, planTilt: venue.planTilt, wallColor: venue.wallColor, tour3dUrl: venue.tour3dUrl }}
+          view={{ plan3d: venue.plan3d, planTilt: venue.planTilt, wallColor: venue.wallColor, tour3dUrl: venue.tour3dUrl, kind: venue.kind === "beach" ? "beach" : "club" }}
+          theme={readTheme(venue.theme, venue.kind)}
           slug={venue.slug}
         />
       )}

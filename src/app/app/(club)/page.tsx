@@ -10,6 +10,8 @@ import Tonight, { type FloorTable } from "./Tonight";
 import TrialBanner from "@/components/TrialBanner";
 import { closeTrialIfOver, trialReport } from "@/lib/billing";
 import { occupying } from "@/lib/holds";
+import { readTheme } from "@/lib/theme";
+import { furnitureOf } from "@/lib/furniture";
 
 export const metadata = { title: "Ce soir · Tablo" };
 
@@ -79,6 +81,7 @@ export default async function Page() {
       id: t.id, name: t.name, category: t.category.name, capacity: t.capacity,
       minSpendCents: t.minSpendCents ?? t.category.minSpendCents,
       x: t.x, y: t.y, w: t.w, h: t.h,
+      color: t.category.color, elevation: t.category.elevation, photoUrl: t.photoUrl, kind: furnitureOf(t.category, t.name),
       resa: r
         ? {
             id: r.id, name: r.organizerName, phone: r.organizerPhone, email: r.organizerEmail, guests: r.guests,
@@ -106,7 +109,8 @@ export default async function Page() {
         <div className="card"><span className="mute">Vendu ce soir</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{eur(vendu)}</div></div>
         <div className="card"><span className="mute">Panier moyen carré</span><div style={{ font: "800 28px Unbounded", marginTop: 6 }}>{resas.length ? eur(Math.round(resas.reduce((a, r) => a + r.totalCents, 0) / resas.length)) : "—"}</div></div>
       </div>
-      <Tonight tables={floor} eventId={event.id} planImageUrl={venue.planImageUrl} garageEnabled={venue.garageEnabled} />
+      <Tonight tables={floor} eventId={event.id} planImageUrl={venue.planImageUrl} garageEnabled={venue.garageEnabled}
+        look={{ theme: readTheme(venue.theme, venue.kind), beach: venue.kind === "beach", wallColor: venue.wallColor, tilt: venue.planTilt || 52 }} />
     </>
   );
 }

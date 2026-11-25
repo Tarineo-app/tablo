@@ -118,8 +118,11 @@ Reste : billets payants en ligne (la billetterie est fermée par défaut), CGV e
 ## Plan des carrés (3D et vue de dessus)
 `src/app/w/[slug]/Plan3D.tsx` (+ `.p3-*` dans `src/app/w/widget.css`), utilisé **toujours** par le widget : `Venue.plan3d` ne décide plus que la vue d'ouverture (3D ou vue de dessus).
 Pas de bibliothèque 3D, uniquement du CSS 3D. La scène est `rotateX(planTilt) rotateZ(rot)` ; les positions sont en % **du sol** (`.p3-stage`, mesuré par ResizeObserver), pas du cadre.
-Chaque emplacement reçoit son **mobilier**, déduit du nom de la catégorie ou du carré par `kindOf()` : banquette en U et table lumineuse (par défaut), table haute avec tabourets (« haute », « mange-debout »),
-cabana avec toile et poteaux (« cabana »), lit balinais avec parasol (« bali », « lit », « daybed »). `Venue.kind === "beach"` passe en bois, sable et toile.
+Chaque emplacement reçoit son **mobilier** (`src/lib/furniture.ts`, partagé serveur/navigateur) : `TableCategory.furniture` choisi par le club dans Catégories
+(`carre` banquette en U et table lumineuse, `haute` table haute et tabourets, `cabana` toile et poteaux, `bali` lit balinais et parasol), sinon deviné d'après le nom (`kindOf`).
+`Venue.kind === "beach"` passe en bois, sable et toile ; le club le choisit dans l'éditeur de plan (Décor), avec la couleur du sol (`wallColor`).
+**Le même composant sert partout** : widget client, « Ce soir » (`staff` : tous les carrés cliquables, couleur selon l'état libre/réservé/arrivé/absent, vue de dessus par défaut),
+onglet « Aperçu client » de l'éditeur de plan, et aperçu de la page Ambiance. Hors du widget, importer `@/app/w/widget.css` et envelopper dans `themeVars(theme)`.
 Les étiquettes (nom, prix) **ne sont pas dans la scène 3D** : `project()` calcule leur place à l'écran avec le même calcul que le navigateur
 (rotateX/rotateZ autour du centre du sol, perspective 1400 depuis 50 % 40 % du cadre) et elles sont dessinées dans le calque `.p3-labels`. Le mobilier ne peut donc jamais les cacher.
 Si on change la perspective, l'origine ou l'ordre des rotations en CSS, **changer `project()` en même temps**. L'inclinaison s'anime en JS (pas de transition CSS sur `.p3-stage`) pour que les étiquettes suivent.
@@ -186,6 +189,7 @@ L'en-tête du site du club dans le téléphone est un teaser de soirée **dessin
 ### Migrations (suite)
 - `20261123180000_vue_3d`, `20261123190000_essai_par_soiree`, `20261123200000_demo`
 - `20261124200000_offres_manager` (Offer, OfferItem, OrderItem.showId, ticketsEnabled, payModes sans POOL)
+- `20261125220000_mobilier` (TableCategory.furniture)
 - `20261125160000_paiements` (Venue : état du compte Stripe, abonnement, `trialReportSentAt` ; Reservation : `holdUntil`, `stripeSessionId`, `stripePaymentIntentId`, `paidAt`)
 
 ## Paiements, abonnement, emails, photos (25/11/2026)

@@ -34,7 +34,7 @@ export async function loadWidget(slug: string) {
       gate: gateFor(venue),
       theme: readTheme(venue.theme, venue.kind),
     },
-    categories: categories.map((c) => ({ id: c.id, name: c.name, depositPct: c.depositPct, includedShows: c.includedShows, color: c.color, elevation: c.elevation })),
+    categories: categories.map((c) => ({ id: c.id, name: c.name, depositPct: c.depositPct, includedShows: c.includedShows, color: c.color, elevation: c.elevation, furniture: c.furniture })),
     tables: tables.map((t) => ({
       id: t.id, name: t.name, categoryId: t.categoryId, capacity: t.capacity,
       minSpendCents: t.minSpendCents ?? catById.get(t.categoryId)?.minSpendCents ?? 0,

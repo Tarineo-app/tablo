@@ -8,7 +8,7 @@ export const metadata = { title: "Catégories · Tablo" };
 
 const PALETTE = ["#ff5fa2", "#a970ff", "#4fd8ff", "#b6ff6a", "#ffd25f", "#ff8a5f"];
 
-function Fields({ c }: { c?: { id: string; name: string; depositPct: number; includedShows: number; minSpendCents: number; color: string | null; elevation: number } }) {
+function Fields({ c }: { c?: { id: string; name: string; depositPct: number; includedShows: number; minSpendCents: number; color: string | null; elevation: number; furniture: string | null } }) {
   return (
     <>
       {c && <input type="hidden" name="id" value={c.id} />}
@@ -26,6 +26,15 @@ function Fields({ c }: { c?: { id: string; name: string; depositPct: number; inc
           <input className="input" type="number" name="elevation" min={0} max={10} defaultValue={c?.elevation ?? 2} />
         </label>
       </div>
+      <label className="field">Mobilier dessiné sur le plan
+        <select className="select" name="furniture" defaultValue={c?.furniture ?? ""}>
+          <option value="">Automatique (d&apos;après le nom : « cabana », « bali », « table haute »…)</option>
+          <option value="carre">Carré : banquette en U et table basse</option>
+          <option value="haute">Table haute et tabourets</option>
+          <option value="cabana">Cabana : matelas, poteaux et toile</option>
+          <option value="bali">Lit balinais et parasol</option>
+        </select>
+      </label>
     </>
   );
 }
@@ -37,7 +46,7 @@ export default async function Page() {
     <>
       <header>
         <h1>Catégories de carré</h1>
-        <p>Chaque catégorie fixe l&apos;acompte obligatoire, le nombre de shows offerts au client et le minimum de bouteilles par défaut. La couleur et la hauteur servent au plan et à la vue 3D. Un carré peut avoir son propre minimum sur le plan.</p>
+        <p>Chaque catégorie fixe l&apos;acompte obligatoire, le nombre de shows offerts au client et le minimum de bouteilles par défaut. La couleur, la hauteur et le mobilier servent au plan et à la vue 3D. Un carré peut avoir son propre minimum sur le plan.</p>
       </header>
       <div style={{ display: "grid", gap: 14 }}>
         {cats.map((c) => (

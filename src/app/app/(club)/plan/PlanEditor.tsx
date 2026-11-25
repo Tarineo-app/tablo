@@ -2,10 +2,14 @@
 
 import { useRef, useState, useTransition } from "react";
 import { savePlan } from "@/app/actions/club";
+import Plan3D from "@/app/w/[slug]/Plan3D";
+import { furnitureOf } from "@/lib/furniture";
+import { themeVars, type Theme } from "@/lib/theme";
+import "@/app/w/widget.css";
 
 type T = { id?: string; key: string; name: string; categoryId: string; capacity: number; minSpendCents: number | null; photoUrl: string | null; x: number; y: number; w: number; h: number };
-type Cat = { id: string; name: string; minSpendCents: number; color: string | null; elevation: number };
-type View3d = { plan3d: boolean; planTilt: number; wallColor: string | null; tour3dUrl: string | null };
+type Cat = { id: string; name: string; minSpendCents: number; color: string | null; elevation: number; furniture: string | null };
+type View3d = { plan3d: boolean; planTilt: number; wallColor: string | null; tour3dUrl: string | null; kind: "club" | "beach" };
 
 const COLORS = ["#ff5fa2", "#a970ff", "#4fd8ff", "#b6ff6a", "#ffd25f", "#ff8a5f"];
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
@@ -28,7 +32,9 @@ function compress(file: File, max = 1600): Promise<string> {
   });
 }
 
-export default function PlanEditor({ categories, initialImage, initialTables, view, slug }: { categories: Cat[]; initialImage: string | null; initialTables: Omit<T, "key">[]; view: View3d; slug: string }) {
+export default function PlanEditor({ categories, initialImage, initialTables, view, slug, theme }: { categories: Cat[]; initialImage: string | null; initialTables: Omit<T, "key">[]; view: View3d; slug: string; theme: Theme }) {
+  const [tab, setTab] = useState<"edit" | "preview">("edit");
+  const [pick, setPick] = useState<string | null>(null);
   const [img, setImg] = useState(initialImage);
   const [v3, setV3] = useState<View3d>(view);
   const [tables, setTables] = useState<T[]>(initialTables.map((t) => ({ ...t, key: t.id ?? `n${seq++}` })));
@@ -68,7 +74,7 @@ export default function PlanEditor({ categories, initialImage, initialTables, vi
       const r = await savePlan({
         planImageUrl: img,
         tables: tables.map((t) => ({ id: t.id, name: t.name, categoryId: t.categoryId, capacity: t.capacity, minSpendCents: t.minSpendCents, photoUrl: t.photoUrl, x: +t.x.toFixed(2), y: +t.y.toFixed(2), w: +t.w.toFixed(2), h: +t.h.toFixed(2) })),
-        plan3d: v3.plan3d, planTilt: v3.planTilt, wallColor: v3.wallColor, tour3dUrl: v3.tour3dUrl,
+        plan3d: v3.plan3d, planTilt: v3.planTilt, wallColor: v3.wallColor, tour3dUrl: v3.tour3dUrl, kind: v3.kind,
       });
       setMsg(r ?? {});
     });
@@ -76,17 +82,47 @@ export default function PlanEditor({ categories, initialImage, initialTables, vi
   return (
     <div className="grid2" style={{ gridTemplateColumns: "minmax(0,1.6fr) minmax(260px,.8fr)", alignItems: "start" }}>
       <div style={{ display: "grid", gap: 12 }}>
-        <div ref={box} className="planwrap" style={{ backgroundImage: img ? `url(${img})` : undefined }} onPointerDown={() => setSel(null)}>
-          {!img && <div className="grid-bg" />}
-          {tables.map((t) => (
-            <div key={t.key} className={`ptable ${sel === t.key ? "sel" : ""}`}
-              style={{ left: `${t.x}%`, top: `${t.y}%`, width: `${t.w}%`, height: `${t.h}%`, borderColor: color(t.categoryId) }}
-              onPointerDown={(e) => drag(e, t, "move")}>
-              <span>{t.name}<br /><span style={{ color: color(t.categoryId), fontSize: 10 }}>{categories.find((c) => c.id === t.categoryId)?.name}</span></span>
-              <span className="rs" onPointerDown={(e) => drag(e, t, "size")} />
-            </div>
-          ))}
+        <div className="seg" role="tablist" style={{ justifySelf: "start" }}>
+          <button type="button" className={tab === "edit" ? "on" : ""} onClick={() => setTab("edit")}>Placer les carrés</button>
+          <button type="button" className={tab === "preview" ? "on" : ""} onClick={() => setTab("preview")}>Aperçu client</button>
         </div>
+
+        {tab === "edit" ? (
+          <div ref={box} className={`planwrap pe ${v3.kind === "beach" ? "beach" : ""}`}
+            style={img ? { backgroundImage: `url(${img})` } : v3.wallColor && v3.kind !== "beach" ? { backgroundColor: v3.wallColor } : undefined}
+            onPointerDown={() => setSel(null)}>
+            {!img && <div className="grid-bg" />}
+            {tables.map((t) => {
+              const cat = categories.find((c) => c.id === t.categoryId);
+              return (
+                <div key={t.key} className={`ptable ${sel === t.key ? "sel" : ""}`}
+                  style={{ left: `${t.x}%`, top: `${t.y}%`, width: `${t.w}%`, height: `${t.h}%`, ["--c" as string]: color(t.categoryId) }}
+                  onPointerDown={(e) => drag(e, t, "move")}>
+                  <i className={`pf k-${furnitureOf(cat, t.name)}`} aria-hidden="true" />
+                  <span className="pn">{t.name}<small>{cat?.name}</small></span>
+                  <span className="rs" onPointerDown={(e) => drag(e, t, "size")} />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={themeVars(theme) as React.CSSProperties}>
+            <Plan3D
+              key={`${v3.kind}-${v3.planTilt}-${v3.plan3d}`}
+              planImageUrl={img} wallColor={v3.wallColor} tilt={v3.planTilt || 52} beach={v3.kind === "beach"} startFlat={!v3.plan3d}
+              selected={pick} onSelect={setPick}
+              boxes={tables.map((t) => {
+                const cat = categories.find((c) => c.id === t.categoryId);
+                return {
+                  id: t.key, name: t.name, sub: `min ${((t.minSpendCents ?? cat?.minSpendCents ?? 0) / 100).toLocaleString("fr-FR")} €`,
+                  x: t.x, y: t.y, w: t.w, h: t.h, elevation: cat?.elevation ?? 2, color: color(t.categoryId), photoUrl: t.photoUrl,
+                  taken: false, small: false, kind: furnitureOf(cat, t.name),
+                };
+              })}
+            />
+            <p className="mute" style={{ fontSize: 13, margin: "8px 0 0" }}>C&apos;est exactement ce que voient vos clients (avant d&apos;enregistrer). Touchez un carré pour voir sa sélection.</p>
+          </div>
+        )}
         <div className="row">
           <button type="button" className="btn btn-out" onClick={add}>+ Ajouter un carré</button>
           <label className="btn btn-out" style={{ cursor: "pointer" }}>Importer le plan (photo)
@@ -138,9 +174,28 @@ export default function PlanEditor({ categories, initialImage, initialTables, vi
         )}
 
         <hr style={{ border: 0, borderTop: "1px solid var(--line)", margin: "4px 0" }} />
+        <h2 style={{ fontSize: 16 }}>Décor</h2>
+        <div className="field">Type d&apos;établissement
+          <div className="seg">
+            <button type="button" className={v3.kind === "club" ? "on" : ""} onClick={() => setV3({ ...v3, kind: "club" })}>Club</button>
+            <button type="button" className={v3.kind === "beach" ? "on" : ""} onClick={() => setV3({ ...v3, kind: "beach" })}>Beach club</button>
+          </div>
+          <span className="mute" style={{ fontSize: 12, fontWeight: 500 }}>Club : sol sombre et néons. Beach club : sable, pontons en bois, toiles.</span>
+        </div>
+        {!img && v3.kind === "club" && (
+          <label className="field">Couleur du sol
+            <div className="row" style={{ gap: 8 }}>
+              <input type="color" value={v3.wallColor ?? "#1b1424"} onChange={(e) => setV3({ ...v3, wallColor: e.target.value })} style={{ width: 54, height: 40, border: 0, background: "none" }} />
+              {v3.wallColor && <button type="button" className="btn btn-out" onClick={() => setV3({ ...v3, wallColor: null })}>Par défaut</button>}
+            </div>
+          </label>
+        )}
+        <p className="mute" style={{ margin: 0, fontSize: 12, lineHeight: 1.5 }}>Le mobilier (banquette, table haute, cabana, lit balinais), la couleur et la hauteur de chaque carré se règlent dans <a href="/app/categories" style={{ color: "inherit" }}>Catégories</a>.</p>
+
+        <hr style={{ border: 0, borderTop: "1px solid var(--line)", margin: "4px 0" }} />
         <h2 style={{ fontSize: 16 }}>Vue 3D</h2>
-        <p className="mute" style={{ margin: 0, fontSize: 13, lineHeight: 1.55 }}>Elle se fabrique toute seule : votre plan devient le sol, chaque carré est relevé à la hauteur de sa catégorie.</p>
-        <label className="row" style={{ gap: 8, fontSize: 14 }}><input type="checkbox" checked={v3.plan3d} onChange={(e) => setV3({ ...v3, plan3d: e.target.checked })} /> Montrer le plan en 3D aux clients</label>
+        <p className="mute" style={{ margin: 0, fontSize: 13, lineHeight: 1.55 }}>Elle se fabrique toute seule : votre plan devient le sol, chaque carré reçoit son mobilier et la hauteur de sa catégorie.</p>
+        <label className="row" style={{ gap: 8, fontSize: 14 }}><input type="checkbox" checked={v3.plan3d} onChange={(e) => setV3({ ...v3, plan3d: e.target.checked })} /> Ouvrir le plan en 3D (sinon vue de dessus ; le client peut changer)</label>
         <label className="field">Inclinaison : {v3.planTilt}°
           <input type="range" min={20} max={68} value={v3.planTilt} onChange={(e) => setV3({ ...v3, planTilt: +e.target.value })} />
         </label>

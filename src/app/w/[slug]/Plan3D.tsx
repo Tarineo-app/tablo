@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as RPointerEvent } from "react";
 
-/** Le mobilier dessiné sur l'emplacement, déduit du nom de la catégorie ou du carré. */
-export type Kind = "carre" | "haute" | "cabana" | "bali";
+import { shortName, type Kind } from "@/lib/furniture";
+
+export type { Kind };
 
 export type Box = {
   id: string;
@@ -16,6 +17,8 @@ export type Box = {
   taken: boolean;
   small: boolean; // trop petit pour le groupe
   kind?: Kind;
+  /** Mode équipe (« Ce soir ») : état du carré pendant la soirée. */
+  status?: "libre" | "reserve" | "arrive" | "absent";
 };
 
 type Props = {
@@ -28,24 +31,9 @@ type Props = {
   label?: (b: Box) => string;
   beach?: boolean;
   startFlat?: boolean;
+  /** Mode équipe : tous les carrés sont cliquables et colorés selon leur état de la soirée. */
+  staff?: boolean;
 };
-
-export function kindOf(...names: (string | null | undefined)[]): Kind {
-  const s = names.filter(Boolean).join(" ").toLowerCase();
-  if (/caban|tente|pergola|paillote/.test(s)) return "cabana";
-  if (/bali|daybed|\blit\b|transat|parasol|matelas/.test(s)) return "bali";
-  if (/haute|mange|debout|high/.test(s)) return "haute";
-  return "carre";
-}
-
-/** « Lounge 12 » → « L12 », « Carré VIP 3 » → « CV3 », « Impérial » → « Imp ». */
-export function shortName(name: string): string {
-  const n = name.trim();
-  const m = n.match(/^(.*?)[\s-]*(\d+[a-z]?)$/i);
-  if (m && m[1]) return m[1].split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") + m[2];
-  if (m) return m[2];
-  return n.length <= 4 ? n : n.slice(0, 3);
-}
 
 type V = CSSProperties & Record<`--${string}`, string | number | undefined>;
 
@@ -64,7 +52,7 @@ const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
  * à la sélection ou en zoomant.
  * Règle : aucun `filter` ni `opacity` sur un élément qui porte du 3D (le navigateur l'aplatit).
  */
-export default function Plan3D({ boxes, planImageUrl, wallColor, tilt, selected, onSelect, label, beach, startFlat }: Props) {
+export default function Plan3D({ boxes, planImageUrl, wallColor, tilt, selected, onSelect, label, beach, startFlat, staff }: Props) {
   const wrap = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ w: 0, h: 0 });
   const [rot, setRot] = useState(0);
@@ -108,12 +96,12 @@ export default function Plan3D({ boxes, planImageUrl, wallColor, tilt, selected,
   }, [target]);
   const squash = Math.cos((t * Math.PI) / 180); // la 3D écrase la profondeur
   // En 3D le sol paraît moins haut (écrasé par l'inclinaison) : il peut donc être plus large.
-  const baseW = Math.min(view.w * (1 - 2 * mx), (view.h * 0.7) / (0.62 * Math.max(squash, 0.55))), baseH = baseW * 0.62;
+  const baseW = Math.min(view.w * (1 - 2 * mx), (view.h * (flat ? (narrow ? 0.76 : 0.86) : 0.7)) / (0.62 * Math.max(squash, 0.55))), baseH = baseW * 0.62;
   const W = baseW * zoom, H = baseH * zoom;
 
   // Position du sol dans le cadre.
   const L = (view.w - W) / 2 + pan.x;
-  const T = (view.h - H) / 2 + view.h * (flat ? 0 : 0.05) + pan.y;
+  const T = (view.h - H) / 2 + view.h * (flat ? 0.04 : 0.05) + pan.y;
   const PER = 1400; // = perspective de .p3-view
   const tr = (t * Math.PI) / 180, rr = (rot * Math.PI) / 180;
   /** Où tombe à l'écran un point du sol (px, py) situé à la hauteur pz : même calcul que le navigateur
@@ -198,13 +186,13 @@ export default function Plan3D({ boxes, planImageUrl, wallColor, tilt, selected,
     const left = (b.x / 100) * W, top = (b.y / 100) * H;
     const bw = (b.w / 100) * W, bh = (b.h / 100) * H;
     const m = Math.min(bw, bh);
-    const off = b.taken || b.small;
+    const off = staff ? false : b.taken || b.small;
     const z = kind === "bali" || kind === "haute" ? 2 : Math.max(3, Math.min(m * 0.5, b.elevation * unit * 1.6));
     const roof = Math.round(Math.max(14, Math.min(40, m * 0.62))); // hauteur de la toile
     const tab = Math.round(Math.max(8, Math.min(20, m * 0.36))); // hauteur d'une table haute
     const isSel = selected === b.id;
     const compact = !isSel && bw < fullMin;
-    const state = b.taken ? "pris" : b.small ? "petit" : isSel ? "on" : "libre";
+    const state = staff ? `st-${b.status ?? "libre"}${isSel ? " on" : ""}` : b.taken ? "pris" : b.small ? "petit" : isSel ? "on" : "libre";
     return { b, kind, left, top, bw, bh, m, off, z, roof, tab, compact, state };
   });
   const many = boxes.length > 12;
@@ -264,7 +252,7 @@ export default function Plan3D({ boxes, planImageUrl, wallColor, tilt, selected,
               <span key={b.id} className={`p3-pin ${state} ${full ? "" : "compact"} ${hover === b.id ? "hov" : ""}`}
                 style={{ left: p.x, top: p.y, zIndex: b.id === selected || hover === b.id ? 50 : undefined, "--col": b.color ?? undefined } as V}
                 onClick={() => !off && pick(b)}>
-                {full ? <span className="full">{b.name}{!off && <small>{label ? label(b) : b.sub}</small>}</span> : <span className="code">{shortName(b.name)}</span>}
+                {full ? <span className="full">{b.name}{(!off || staff) && <small>{label ? label(b) : b.sub}</small>}</span> : <span className="code">{shortName(b.name)}</span>}
                 {b.id === selected && b.photoUrl && <span className="p3-card"><img src={b.photoUrl} alt="" /></span>}
               </span>
             );

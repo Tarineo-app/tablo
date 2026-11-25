@@ -4,17 +4,23 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { checkIn, createWalkIn, markNoShow, type FloorState } from "@/app/actions/floor";
 import { useActionState } from "react";
+import Plan3D, { type Box, type Kind } from "@/app/w/[slug]/Plan3D";
+import { themeVars, type Theme } from "@/lib/theme";
+import "@/app/w/widget.css";
 
 export type FloorTable = {
   id: string; name: string; category: string; capacity: number; minSpendCents: number;
   x: number; y: number; w: number; h: number;
+  color: string | null; elevation: number; photoUrl: string | null; kind: Kind;
   resa: null | { id: string; name: string; phone: string; email: string; guests: number; totalCents: number; paidCents: number; status: string; manager: string | null; orders: number; garage: string | null };
 };
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 const STATUS: Record<string, string> = { DRAFT: "À payer", PENDING_PAYMENT: "Paiement en cours", CONFIRMED: "Confirmé", FULLY_PAID: "Payé", CHECKED_IN: "Arrivé", COMPLETED: "Terminé", NO_SHOW: "Absent" };
 
-export default function Tonight({ tables, eventId, planImageUrl, garageEnabled }: { tables: FloorTable[]; eventId: string; planImageUrl: string | null; garageEnabled: boolean }) {
+type Look = { theme: Theme; beach: boolean; wallColor: string | null; tilt: number };
+
+export default function Tonight({ tables, eventId, planImageUrl, garageEnabled, look }: { tables: FloorTable[]; eventId: string; planImageUrl: string | null; garageEnabled: boolean; look: Look }) {
   const router = useRouter();
   const [openId, setOpenId] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -31,17 +37,22 @@ export default function Tonight({ tables, eventId, planImageUrl, garageEnabled }
 
   return (
     <div className="floorwrap2">
-      <div className="floorplan" style={planImageUrl ? { backgroundImage: `url(${planImageUrl})` } : undefined}>
-        {tables.map((t) => {
-          const state = !t.resa ? "libre" : t.resa.status === "CHECKED_IN" ? "arrive" : t.resa.status === "NO_SHOW" ? "absent" : "reserve";
-          return (
-            <button key={t.id} className={`ft ${state} ${openId === t.id ? "on" : ""}`}
-              style={{ left: `${t.x}%`, top: `${t.y}%`, width: `${t.w}%`, height: `${t.h}%` }}
-              onClick={() => { setOpenId(openId === t.id ? null : t.id); setMsg(undefined); }}>
-              <span>{t.name}<small>{t.resa ? `${t.resa.name.split(" ")[0]} · ${t.resa.guests}p` : `libre · ${t.capacity}p`}</small></span>
-            </button>
-          );
-        })}
+      {/* Même plan que celui des clients, vu de dessus par défaut, coloré selon l'état de la soirée. */}
+      <div className="floor3d" style={themeVars(look.theme) as React.CSSProperties}>
+        <Plan3D
+          staff startFlat
+          planImageUrl={planImageUrl} wallColor={look.wallColor} tilt={look.tilt} beach={look.beach}
+          selected={openId} onSelect={(id) => { setOpenId(openId === id ? null : id); setMsg(undefined); }}
+          boxes={tables.map<Box>((t) => {
+            const status = !t.resa ? "libre" : t.resa.status === "CHECKED_IN" ? "arrive" : t.resa.status === "NO_SHOW" ? "absent" : "reserve";
+            return {
+              id: t.id, name: t.name,
+              sub: t.resa ? `${t.resa.name.split(" ")[0]} · ${t.resa.guests} p.` : `libre · ${t.capacity} p.`,
+              x: t.x, y: t.y, w: t.w, h: t.h, elevation: t.elevation, color: t.color, photoUrl: null,
+              taken: false, small: false, kind: t.kind, status,
+            };
+          })}
+        />
       </div>
 
       <aside className="floorside">
