@@ -120,10 +120,21 @@ Reste : billets payants en ligne (la billetterie est fermée par défaut), CGV e
 Pas de bibliothèque 3D, uniquement du CSS 3D. La scène est `rotateX(planTilt) rotateZ(rot)` ; les positions sont en % **du sol** (`.p3-stage`, mesuré par ResizeObserver), pas du cadre.
 Chaque emplacement reçoit son **mobilier**, déduit du nom de la catégorie ou du carré par `kindOf()` : banquette en U et table lumineuse (par défaut), table haute avec tabourets (« haute », « mange-debout »),
 cabana avec toile et poteaux (« cabana »), lit balinais avec parasol (« bali », « lit », « daybed »). `Venue.kind === "beach"` passe en bois, sable et toile.
-Le nom et le prix sont sur une **étiquette debout** (`.p3-pin`, contre-rotation `rotateZ(-rot) rotateX(-tilt)`), pas écrits sur le sol.
-Pièges : **jamais de `filter` ni d'`opacity` sur un élément qui porte du 3D** (le navigateur l'aplatit ; on grise les enfants) ; en vue de dessus, les murs et pieds (vus de profil) sont retirés et l'étiquette montée de 18 px, sinon le tri des plans se trompe.
+Les étiquettes (nom, prix) **ne sont pas dans la scène 3D** : `project()` calcule leur place à l'écran avec le même calcul que le navigateur
+(rotateX/rotateZ autour du centre du sol, perspective 1400 depuis 50 % 40 % du cadre) et elles sont dessinées dans le calque `.p3-labels`. Le mobilier ne peut donc jamais les cacher.
+Si on change la perspective, l'origine ou l'ordre des rotations en CSS, **changer `project()` en même temps**. L'inclinaison s'anime en JS (pas de transition CSS sur `.p3-stage`) pour que les étiquettes suivent.
+**Grands plans** : zoom (boutons + / −, pincement, Ctrl + molette) et déplacement en glissant ; le zoom agrandit vraiment le sol, donc les étiquettes gardent leur taille.
+Un carré trop étroit (`fullMin`) n'affiche qu'une pastille courte (`shortName` : « Lounge 12 » → « L12 ») ; l'étiquette complète revient au survol, à la sélection ou en zoomant. Un carré choisi en zoom est recentré.
+Sous le plan, `.w-cats` : chaque catégorie avec sa couleur, son prix de départ et le nombre de carrés libres.
+Pièges : **jamais de `filter` ni d'`opacity` sur un élément qui porte du 3D** (le navigateur l'aplatit ; on grise les enfants) ; en vue de dessus, les murs et pieds (vus de profil) sont retirés, sinon le tri des plans se trompe.
 `TableCategory.color` et `elevation` pilotent la couleur et la hauteur, `VenueTable.photoUrl` la photo affichée à la sélection, `Venue.tour3dUrl` une vraie visite externe.
 La démo (`public/demo.html`, `stepCarre`) suit le même principe avec son propre décor (piste LED, cabine DJ et bar en relief, mer, piscine, palmiers).
+
+## Widget responsive (25/11/2026)
+`src/app/w/widget.css`, bloc « Mise en page responsive ». Règle : **le bouton « Continuer » est toujours à l'écran** (barre `.w-nav` collée en bas sur ordinateur, `.w-foot` fixe sur mobile).
+Le plan ne dépasse jamais `min(56vh, 540px)` sur ordinateur. Sur mobile (≤ 900 px) : bouteilles en lignes compactes (zones `ph nm sz add fl`), infos du carré sur 4 colonnes,
+légende des catégories qui défile à l'horizontale, et le récapitulatif (`.w-aside`) devient un **tiroir** ouvert par le total en bas (`cartOpen`, pastille du nombre d'articles).
+La mention loi Évin est répétée en bas de page sur mobile (`.w-legal-m`) puisque le panneau de droite y est masqué. Tester sur 360×640, 390×844, 820×1180 et 1366×800.
 
 ## Facturation
 `src/lib/billing.ts` : `gateFor(venue, eventId)` décide si le public peut réserver. Elle est appelée dans le widget **et** dans `reserve.ts` / `tickets.ts` — ne jamais se contenter de griser un bouton. `closeTrialIfOver` passe le club en `LOCKED` le lendemain 8 h de sa soirée d'essai.

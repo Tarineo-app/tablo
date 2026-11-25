@@ -22,6 +22,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
   const { venue, categories, tables, bottles, shows, events } = data;
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [cartOpen, setCartOpen] = useState(false); // récapitulatif en tiroir sur mobile
   const [eventId, setEventId] = useState((events.find((e) => e.open) ?? events[0])?.id ?? "");
   const [guests, setGuests] = useState(6);
   const [tableId, setTableId] = useState<string | null>(null);
@@ -106,7 +107,8 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
     else router.push(`/w/${venue.slug}/r/${r.token}`);
   });
 
-  const next = () => (step < 4 ? setStep(step + 1) : submit());
+  const next = () => { setCartOpen(false); if (step < 4) { setStep(step + 1); window.scrollTo({ top: 0, behavior: "smooth" }); } else submit(); };
+  const nItems = Object.values(lines).reduce((n, l) => n + l.quantity, 0) + priced.length;
   const nextLabel = step < 4 ? "Continuer" : pending ? "Envoi…" : `Réserver · ${eur(deposit)} ${payMode === "FULL" ? "" : "d'acompte"}`;
 
   return (
@@ -165,7 +167,19 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
                 };
               })}
             />
-            <div className="w-legend"><span>Libre</span><span>● Votre choix</span><span>▨ Indisponible ou trop petit</span></div>
+            <div className="w-cats">
+              {categories.map((c) => {
+                const ts = tables.filter((t) => t.categoryId === c.id);
+                if (!ts.length) return null;
+                const from = Math.min(...ts.map((t) => event?.prices[t.id] ?? t.minSpendCents));
+                const free = ts.filter((t) => !event?.taken.includes(t.id) && guests <= t.capacity).length;
+                return (
+                  <span key={c.id} className={free ? "" : "none"} style={{ "--dot": c.color ?? "var(--w-accent)" } as React.CSSProperties}>
+                    <i />{c.name}<b>dès {eur(from)}</b><small>{free ? `${free} libre${free > 1 ? "s" : ""}` : "complet"}</small>
+                  </span>
+                );
+              })}
+            </div>
             {venue.garage.enabled && (
               <div className="w-garage">
                 {garage ? (
@@ -233,16 +247,16 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
               {bottles.map((b) => (
                 <div key={b.id} className="w-bottle">
                   <div className="ph">{b.photoUrl ? <img src={b.photoUrl} alt={b.name} /> : <span>{b.name.slice(0, 1)}</span>}</div>
-                  <div><b>{b.name}</b><div className="w-sub" style={{ fontSize: 13 }}>{b.type}</div></div>
-                  <select className="w-sel" value={pickSize[b.id] ?? b.sizes.find((s) => !s.soldOut)?.id} onChange={(e) => setPickSize({ ...pickSize, [b.id]: e.target.value })}>
+                  <div className="nm"><b>{b.name}</b><div className="w-sub" style={{ fontSize: 13 }}>{b.type}</div></div>
+                  <select className="w-sel sz" value={pickSize[b.id] ?? b.sizes.find((s) => !s.soldOut)?.id} onChange={(e) => setPickSize({ ...pickSize, [b.id]: e.target.value })}>
                     {b.sizes.map((s) => <option key={s.id} value={s.id} disabled={s.soldOut}>{s.label} {s.volume} · {eur(s.priceCents)}{s.soldOut ? " · épuisé" : ""}</option>)}
                   </select>
                   {b.flavors.length > 0 && (
-                    <select className="w-sel" value={pickFlavor[b.id] ?? b.flavors[0]} onChange={(e) => setPickFlavor({ ...pickFlavor, [b.id]: e.target.value })}>
+                    <select className="w-sel fl" value={pickFlavor[b.id] ?? b.flavors[0]} onChange={(e) => setPickFlavor({ ...pickFlavor, [b.id]: e.target.value })}>
                       {b.flavors.map((f) => <option key={f}>{f}</option>)}
                     </select>
                   )}
-                  <button className="w-btn" style={{ minHeight: 42 }} onClick={() => addLine(b.id)} disabled={b.sizes.every((s) => s.soldOut)}>Ajouter</button>
+                  <button className="w-btn add" onClick={() => addLine(b.id)} disabled={b.sizes.every((s) => s.soldOut)}>Ajouter</button>
                 </div>
               ))}
             </div>
@@ -317,7 +331,9 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
           </>
         )}
 
-        <div className="row" style={{ gap: 10 }}>
+        <p className="w-legal w-legal-m">L&apos;abus d&apos;alcool est dangereux pour la santé, à consommer avec modération. Réservation réservée aux 18 ans et plus.</p>
+
+        <div className="w-nav">
           {step > 0 && <button className="w-ghost" onClick={() => setStep(step - 1)}>Retour</button>}
           <button className="w-btn w-cta" disabled={!canNext || pending || events.length === 0} onClick={next}>{nextLabel}</button>
           {step === 2 && bottlesCents < minCents && <span className="w-sub">Encore {eur(minCents - bottlesCents)} pour atteindre le minimum du carré.</span>}
@@ -326,8 +342,9 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
         </div>
       </section>
 
-      <aside className="w-aside" aria-label="Votre réservation">
-        <h2 style={{ fontSize: 18 }}>Votre réservation</h2>
+      {cartOpen && <div className="w-scrim" onClick={() => setCartOpen(false)} aria-hidden="true" />}
+      <aside className={`w-aside ${cartOpen ? "open" : ""}`} aria-label="Votre réservation">
+        <div className="w-ahead"><h2 style={{ fontSize: 18, margin: 0 }}>Votre réservation</h2><button className="w-aclose" onClick={() => setCartOpen(false)} aria-label="Fermer le récapitulatif">×</button></div>
         {event && <div className="w-line"><span>{day(event.date)}</span><b>{guests} pers.</b></div>}
         {table && <div className="w-line"><span>{table.name}{cat ? ` · ${cat.name}` : ""}</span><b>{garage && !garage.keepsMin ? `${garage.minBottles} bout. min` : `min ${eur(minCents)}`}</b></div>}
         {garage && <div className="w-line"><span>Du garage · {garage.quantity > 1 ? `${garage.quantity} × ` : ""}{garage.label}</span><b>Offerte</b></div>}
@@ -347,7 +364,11 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
         <p className="w-legal">L&apos;abus d&apos;alcool est dangereux pour la santé, à consommer avec modération. Réservation réservée aux 18 ans et plus. Propulsé par Tablo.</p>
       </aside>
 
-      <div className="w-foot"><span><b>{eur(total)}</b>{total > 0 && payMode !== "FULL" && <span style={{ color: "var(--w-mute)", fontSize: 13 }}> · acompte {eur(deposit)}</span>}</span>
+      <div className="w-foot">
+        <button className="w-sum" onClick={() => setCartOpen(!cartOpen)} aria-expanded={cartOpen}>
+          <b>{eur(total)}{nItems > 0 && <i>{nItems}</i>}</b>
+          <small>{total > 0 && payMode !== "FULL" ? `acompte ${eur(deposit)} · ` : ""}détail {cartOpen ? "▾" : "▴"}</small>
+        </button>
         <button className="w-btn" style={{ minHeight: 46 }} disabled={!canNext || pending || events.length === 0} onClick={next}>{step < 4 ? "Continuer" : pending ? "Envoi…" : "Réserver"}</button></div>
     </div>
   );
