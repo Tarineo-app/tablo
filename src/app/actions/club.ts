@@ -6,17 +6,12 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { MANAGE, requireMembership, requireUser, refuseInDemo } from "@/lib/auth";
 import { toCents } from "@/lib/money";
-import { forgetLook, readLook, themeFromLook } from "@/lib/look";
+import { forgetLook, readLook } from "@/lib/look";
+import { createVenueFor } from "@/lib/venue-create";
 import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme, COLOR_PARTS, isHex } from "@/lib/theme";
 import { imageFromForm, isImageValue, persistImage } from "@/lib/storage";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
-
-/** Couleurs de départ des catégories : elles servent au plan et à la vue 3D. */
-const CAT_COLORS = ["#ff5fa2", "#a970ff", "#4fd8ff", "#ffd25f", "#7dffa8", "#ff8a5f"];
-
-const slugify = (s: string) =>
-  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "club";
 
 /* ---------- Établissement ---------- */
 
@@ -33,26 +28,9 @@ export async function createVenue(_: ActionState, form: FormData): Promise<Actio
   const { name, city, kind } = parsed.data;
   const look = await readLook();
 
-  let slug = slugify(name);
-  for (let i = 2; await db.venue.findUnique({ where: { slug } }); i++) slug = `${slugify(name)}-${i}`;
-
-  const cats =
-    kind === "beach"
-      ? [["Cabana", 50, 2, 1200], ["Lit balinais", 30, 1, 600], ["Transat", 0, 0, 150]]
-      : [["Prestige", 50, 3, 1500], ["Scène", 30, 2, 800], ["Lounge", 20, 1, 400], ["Table haute", 0, 0, 150]];
-
-  await db.venue.create({
-    data: {
-      name, city: city || null, kind, slug,
-      theme: themeFromLook(kind, look),
-      websiteUrl: look.site ?? null,
-      rules: kind === "beach" ? "18 ans et plus. Maillot accepté jusqu'à 20 h, tenue de soirée ensuite." : "18 ans et plus. Tenue correcte exigée.",
-      memberships: { create: { userId: user.id, role: "OWNER" } },
-      categories: { create: cats.map(([n, dep, inc, min], i) => ({ name: n as string, depositPct: dep as number, includedShows: inc as number, minSpendCents: (min as number) * 100, sortOrder: i, color: CAT_COLORS[i % CAT_COLORS.length], elevation: [5, 7, 2, 1][i] ?? 2 })) },
-    },
-  });
+  await createVenueFor(user.id, { name, city: city || look.city || null, kind }, look);
   await forgetLook();
-  redirect("/app");
+  redirect("/app/configuration");
 }
 
 const InfoSchema = z.object({ name: z.string().trim().min(2), city: z.string().trim().max(80).optional(), rules: z.string().trim().max(500).optional() });
@@ -313,22 +291,4 @@ export async function deleteEvent(id: string) {
   if (used) await db.event.updateMany({ where: { id, venueId: venue.id }, data: { isOpen: false } });
   else await db.event.deleteMany({ where: { id, venueId: venue.id } });
   revalidatePath("/app/soirees");
-}
-
-/** Le club choisit la nuit qu'il veut tester : elle est offerte, tout y fonctionne. */
-export async function pickTrialEvent(eventId: string): Promise<ActionState> {
-  const no = await refuseInDemo();
-  if (no) return no;
-  const { venue } = await requireMembership(MANAGE);
-  if (venue.billing === "ACTIVE") return { error: "Votre abonnement est déjà actif." };
-  if (venue.billing !== "SETUP") return { error: "Votre soirée d'essai a déjà été choisie." };
-  const ev = await db.event.findFirst({ where: { id: eventId, venueId: venue.id } });
-  if (!ev) return { error: "Cette soirée n'existe pas." };
-  if (ev.date.getTime() < Date.now() - 2 * 3600e3) return { error: "Choisissez une soirée à venir." };
-  await db.venue.updateMany({
-    where: { id: venue.id, billing: "SETUP" },
-    data: { billing: "TRIAL", trialEventId: ev.id, trialPickedAt: new Date() },
-  });
-  revalidatePath("/app");
-  return { ok: `C'est parti : votre soirée d'essai est ouverte.` };
 }

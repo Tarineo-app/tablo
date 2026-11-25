@@ -55,7 +55,7 @@ export default async function Page({ searchParams }: Props) {
   return (
     <>
       <header>
-        <h1>{subscribed ? "Votre abonnement" : "Ouvrir les prochaines soirées"}</h1>
+        <h1>{subscribed ? "Votre abonnement" : v.billing === "SETUP" ? "Mettre vos carrés en ligne" : "Ouvrir les prochaines soirées"}</h1>
         <p>Pas de commission, jamais. Ce que vos clients dépensent est à vous. Vous payez l&apos;outil, pas vos propres réservations.</p>
       </header>
 
@@ -112,6 +112,12 @@ export default async function Page({ searchParams }: Props) {
           </section>
         ))}
       </div>
+      {!subscribed && (
+        <div className="su-guarantee" style={{ marginTop: 14 }}>
+          <b>Satisfait ou remboursé 30 jours</b>
+          <span>Si Tablo ne vous convient pas dans les 30 jours qui suivent votre premier paiement, on vous rembourse ce premier mois, sans question.</span>
+        </div>
+      )}
       <p className="mute" style={{ marginTop: 14, fontSize: 13.5 }}>
         {stripeConfigured()
           ? "Sans engagement : vous résiliez quand vous voulez, vos soirées restent ouvertes jusqu'à la fin du mois payé. Facture envoyée chaque mois."

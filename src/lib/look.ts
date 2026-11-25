@@ -6,7 +6,20 @@ import { AMBIANCES, defaultTheme } from "./theme";
  * Réglages choisis par le prospect sur la page d'accueil (nom, ambiance, couleur…).
  * On les garde le temps de l'inscription pour que son espace démarre déjà à son image.
  */
-export type Look = { club?: string; kind?: string; amb?: string; couleur?: string; boutons?: string; site?: string };
+export type Look = {
+  club?: string; kind?: string; amb?: string; couleur?: string; boutons?: string; site?: string;
+  // Réponses au questionnaire d'accueil (/inscription).
+  city?: string; size?: string; sell?: string; goals?: string;
+};
+
+/** Réponses possibles du questionnaire d'accueil : seules celles-ci sont gardées. */
+export const SIZES = ["lt10", "10-25", "gt25"] as const;
+export const SELL = ["dm", "whatsapp", "phone", "place", "platform"] as const;
+export const GOALS = ["upsell", "noshow", "managers", "live", "brand"] as const;
+const pickList = (v: string | undefined, allowed: readonly string[]) => {
+  const list = (v ?? "").split(",").map((x) => x.trim()).filter((x) => allowed.includes(x));
+  return list.length ? [...new Set(list)].join(",") : undefined;
+};
 const COOKIE = "tablo_look";
 
 const clean = (v: string | undefined, max = 40) => (v ?? "").trim().slice(0, max);
@@ -24,11 +37,15 @@ export function parseLook(q: Record<string, string | string[] | undefined>): Loo
     amb: amb in AMBIANCES ? amb : undefined,
     couleur: /^#[0-9a-fA-F]{6}$/.test(couleur) ? couleur : undefined,
     boutons: ["pill", "round", "square"].includes(boutons) ? boutons : undefined,
+    city: clean(one("city"), 60) || undefined,
+    size: (SIZES as readonly string[]).includes(one("size") ?? "") ? one("size") : undefined,
+    sell: pickList(one("sell"), SELL),
+    goals: pickList(one("goals"), GOALS),
   };
 }
 
 export async function rememberLook(look: Look) {
-  if (!look.club && !look.amb && !look.couleur && !look.kind && !look.site) return;
+  if (!Object.values(look).some(Boolean)) return;
   (await cookies()).set(COOKIE, JSON.stringify(look), { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 3600 });
 }
 
@@ -52,4 +69,10 @@ export function themeFromLook(kind: string, look: Look) {
     ...(look.couleur ? { accent: look.couleur, grad: "" } : {}),
     ...(look.boutons ? { btn: look.boutons } : {}),
   };
+}
+
+/** Ce qu'on garde du questionnaire sur la fiche du club (pour l'accompagner). */
+export function onboardingFromLook(look: Look) {
+  if (!look.size && !look.sell && !look.goals) return undefined;
+  return { size: look.size ?? null, sell: look.sell?.split(",") ?? [], goals: look.goals?.split(",") ?? [], at: new Date().toISOString() };
 }

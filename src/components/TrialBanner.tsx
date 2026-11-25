@@ -1,5 +1,3 @@
-import { pickTrialEvent } from "@/app/actions/club";
-import ConfirmButton from "@/components/ConfirmButton";
 import Link from "next/link";
 
 const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
@@ -18,24 +16,15 @@ export default function TrialBanner({
   if (billing === "ACTIVE") return null;
 
   if (billing === "SETUP") {
+    // Plus de soirée offerte : le club configure tout, puis met en ligne (abonnement, satisfait ou remboursé).
     return (
       <section className="card trial">
         <div>
-          <span className="tag soft">Offert</span>
-          <h2>Votre première soirée est offerte.</h2>
-          <p className="mute">Choisissez la nuit que vous voulez tester. Ce soir-là, tout fonctionne : les carrés, la billetterie, l&apos;entrée, les QR codes. Vous déciderez après, chiffres en main.</p>
+          <span className="tag soft">Pas encore en ligne</span>
+          <h2>Terminez la configuration, puis ouvrez vos réservations.</h2>
+          <p className="mute">Ambiance, carrés et prix, bouteilles, shows, première soirée : on vous guide étape par étape. Vous mettez en ligne quand tout est prêt, satisfait ou remboursé 30 jours.</p>
         </div>
-        {upcoming.length === 0 ? (
-          <p className="mute">Créez d&apos;abord une soirée dans <Link href="/app/soirees">Soirées</Link>.</p>
-        ) : (
-          <div className="trialpick">
-            {upcoming.map((e) => (
-              <ConfirmButton key={e.id} label={`${day(e.date)}${e.name ? ` · ${e.name}` : ""}`}
-                confirm={`Ouvrir la soirée du ${day(e.date)} comme soirée d'essai ? Vous ne pourrez en choisir qu'une.`}
-                run={pickTrialEvent.bind(null, e.id)} />
-            ))}
-          </div>
-        )}
+        <Link href="/app/configuration" className="btn btn-main">Reprendre la configuration</Link>
       </section>
     );
   }

@@ -19,9 +19,9 @@ export default async function Page() {
         <Link href="/" className="logo"><i />tablo</Link>
         <h1 style={{ fontSize: 24 }}>Votre établissement</h1>
         <p className="mute" style={{ margin: 0, lineHeight: 1.6 }}>Bonjour {user.name}. On crée l&apos;espace de votre club : vous pourrez tout modifier ensuite.{look.amb ? " Votre ambiance et votre couleur sont déjà reprises." : ""}</p>
-        <ActionForm action={createVenue} submit="Créer mon espace">
+        <ActionForm action={createVenue} submit="Continuer la configuration">
           <label className="field">Nom de l&apos;établissement<input className="input" name="name" placeholder="Ex. Le Velours" defaultValue={look.club ?? ""} required /></label>
-          <label className="field">Ville<input className="input" name="city" placeholder="Ex. Rouen" /></label>
+          <label className="field">Ville<input className="input" name="city" placeholder="Ex. Rouen" defaultValue={look.city ?? ""} /></label>
           <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
             <legend style={{ marginBottom: 6 }}>Type de lieu</legend>
             <div className="row">

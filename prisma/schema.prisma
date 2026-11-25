@@ -130,6 +130,8 @@ model Venue {
   orders       Order[]
   offers       Offer[]
   garageItems  GarageItem[]
+  /// Réponses au questionnaire d'accueil : { size, sell[], goals[] }.
+  onboarding    Json?
 }
 
 model Membership {

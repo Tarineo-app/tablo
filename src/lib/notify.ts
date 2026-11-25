@@ -98,8 +98,8 @@ export async function sendNudgeTables(venueId: string) {
   const { html, text } = layout({
     venue: v.name,
     title: "Il vous reste vos carrés à placer",
-    intro: "Une photo de votre plan suffit : vous posez vos carrés dessus, vous fixez les minimums, et votre soirée test peut commencer. Comptez une vingtaine de minutes.",
-    button: { label: "Placer mes carrés", url: `${appUrl()}/app/plan` },
+    intro: "La configuration guidée vous attend là où vous l'avez laissée : vos carrés et leurs prix, vos bouteilles, vos shows, votre première soirée. Comptez une vingtaine de minutes, puis vous mettez en ligne.",
+    button: { label: "Reprendre la configuration", url: `${appUrl()}/app/configuration` },
   });
   const r = await Promise.all((await ownersOf(v.id)).map((to) => sendEmail({ to, subject: `${v.name} · plus que vos carrés à placer`, html, text, idempotencyKey: `nudge-tables-${v.id}-${to}` })));
   return r.some(Boolean);

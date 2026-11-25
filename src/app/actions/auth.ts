@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { parseLook, rememberLook } from "@/lib/look";
+import { createVenueFor } from "@/lib/venue-create";
 import { rateLimit } from "@/lib/ratelimit";
 import { createSession, deleteSession } from "@/lib/session";
 
@@ -24,10 +25,25 @@ export async function signup(_: FormState, form: FormData): Promise<FormState> {
   if (tooMany) return { error: tooMany };
   if (await db.user.findUnique({ where: { email } })) return { error: "Un compte existe déjà avec cet email." };
   const user = await db.user.create({ data: { name, email, passwordHash: await bcrypt.hash(password, 10) } });
-  // Ce que le prospect a réglé sur la page d'accueil suit jusqu'à la création de son club.
-  await rememberLook(parseLook(Object.fromEntries([...form.entries()].filter(([k]) => k.startsWith("look_")).map(([k, v]) => [k.slice(5), String(v)]))));
+  // Réglages de la page d'accueil et réponses du questionnaire d'accueil.
+  const look = lookFromForm(form);
   await createSession(user.id);
+  // Il a déjà dit qui il est : on crée son espace tout de suite et on passe à la configuration guidée.
+  if (look.club && look.club.length >= 2 && (look.kind === "club" || look.kind === "beach")) {
+    await createVenueFor(user.id, { name: look.club, city: look.city ?? null, kind: look.kind }, look);
+    redirect("/app/configuration");
+  }
+  await rememberLook(look);
   redirect("/app/nouveau-club");
+}
+
+const lookFromForm = (form: FormData) =>
+  parseLook(Object.fromEntries([...form.entries()].filter(([k]) => k.startsWith("look_")).map(([k, v]) => [k.slice(5), String(v)])));
+
+/** Inscription avec Google depuis le questionnaire : on garde ses réponses le temps de l'aller-retour chez Google. */
+export async function googleWithLook(form: FormData) {
+  await rememberLook(lookFromForm(form));
+  redirect("/auth/google");
 }
 
 const LoginSchema = z.object({ email: z.string().trim().toLowerCase().email("Email invalide."), password: z.string().min(1, "Mot de passe requis.") });

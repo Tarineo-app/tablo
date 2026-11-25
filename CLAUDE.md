@@ -146,11 +146,25 @@ La mention loi Évin est répétée en bas de page sur mobile (`.w-legal-m`) pui
 Une partie absente suit l'ambiance ; `themeVars()` recalcule les nuances voisines (bordures, textes secondaires) avec `mixHex`. Variables ajoutées : `--w-title`, `--w-fab`, `--w-fab-on`
 (le bouton flottant d'`embed.js` lit `--w-fab` via `/embed.js/theme`). `saveTheme` ne garde que les parties connues en `#rrggbb`. Choisir une ambiance remet les couleurs en auto.
 
-## Facturation
-`src/lib/billing.ts` : `gateFor(venue, eventId)` décide si le public peut réserver. Elle est appelée dans le widget **et** dans `reserve.ts` / `tickets.ts` — ne jamais se contenter de griser un bouton. `closeTrialIfOver` passe le club en `LOCKED` le lendemain 8 h de sa soirée d'essai.
+## Facturation (25/11/2026 : plus de soirée offerte)
+Décision d'Alann : **le club paie pour s'investir**. Plus de soirée d'essai gratuite : il configure tout, puis s'abonne (200 €/mois) pour ouvrir ses réservations,
+avec **« Satisfait ou remboursé 30 jours »** (premier mois remboursé sans question ; durée dans `GARANTIE_JOURS` de `src/app/app/configuration/Setup.tsx`,
+à reporter dans les CGV). Remboursement à faire à la main dans Stripe. Landing, page Abonnement et bannière de l'espace club le disent.
+`src/lib/billing.ts` : `gateFor(venue, eventId)` décide si le public peut réserver (`SETUP` = fermé, `ACTIVE` = ouvert ; `TRIAL`/`LOCKED` ne servent plus qu'aux anciens clubs).
+Elle est appelée dans le widget **et** dans `reserve.ts` / `tickets.ts` — ne jamais se contenter de griser un bouton. L'action `pickTrialEvent` est **supprimée** (elle était publique).
 
-## Tunnel d'inscription
-Les réglages pris sur la page d'accueil voyagent ainsi : URL `/inscription?club=…&site=…` → champs cachés `look_*` du formulaire (`AuthForm`) → cookie `tablo_look` posé **dans l'action `signup`** (jamais pendant le rendu d'une page) → `readLook()` dans `createVenue`.
+## Tunnel d'inscription : questions d'abord, identifiants à la fin
+1. **`/inscription`** (`src/app/(auth)/inscription/Onboarding.tsx`) : 5 questions, une par écran (type de lieu, nom et ville, nombre de carrés,
+   comment il vend aujourd'hui, ses priorités), puis **« Votre plan »** construit d'après ses réponses (chaque ligne = une vraie fonction, rien d'inventé),
+   et seulement ensuite le compte (email ou Google via `googleWithLook`, qui garde les réponses dans le cookie le temps de l'aller-retour).
+   Les réglages de la page d'accueil (`/inscription?club=…&kind=…&amb=…`) préremplissent les réponses.
+2. **`signup`** crée l'utilisateur **et son établissement d'un coup** (`createVenueFor` dans `src/lib/venue-create.ts`, fonction serveur ordinaire, pas une action),
+   avec ses réponses dans `Venue.onboarding` (`{ size, sell[], goals[], done[] }` : à lire avant d'appeler un club), puis envoie vers la configuration.
+   Sans réponses complètes (ou par Google), il passe par `/app/nouveau-club`, prérempli.
+3. **`/app/configuration`** (`Setup.tsx`, actions dans `src/app/actions/setup.ts`) : ambiance → carrés et prix (`autoPlan` dessine le plan tout seul s'il n'y a encore aucun carré)
+   → bouteilles → shows (suggestions cochables, `addSetupShows`) → première soirée → encaissement Stripe (ou « plus tard ») → **mise en ligne : paiement 200 €, satisfait ou remboursé**.
+   La progression se lit en base (carrés, bouteilles, shows, soirées) ; ambiance et « paiements plus tard » sont notés dans `onboarding.done` (`markSetup`).
+Le cookie `tablo_look` n'est posé que dans une action (`signup`, `googleWithLook`), jamais pendant le rendu d'une page.
 
 ## Carrés tenus hors application
 `blockTable` / `releaseTable` dans `src/app/actions/floor.ts`, formulaire sur `/app/soirees/[id]`.
@@ -197,6 +211,7 @@ L'en-tête du site du club dans le téléphone est un teaser de soirée **dessin
 - `20261123180000_vue_3d`, `20261123190000_essai_par_soiree`, `20261123200000_demo`
 - `20261124200000_offres_manager` (Offer, OfferItem, OrderItem.showId, ticketsEnabled, payModes sans POOL)
 - `20261125220000_mobilier` (TableCategory.furniture)
+- `20261125230000_questionnaire` (Venue.onboarding)
 - `20261125160000_paiements` (Venue : état du compte Stripe, abonnement, `trialReportSentAt` ; Reservation : `holdUntil`, `stripeSessionId`, `stripePaymentIntentId`, `paidAt`)
 
 ## Paiements, abonnement, emails, photos (25/11/2026)
