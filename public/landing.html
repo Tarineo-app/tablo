@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tablo — Vos carrés VIP se vendent sur votre site, sans commission</title>
+<title>Tablo — Vos carrés VIP payés avant l'ouverture des portes</title>
 <meta name="description" content="Vos carrés VIP se réservent sur votre site : carré, bouteilles, acompte. Vos managers vendent plus cher. Zéro commission, première soirée offerte.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;600;700;800&family=Cinzel:wght@600;700&family=Fraunces:ital,wght@1,600;1,800&family=Monoton&family=Bungee&display=swap">
@@ -210,6 +210,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .step .ctas,.step .proofs{justify-content:flex-start}
 .step .eyebrow{margin-bottom:16px}
 .step .badge{align-self:flex-start}
+.step .pain{margin:0 0 14px;padding-left:14px;border-left:2px solid var(--accent);font-size:clamp(15px,1.4vw,17px);font-style:italic;color:#9a98a6;max-width:none}
 .step .eyebrow i{font-style:normal;color:var(--text)}
 .gain{display:inline-flex;align-items:center;gap:9px;margin-top:22px;padding:9px 15px;border-radius:999px;border:1px solid color-mix(in srgb,var(--ok) 40%,var(--line));background:color-mix(in srgb,var(--ok) 8%,transparent);font:700 14px var(--f);color:#e9fbf2;align-self:flex-start}
 .gain::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
@@ -279,7 +280,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .pinphone .phonetop{padding:2px 2px 7px}
   .pinphone .phonescreen{height:calc(73vh - 170px);width:calc((73vh - 170px) * .56);max-width:84vw;border-radius:27px}
   .pinphone .phonenote,.pcred{display:none}
-  .step .badge{align-self:center;margin-bottom:12px}
+  .step .badge{display:none}
+  .step .pain{border-left:0;padding:0;margin-bottom:8px;font-size:13.5px}
   .rail,.scrollhint{display:none}
   .bar{display:block;position:absolute;left:0;right:0;top:62px;height:2px;background:rgba(255,255,255,.06);z-index:3}
   .bar i{display:block;height:100%;width:0;background:var(--holo);background-size:200% 100%;transition:width .2s}
@@ -325,8 +327,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
         <div class="step on" data-i="0">
           <span class="badge"><b>Pour les clubs et beach clubs</b></span>
-          <h1>Vos carrés se réservent sur votre site. Pas dans vos DM.</h1>
-          <p class="lead">Un bouton sur votre site. Le client choisit son carré, ses bouteilles, et paie l'acompte. Zéro commission.</p>
+          <p class="pain">« Trois carrés bloqués samedi. Deux ne sont jamais venus. »</p>
+          <h1>Vos carrés payés avant l'ouverture des portes.</h1>
+          <p class="lead">Le client réserve sur votre site, choisit ses bouteilles et verse l'acompte. Votre manager vend plus cher. Zéro commission.</p>
           <div class="ctas"><a href="#construire" class="btn main" id="hCta">Mettre mes carrés en ligne</a></div>
           <div class="proofs">
             <span><i>✓</i> Première soirée offerte</span>
