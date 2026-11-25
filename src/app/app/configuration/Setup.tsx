@@ -351,7 +351,7 @@ function Launch({ data, ready, doneOf, go }: { data: SetupData; ready: boolean; 
   if (data.live) {
     return (
       <>
-        <h1>{data.venue.name} est en ligne.</h1>
+        <h1><span className="holo">{data.venue.name}</span> est en ligne.</h1>
         <p className="mute">Vos clients peuvent réserver. Il reste à poser le bouton sur votre site et le lien dans votre bio Instagram.</p>
         <div className="row" style={{ gap: 10 }}>
           <Link className="btn btn-main" href="/app/integrer">Poser le bouton sur mon site</Link>
@@ -362,7 +362,7 @@ function Launch({ data, ready, doneOf, go }: { data: SetupData; ready: boolean; 
   }
   return (
     <>
-      <h1>{ready ? `Tout est prêt, ${data.firstName}.` : "Presque prêt"}</h1>
+      <h1>{ready ? <>Tout est prêt, <span className="holo">{data.firstName || data.venue.name}</span>.</> : "Presque prêt"}</h1>
       <p className="mute">{ready ? `Votre espace est configuré à 100 %. Il ne reste qu'à ouvrir les réservations de ${data.venue.name}.` : "Terminez les étapes cochées en gris, puis ouvrez vos réservations."}</p>
       <ul className="su-check">
         {STEPS.filter((s) => s.key !== "lancement").map((s) => (

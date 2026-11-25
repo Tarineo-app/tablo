@@ -321,3 +321,37 @@ table.list td { padding: 12px 8px; border-bottom: 1px solid var(--line); vertica
   .su-tr { grid-template-columns: minmax(90px, 1.2fr) repeat(4, minmax(56px, 1fr)); gap: 6px; font-size: 13px; }
   .su-show { grid-template-columns: auto minmax(0, 1fr) 90px; }
 }
+
+/* ───────── Tunnel de vente : la DA de la landing, à l'identique ─────────
+   Questionnaire (/inscription), connexion, création du club et configuration guidée.
+   Titres Unbounded 900 serrés, textes Manrope, bouton principal en dégradé arc-en-ciel animé,
+   boutons secondaires noirs bordés, surtitres en capitales espacées, prix en chrome. */
+:root { --chrome: linear-gradient(180deg, #ffffff 0%, #d9dbe4 28%, #7d8094 50%, #f4f5fa 64%, #a3a6b8 82%, #ffffff 100%); }
+@keyframes tabloHs { to { background-position: -200% 0; } }
+.chrome { background: var(--chrome); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ob .holo, .su .holo, .auth .holo { background-size: 200% 100%; animation: tabloHs 7s linear infinite; }
+.ob h1, .su-main h1, .auth h1 { font: 900 clamp(30px, 4.4vw, 50px)/1.02 Unbounded, system-ui, sans-serif; letter-spacing: -.035em; }
+.auth h1 { font-size: clamp(24px, 3vw, 30px); }
+.ob .btn, .su .btn, .auth .btn { min-height: 54px; padding: 0 26px; border-radius: 999px; font: 800 15px Manrope, system-ui, sans-serif; transition: transform .2s, box-shadow .2s; }
+.ob .btn-main, .su .btn-main, .auth .btn-main { background: var(--holo); background-size: 200% 100%; color: #08080a; border: 0; animation: tabloHs 7s linear infinite; box-shadow: 0 10px 36px rgba(169, 112, 255, .3); }
+.ob .btn-main:hover, .su .btn-main:hover, .auth .btn-main:hover { transform: translateY(-1px); box-shadow: 0 14px 44px rgba(169, 112, 255, .42); }
+.ob .btn-main:disabled, .su .btn-main:disabled, .auth .btn-main:disabled { animation: none; box-shadow: none; opacity: .35; }
+.ob .btn-out, .su .btn-out, .auth .btn-out { background: #101014; color: var(--text); border: 1px solid var(--line); }
+.ob .btn-out:hover, .su .btn-out:hover, .auth .btn-out:hover { border-color: rgba(255, 255, 255, .3); }
+.su-check li .btn, .colorpart .btn { min-height: 34px; padding: 0 14px; font-size: 12.5px; }
+.ob-eyebrow, .su-eyebrow { font: 800 11px/1 Manrope, system-ui, sans-serif; letter-spacing: .2em; }
+.ob-badge { justify-self: start; display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 7px; border-radius: 999px; border: 1px solid var(--line); background: #0d0d11; font-size: 13.5px; color: #cfcdd9; }
+.ob-badge b { font: 800 10.5px Manrope, system-ui, sans-serif; letter-spacing: .13em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: var(--holo); background-size: 200% 100%; color: #0a0a0c; animation: tabloHs 7s linear infinite; }
+.ob-choice { min-height: 64px; }
+.ob-choice b { font: 800 16px Manrope, system-ui, sans-serif; }
+.ob-choice.on { border: 1px solid transparent; background: linear-gradient(#17171d, #17171d) padding-box, var(--holo) border-box; }
+.ob-choice.on .ob-tick { background: var(--holo); border-color: transparent; }
+.ob-name { font: 900 24px/1.1 Unbounded, system-ui, sans-serif; letter-spacing: -.02em; }
+.su-venue { font: 900 18px/1.15 Unbounded, system-ui, sans-serif; letter-spacing: -.02em; }
+.su-steps button.on { background: #fff; color: #08080a; }
+.su-steps button.on .n { border-color: #08080a; }
+.su-price b { background: var(--chrome); -webkit-background-clip: text; background-clip: text; color: transparent; font: 900 52px/1 Unbounded, system-ui, sans-serif; letter-spacing: -.03em; }
+.su-offer { border-radius: 24px; }
+.su-guarantee b { font: 800 16px Manrope, system-ui, sans-serif; }
+.auth .card { border-radius: 24px; }
+@media (prefers-reduced-motion: reduce) { .ob .btn-main, .su .btn-main, .auth .btn-main, .ob .holo, .su .holo, .ob-badge b { animation: none; } }

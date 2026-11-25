@@ -204,6 +204,10 @@ Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), c
 **Haut de page (25/11/2026, soir)** : accroche « Plus de shows. Plus de bouteilles. Sur chaque carré. » (le but : vendre shows, bouteilles, montées en gamme).
 L'en-tête du site du club dans le téléphone est un teaser de soirée **dessiné en canvas** (`#pVid` : faisceaux, lasers sur les temps forts, fumée, foule en ombre chinoise), aux couleurs `--accent`, masqué si le club a une vraie image (`.has-img`), arrêté hors écran et figé si `prefers-reduced-motion`.
 À l'étape 0, toucher « Réserver une table » ouvre la vraie réservation **dans le téléphone pour l'essayer soi-même** (`tryIt()`, classe `try`, croix `#pClose`) ; dès qu'on fait défiler, la séquence reprend.
+**Constructeur retiré (25/11/2026 soir)** : la section « personnalisation » (`#construire`) et la barre « Reprendre où j'en suis » sont supprimées.
+Tous les boutons principaux (`nCta`, `hCta`, `cCta`, `fCta`) mènent au questionnaire `/inscription` ; la démo de l'espace club devient un bouton secondaire.
+**DA du tunnel** : questionnaire, connexion, création du club et configuration reprennent la landing à l'identique (bloc « Tunnel de vente » en fin de `globals.css` :
+titres Unbounded 900 serrés, bouton principal en dégradé arc-en-ciel animé, surtitres en capitales espacées, pastilles `.ob-badge`, prix en chrome). Ne pas s'en écarter.
 **Lien personnalisé pour la prospection** : `/?club=Le%20Rex&site=lerex.fr` met le nom du club et sa vraie page dans le téléphone
 (via `/api/apercu`) et préremplit l'inscription. Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` ou la FAQ.
 

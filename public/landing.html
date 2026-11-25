@@ -117,35 +117,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .rv{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}*{animation:none!important}}
-/* Constructeur */
-.builder{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;margin-top:34px;align-items:start}
-.bpreview{display:grid;gap:12px;justify-items:center;position:sticky;top:92px}
-.bpreview small{color:var(--mute);font-size:12.5px;text-align:center;max-width:260px;line-height:1.5}
-.bnext{grid-column:1 / -1}
-.bcontrols{border:1px solid var(--line);border-radius:22px;background:var(--card);padding:26px;display:grid;gap:20px}
-.bfield{display:grid;gap:9px;font:700 12px Manrope,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
-.bfield input{min-height:50px;border-radius:13px;border:1px solid var(--line);background:#0c0c0f;color:var(--text);padding:0 16px;font:600 16px Manrope,system-ui,sans-serif;letter-spacing:0;text-transform:none}
-.bfield input:focus{outline:2px solid #a970ff;outline-offset:1px}
-.brow{display:flex;gap:7px;flex-wrap:wrap}
-.brow button{min-height:40px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#c9c7d4;font:700 13.5px Manrope,system-ui,sans-serif;letter-spacing:0;text-transform:none;cursor:pointer;transition:.15s}
-.brow button:hover{border-color:rgba(255,255,255,.3)}
-.brow button.on{background:#fff;color:#08080a;border-color:#fff}
-.brow.sw button{width:38px;height:38px;min-height:0;padding:0;border-radius:50%;border:2px solid rgba(255,255,255,.14)}
-.brow.sw button.on{outline:2px solid #fff;outline-offset:2px}
-.bnext{border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,rgba(169,112,255,.1),transparent 60%),var(--card);padding:26px;display:grid;gap:14px;align-content:start}
-.bnext p{margin:0;color:var(--mute);font-size:15px;line-height:1.6}
-.bsteps{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:14.5px;color:#cfcdd9}
-.bsteps li{display:flex;gap:10px}
-.bsteps b{color:var(--mute)}
-.bnext small{color:var(--mute);font-size:12.5px;line-height:1.5}
-@media(max-width:900px){.builder{grid-template-columns:1fr}.bpreview{position:static}.bnext{grid-column:auto}}
 
 /* Progression de l'étape 1 */
-.bprog{display:grid;gap:9px;padding-bottom:18px;border-bottom:1px solid var(--line)}
-.bprogtop{display:flex;justify-content:space-between;align-items:baseline;font:700 12px Manrope,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
-.bprogtop b{color:var(--text);letter-spacing:0;text-transform:none;font-size:15px}
-.btrack{height:7px;border-radius:9px;background:#17171d;overflow:hidden}
-.btrack i{display:block;height:100%;width:0;border-radius:9px;background:var(--holo);background-size:200% 100%;animation:hs 7s linear infinite;transition:width .45s cubic-bezier(.4,0,.2,1)}
 .phone{width:min(330px,82vw);border-radius:42px;padding:10px;background:linear-gradient(160deg,#2a2a34,#101016);box-shadow:0 50px 120px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06)}
 .phonetop{position:relative;padding:4px 4px 10px}
 .phoneurl{display:flex;gap:6px;width:100%;align-items:center;background:#0c0c11;border:1px solid var(--line);border-radius:999px;padding:4px 4px 4px 14px}
@@ -183,24 +156,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .phonenote{margin:0;font-size:13px;color:var(--mute);text-align:center;max-width:300px;line-height:1.55}
 .phonenote.err{color:#ff8a8a}
 /* Les étapes de la configuration */
-.bsteps{list-style:none;margin:0;padding:0;display:grid;gap:4px}
-.bsteps li{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border-radius:14px;color:var(--mute);transition:.3s}
-.bsteps li .num{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 12px Manrope,system-ui,sans-serif;background:#1c1c23;color:#8e8c99}
-.bsteps li b{display:block;font-size:14.5px;color:#cfcdd9}
-.bsteps li em{font-style:normal;font-size:12.5px;line-height:1.45;display:block;margin-top:2px}
-.bsteps li.done{background:rgba(169,112,255,.1);color:#cfcdd9}
-.bsteps li.done .num{background:var(--holo);background-size:200% 100%;animation:hs 7s linear infinite;color:#08080a}
-.bsteps li.done b{color:#fff}
 
 /* Barre collante : « vous avez commencé » */
-.keepbar{position:fixed;left:50%;bottom:18px;transform:translate(-50%,140%);z-index:60;display:flex;align-items:center;gap:14px;padding:11px 12px 11px 18px;border-radius:999px;background:rgba(16,16,22,.92);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 60px rgba(0,0,0,.6);transition:transform .5s cubic-bezier(.4,0,.2,1);max-width:min(560px,94vw)}
-.keepbar.on{transform:translate(-50%,0)}
-.keepbar.hide{transform:translate(-50%,140%)!important}
-.kdot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(61,220,151,.55);animation:rec 2.2s infinite}
-.ktxt{display:grid;min-width:0}
-.ktxt b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ktxt small{color:var(--mute);font-size:12px}
-@media(max-width:560px){.keepbar{left:12px;right:12px;transform:translateY(140%);max-width:none}.keepbar.on{transform:translateY(0)}.keepbar.hide{transform:translateY(140%)!important}.ktxt small{display:none}}
 
 /* ───── La séquence : le téléphone reste en place, l'écran change au défilement ───── */
 .scrolly{position:relative;height:calc(var(--n) * 90vh + 10vh)}
@@ -300,17 +257,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 #club{padding:110px 0 70px}
 #club .head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:8px}
 #club h2{margin:0;max-width:18ch}
-#construire{padding:90px 0 70px}
-.bpreview .screen{width:min(310px,80vw);height:560px;border-radius:32px;overflow:hidden;background:#07070b}
-.bpreview .screen iframe{display:block;width:375px;height:calc(100% / .8267);border:0;transform:scale(.8267);transform-origin:0 0}
-.bpreview .screen{width:310px}
 #faq{padding:70px 0}
-/* Constructeur : le téléphone a sa propre colonne, les étapes passent sous les réglages (sinon il les recouvre en défilant) */
-.builder .bcontrols{grid-column:1;grid-row:1}
-.builder .bnext{grid-column:1;grid-row:2}
-.builder .bpreview{grid-column:2;grid-row:1 / span 2;align-self:start}
-.bnext .btn{width:100%}
-@media(max-width:900px){.builder .bcontrols,.builder .bnext,.builder .bpreview{grid-column:auto;grid-row:auto}}
 
 </style></head>
 <body>
@@ -338,7 +285,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
           <p class="pain">« Vos clients découvrent vos shows une fois à table. Trop tard pour les commander. »</p>
           <h1>Plus de shows. Plus de bouteilles. Sur chaque carré.</h1>
           <p class="lead">Tablo présente vos shows, vos pancartes et vos bouteilles au moment où le client réserve. Il les ajoute lui-même et verse l'acompte. Votre manager, lui, peut toujours faire mieux. Zéro commission.</p>
-          <div class="ctas"><a href="#construire" class="btn main" id="hCta">Mettre mes carrés en ligne</a></div>
+          <div class="ctas"><a href="/inscription" class="btn main" id="hCta">Mettre mes carrés en ligne</a></div>
           <div class="proofs">
             <span><i>✓</i> Zéro commission</span>
             <span><i>✓</i> Satisfait ou remboursé 30 jours</span>
@@ -440,7 +387,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   <div class="wrap">
     <div class="head">
       <h2 class="rv">Et vous, vous tenez la soirée.</h2>
-      <a href="/demo-club" class="btn main rv">Entrer dans l'espace club &rarr;</a>
+      <div class="ctas rv" style="justify-content:flex-start"><a href="/inscription" class="btn main" id="cCta">Mettre mes carrés en ligne</a><a href="/demo-club" class="btn">Voir l'espace club en démo</a></div>
     </div>
     <div class="apptabs rv" role="tablist" aria-label="Espace club">
       <button class="on" data-app="soir">Ce soir</button>
@@ -532,77 +479,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   </div>
 </section>
 
-<section id="construire">
-  <div class="wrap">
-    <div class="eyebrow rv">Configuré en une soirée · satisfait ou remboursé 30 jours</div>
-    <h2 class="rv">Commençons par la vôtre.</h2>
-    <p class="sub rv">Réglez l'apparence ici. On vous pose ensuite quelques questions, puis on configure ensemble vos carrés, votre carte et votre première soirée.</p>
 
-    <div class="builder rv">
-      <div class="bcontrols">
-        <div class="bprog">
-          <div class="bprogtop"><b>Votre apparence</b><span id="bCount">0 sur 4</span></div>
-          <div class="btrack"><i id="bBar" style="width:0%"></i></div>
-        </div>
-        <label class="bfield">Le nom de votre établissement
-          <input id="bName" maxlength="28" placeholder="Le Velours" autocomplete="organization">
-        </label>
-        <div class="bfield">Le type de lieu
-          <div class="brow" id="bKind">
-            <button class="on" data-kind="club">Club</button>
-            <button data-kind="beach">Beach club</button>
-          </div>
-        </div>
-        <div class="bfield">L'ambiance
-          <div class="brow" id="bAmb">
-            <button class="on" data-amb="tablo">Sobre</button>
-            <button data-amb="or">Noir et or</button>
-            <button data-amb="velours">Velours rouge</button>
-            <button data-amb="disco">Disco</button>
-            <button data-amb="chic">Chic clair</button>
-          </div>
-        </div>
-        <div class="bfield">Votre couleur
-          <div class="brow sw" id="bCol">
-            <button style="background:#ffffff" data-c="#ffffff" aria-label="Blanc"></button>
-            <button style="background:#e2b860" data-c="#e2b860" aria-label="Or"></button>
-            <button style="background:#ff5fa2" data-c="#ff5fa2" aria-label="Rose"></button>
-            <button style="background:#a970ff" data-c="#a970ff" aria-label="Violet"></button>
-            <button style="background:#4fd8ff" data-c="#4fd8ff" aria-label="Bleu"></button>
-            <button style="background:#7dffa8" data-c="#7dffa8" aria-label="Vert"></button>
-            <button style="background:#ff3b3b" data-c="#ff3b3b" aria-label="Rouge"></button>
-          </div>
-        </div>
-        <div class="bfield">La forme des boutons
-          <div class="brow" id="bBtn">
-            <button class="on" data-btn="pill">Pilule</button>
-            <button data-btn="round">Arrondis</button>
-            <button data-btn="square">Carrés</button>
-          </div>
-        </div>
-      </div>
-
-      <aside class="bpreview">
-        <div class="phone">
-          <div class="screen">
-            <iframe id="liveM" title="Aperçu sur téléphone" loading="lazy" scrolling="no"></iframe>
-          </div>
-        </div>
-      </aside>
-
-      <aside class="bnext">
-        <ol class="bsteps">
-          <li class="done"><span class="num">1</span><div><b>L'apparence</b><em>Vous y êtes</em></div></li>
-          <li><span class="num">2</span><div><b>Vos carrés</b><em>Une photo de votre plan suffit</em></div></li>
-          <li><span class="num">3</span><div><b>Votre carte</b><em>Bouteilles, shows, pancarte</em></div></li>
-          <li><span class="num">4</span><div><b>Mise en ligne</b><em>200 € par mois, satisfait ou remboursé</em></div></li>
-        </ol>
-        <a href="/inscription" class="btn main" id="bCta">Continuer &rarr;</a>
-        <small id="bSmall">Vous ne payez qu'une fois votre espace prêt.</small>
-      </aside>
-    </div>
-  </div>
-</section>
 
 <section id="faq">
   <div class="wrap">
@@ -626,11 +503,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 </section>
 </main>
 
-<div class="keepbar" id="keepbar" role="status">
-  <span class="kdot"></span>
-  <span class="ktxt"><b id="kName">Votre espace</b><small id="kSub">apparence réglée</small></span>
-  <a href="/inscription" class="btn main sm" id="kCta">Reprendre où j&apos;en suis</a>
-</div>
+
 
 <footer>
   <div class="wrap">
@@ -650,14 +523,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
  /* Les réglages du prospect : ils suivent jusqu'à l'inscription */
  const look={name:'',kind:'club',amb:'tablo',accent:'',btn:'pill',site:''};
- const ctas=['nCta','fCta','bCta','kCta'].map($).filter(Boolean);
+ const ctas=['nCta','hCta','fCta','cCta'].map($).filter(Boolean);
  const refreshCtas=()=>{const q=new URLSearchParams();
+   // Lien de prospection : le nom du club et son site préremplissent le questionnaire.
    if(look.name)q.set('club',look.name);
-   q.set('kind',look.kind);q.set('amb',look.amb);
-   if(look.accent)q.set('couleur',look.accent);
-   if(look.btn!=='pill')q.set('boutons',look.btn);
    if(look.site)q.set('site',look.site);
-   ctas.forEach(a=>a.href='/inscription?'+q.toString());
+   ctas.forEach(a=>a.href='/inscription'+(q.toString()?'?'+q.toString():''));
  };
  const theme=()=>({venue:look.kind,amb:look.amb,accent:look.accent||undefined,btn:look.btn,name:look.name||undefined});
 
@@ -806,41 +677,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
  if(qs.get('club')){look.name=qs.get('club').slice(0,40);setClub(look.name)}
  if(qs.get('site')){pUrl.value=qs.get('site').slice(0,120);showSite(null,true)}
  refreshCtas();
-
- /* ───── Constructeur : le prospect met la fenêtre à son nom ───── */
- const touched={};
- const bBar=$('bBar'),bCount=$('bCount'),bSmall=$('bSmall'),keepbar=$('keepbar'),kName=$('kName'),kSub=$('kSub'),liveM=$('liveM');
- const both=d=>{send(liveM,d);if(frameReady)send(pFrame,d)};
- function progress(key){
-  if(key)touched[key]=true;
-  const n=['name','kind','amb','accent'].filter(k=>touched[k]).length;
-  bBar&&(bBar.style.width=(n/4*100)+'%');
-  bCount&&(bCount.textContent=n+' sur 4');
-  if(bSmall)bSmall.textContent=n===0?"Vous ne payez qu'une fois votre espace prêt.":"Vos réglages sont gardés : vous reprendrez exactement ici.";
-  if(n>0&&keepbar){keepbar.classList.add('on');kName&&(kName.textContent=look.name||'Votre espace');kSub&&(kSub.textContent='apparence réglée · il reste vos carrés et votre carte')}
-  refreshCtas();
- }
- const pick=(box,el,key,val)=>{box.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===el));look[key]=val;progress(key)};
- const bName=$('bName');
- if(bName){if(look.name)bName.value=look.name;
-  bName.addEventListener('input',()=>{const v=bName.value.trim();look.name=v;setClub(v||'Le Velours');both({name:v||'Le Velours'});progress(v?'name':null)})}
- const bKind=$('bKind'),bAmb=$('bAmb'),bCol=$('bCol'),bBtn=$('bBtn');
- bKind&&bKind.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-   pick(bKind,b,'kind',b.dataset.kind);
-   const amb=b.dataset.kind==='beach'?'pool':'tablo';
-   look.amb=amb;bAmb&&bAmb.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.amb===amb));
-   both({venue:b.dataset.kind,amb,name:look.name||'Le Velours'});progress('amb')});
- bAmb&&bAmb.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bAmb,b,'amb',b.dataset.amb);both({amb:b.dataset.amb})});
- bCol&&bCol.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bCol,b,'accent',b.dataset.c);
-   document.documentElement.style.setProperty('--accent',b.dataset.c);both({accent:b.dataset.c})});
- bBtn&&bBtn.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;pick(bBtn,b,'btn',b.dataset.btn);both({btn:b.dataset.btn})});
- progress();
- // l'aperçu du constructeur ne se charge qu'à l'approche de la section
- const cons=$('construire');
- if(liveM&&cons)new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){o.disconnect();liveM.src='demo.html?embed=1';
-   liveM.addEventListener('load',()=>setTimeout(()=>send(liveM,theme()),400),{once:true})}},{rootMargin:'600px'}).observe(cons);
- const fin=document.querySelector('.final');
- if(fin&&keepbar)new IntersectionObserver(es=>es.forEach(e=>keepbar.classList.toggle('hide',e.isIntersecting)),{threshold:.25}).observe(fin);
 
  /* onglets de l'espace club */
  const tabs=document.querySelector('.apptabs');

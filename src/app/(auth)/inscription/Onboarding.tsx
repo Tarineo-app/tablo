@@ -96,7 +96,7 @@ export default function Onboarding({ look, google }: { look: Look; google: boole
         <section className="ob-main">
           {step === 0 && (
             <>
-              <p className="ob-eyebrow">1 minute · on prépare l&apos;espace de votre club</p>
+              <span className="ob-badge"><b>1 minute</b>On prépare l&apos;espace de votre club</span>
               <h1>Vous gérez quel type de lieu&nbsp;?</h1>
               <div className="ob-choices">
                 {KINDS.map((k) => <Choice key={k.v} on={a.kind === k.v} t={k.t} s={k.s} onClick={() => { set({ kind: k.v }); go(1); }} />)}
@@ -156,13 +156,13 @@ export default function Onboarding({ look, google }: { look: Look; google: boole
 
           {step === 5 && (
             <>
-              <p className="ob-eyebrow">Votre plan</p>
-              <h1>Voici ce que Tablo change pour {name}.</h1>
+              <span className="ob-badge"><b>Votre plan</b>Construit avec vos réponses</span>
+              <h1>Voici ce que Tablo change pour <span className="holo">{name}</span>.</h1>
               <ul className="ob-plan">{plan(a).map((l) => <li key={l}>{l}</li>)}</ul>
               <p className="mute ob-next">Prochaine étape : on configure ensemble votre espace (ambiance, {a.kind === "beach" ? "emplacements" : "carrés"}, bouteilles, shows, première soirée). Vous mettez en ligne quand tout est prêt.</p>
               <div className="ob-nav">
                 <button type="button" className="btn btn-out" onClick={() => go(4)}>Retour</button>
-                <button type="button" className="btn btn-main" onClick={() => go(6)}>Créer l&apos;espace de {name}</button>
+                <button type="button" className="btn btn-main" onClick={() => go(6)}>Créer mon espace</button>
               </div>
             </>
           )}
@@ -170,7 +170,7 @@ export default function Onboarding({ look, google }: { look: Look; google: boole
           {step === 6 && (
             <form action={formAction} className="ob-form">
               <p className="ob-eyebrow">Dernière étape avant la configuration</p>
-              <h1>Votre accès à l&apos;espace de {name}</h1>
+              <h1>Votre accès à l&apos;espace de <span className="holo">{name}</span></h1>
               {hidden}
               <label className="field">Votre nom<input className="input" name="name" autoComplete="name" required autoFocus /></label>
               <label className="field">Email<input className="input" type="email" name="email" autoComplete="email" required /></label>
