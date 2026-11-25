@@ -194,22 +194,16 @@ un nouvel `Order` numéroté à la suite part au service. `OrderItem.bottleSizeI
 **nullable** et `showId` existe — tout affichage d'un article passe par `itemLabel()` (`src/lib/orderitem.ts`).
 La fenêtre est la nuit même : de la veille au lendemain midi.
 
-## Landing (version 4, 25/11/2026)
-Une seule séquence en haut de page (`#comment`, `.scrolly`) : **le téléphone reste fixe pendant qu'on fait défiler,
-son écran change, puis la page reprend son cours**. Cinq étapes (`.step`, `--n:5`) : 0 le site du club avec le bouton
-« Réserver une table », 1 le message WhatsApp du manager avec son offre (`.pchat`), 2 à 4 la vraie fenêtre de réservation
-(`demo.html?embed=1`, pilotée par `postMessage({tour})` : 0 carré, 2 panier/shows, 3 acompte). La fenêtre est rendue à
-375 px puis réduite (`--k`) pour ne pas se tasser. Sur mobile : texte court en haut, téléphone dessous, barre de progression.
-Ensuite seulement : côté club (maquette en 3 onglets + bouton `/demo-club`), constructeur (étape 1 du tunnel), 4 questions, appel final.
-**Haut de page (25/11/2026, soir)** : accroche « Plus de shows. Plus de bouteilles. Sur chaque carré. » (le but : vendre shows, bouteilles, montées en gamme).
-L'en-tête du site du club dans le téléphone est un teaser de soirée **dessiné en canvas** (`#pVid` : faisceaux, lasers sur les temps forts, fumée, foule en ombre chinoise), aux couleurs `--accent`, masqué si le club a une vraie image (`.has-img`), arrêté hors écran et figé si `prefers-reduced-motion`.
-À l'étape 0, toucher « Réserver une table » ouvre la vraie réservation **dans le téléphone pour l'essayer soi-même** (`tryIt()`, classe `try`, croix `#pClose`) ; dès qu'on fait défiler, la séquence reprend.
-**Constructeur retiré (25/11/2026 soir)** : la section « personnalisation » (`#construire`) et la barre « Reprendre où j'en suis » sont supprimées.
-Tous les boutons principaux (`nCta`, `hCta`, `cCta`, `fCta`) mènent au questionnaire `/inscription` ; la démo de l'espace club devient un bouton secondaire.
-**DA du tunnel** : questionnaire, connexion, création du club et configuration reprennent la landing à l'identique (bloc « Tunnel de vente » en fin de `globals.css` :
-titres Unbounded 900 serrés, bouton principal en dégradé arc-en-ciel animé, surtitres en capitales espacées, pastilles `.ob-badge`, prix en chrome). Ne pas s'en écarter.
-**Lien personnalisé pour la prospection** : `/?club=Le%20Rex&site=lerex.fr` met le nom du club et sa vraie page dans le téléphone
-(via `/api/apercu`) et préremplit l'inscription. Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` ou la FAQ.
+## Landing (version 5, 25/11/2026 soir)
+**Plus de défilement bloqué.** Accroche centrée (`.hero`, bouton principal + « Essayer la démo »), puis **la démo au centre** (`#demo`) :
+3 onglets (`.showtabs` : le client réserve / le manager propose / le club pilote), le téléphone au milieu, 4 légendes autour (`CALLS` dans le script, 2 à gauche, 2 à droite),
+puis un bouton vers le questionnaire. Écrans du téléphone : le site du club avec l'en-tête animé en canvas (`#pVid`) et le bouton « Réserver une table » qui ouvre la vraie réservation
+(`demo.html?embed=1` dans `#pFrame`, `tryIt()`, croix `#pClose`) ; le WhatsApp du manager (`.pchat`, classe `chat`) ; l'app serveur (`.pserv`, classe `serv`).
+Ensuite : 3 bénéfices (`#benefices`) + bande « aussi inclus » (`.strip`), l'espace club en fenêtre (`#club`), la FAQ, l'appel final.
+**Tous les boutons principaux mènent au questionnaire `/inscription`** ; la démo de l'espace club est un bouton secondaire. Constructeur supprimé.
+**Lien personnalisé pour la prospection** : `/?club=Le%20Rex&site=lerex.fr` met le nom du club et sa vraie page dans le téléphone (via `/api/apercu`) et préremplit le questionnaire.
+**DA du tunnel** : questionnaire, connexion, création du club et configuration reprennent la landing à l'identique (bloc « Tunnel de vente » en fin de `globals.css`). Ne pas s'en écarter.
+Règle : ne pas ré-alourdir ; une nouvelle fonction va dans la bande `.strip` ou la FAQ.
 
 ### Migrations (suite)
 - `20261123180000_vue_3d`, `20261123190000_essai_par_soiree`, `20261123200000_demo`

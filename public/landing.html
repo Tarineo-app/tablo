@@ -159,24 +159,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 /* Barre collante : « vous avez commencé » */
 
-/* ───── La séquence : le téléphone reste en place, l'écran change au défilement ───── */
-.scrolly{position:relative;height:calc(var(--n) * 90vh + 10vh)}
-.pin{position:sticky;top:0;height:100vh;display:flex;align-items:center;padding-top:64px;overflow:hidden}
-.pin::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 50% at 78% 45%,color-mix(in srgb,var(--accent) 16%,transparent),transparent 70%),radial-gradient(50% 45% at 15% 70%,rgba(79,216,255,.07),transparent 70%)}
-.pingrid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,90px);align-items:center}
-.steps{position:relative;height:min(470px,70vh)}
-.step{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;opacity:0;transform:translateY(28px);transition:opacity .45s ease,transform .55s cubic-bezier(.3,0,.2,1);pointer-events:none}
-.step.past{transform:translateY(-28px)}
-.step.on{opacity:1;transform:none;pointer-events:auto}
-.step h1{font-size:clamp(32px,3.9vw,54px);margin:0 0 18px}
-.step h2{font-size:clamp(28px,3.4vw,46px);line-height:1.08;margin:0 0 16px;max-width:15ch}
-.step p{margin:0;font-size:clamp(16px,1.5vw,18.5px);line-height:1.6;color:#c6c4d2;max-width:44ch}
-.step .lead{margin:0 0 28px;max-width:44ch}
-.step .ctas,.step .proofs{justify-content:flex-start}
-.step .eyebrow{margin-bottom:16px}
-.step .badge{align-self:flex-start}
-.step .pain{margin:0 0 14px;padding-left:14px;border-left:2px solid var(--accent);font-size:clamp(15px,1.4vw,17px);font-style:italic;color:#9a98a6;max-width:none}
-.step .eyebrow i{font-style:normal;color:var(--text)}
 .gain{display:inline-flex;align-items:center;gap:9px;margin-top:22px;padding:9px 15px;border-radius:999px;border:1px solid color-mix(in srgb,var(--ok) 40%,var(--line));background:color-mix(in srgb,var(--ok) 8%,transparent);font:700 14px var(--f);color:#e9fbf2;align-self:flex-start}
 .gain::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
 .hint{margin-top:18px!important;font-size:13.5px!important;color:var(--mute)!important}
@@ -212,46 +194,95 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .offerbtn{display:block;margin:0 10px 10px;padding:10px;border-radius:999px;text-align:center;background:var(--accent);color:#0b0b10;font:800 12.5px var(--f)}
 .phonescreen.chat .offerbtn{animation:pf 2.4s ease-in-out 1.2s infinite}
 
-/* le rail : où en est la présentation */
-.rail{position:absolute;right:max(18px,2.4vw);top:50%;transform:translateY(-50%);display:grid;gap:14px;margin:0;padding:0;list-style:none;z-index:3}
-.rail button{display:flex;align-items:center;justify-content:flex-end;gap:10px;border:0;background:none;color:var(--mute);font:700 11.5px var(--f);cursor:pointer;padding:0}
-.rail button span{opacity:0;transform:translateX(6px);transition:.25s}
-.rail button:hover span,.rail button.on span{opacity:1;transform:none}
-.rail button i{width:8px;height:8px;border-radius:50%;background:#34343d;transition:.25s}
-.rail button.on{color:var(--text)}
-.rail button.on i{background:var(--text);box-shadow:0 0 0 4px rgba(255,255,255,.12);height:22px;border-radius:9px}
 @media(max-width:1260px){.rail button span{display:none}}
-.bar{display:none}
-.scrollhint{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:10px;font:700 11px var(--f);letter-spacing:.18em;text-transform:uppercase;color:var(--mute);transition:opacity .4s}
-.scrollhint i{display:block;width:1px;height:22px;background:linear-gradient(180deg,currentColor,transparent);animation:sh 1.8s infinite}
 @keyframes sh{0%{transform:translateY(-6px);opacity:0}40%{opacity:1}100%{transform:translateY(8px);opacity:0}}
-.scrolly.moved .scrollhint{opacity:0}
 
-@media(max-width:900px){
-  .scrolly{height:calc(var(--n) * 80vh + 20vh)}
-  .pin{align-items:stretch;padding:66px 0 14px}
-  .pingrid{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:10px;height:100%}
-  .steps{height:clamp(150px,27vh,210px)}
-  .step{justify-content:flex-end;text-align:center;align-items:center}
-  .step h1{font-size:clamp(25px,7.2vw,34px);margin-bottom:10px}
-  .step h2{font-size:clamp(21px,6vw,28px);margin-bottom:8px;max-width:none}
-  .step p{font-size:14.5px;line-height:1.5}
-  .step .lead,.step .proofs,.step .hint,.step .eyebrow{display:none}
-  .step .ctas{justify-content:center}
-  .step .ctas .btn{min-height:46px;padding:0 20px;font-size:14px}
-  .gain{margin-top:10px;font-size:12.5px;padding:7px 12px;align-self:center}
-  .pinphone{align-content:start}
-  .pinphone .phone{padding:7px;border-radius:34px}
-  .pinphone .phonetop{padding:2px 2px 7px}
-  .pinphone .phonescreen{height:calc(73vh - 170px);width:calc((73vh - 170px) * .56);max-width:84vw;border-radius:27px}
-  .pinphone .phonenote,.pcred{display:none}
-  .step .badge{display:none}
-  .step .pain{border-left:0;padding:0;margin-bottom:8px;font-size:13.5px}
-  .rail,.scrollhint{display:none}
-  .bar{display:block;position:absolute;left:0;right:0;top:62px;height:2px;background:rgba(255,255,255,.06);z-index:3}
-  .bar i{display:block;height:100%;width:0;background:var(--holo);background-size:200% 100%;transition:width .2s}
+
+/* ───── Accroche centrée, puis la démo au centre (onglets client / manager / club) ───── */
+.hero{padding:150px 0 40px;text-align:center;position:relative}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(50% 60% at 50% 0%,rgba(169,112,255,.16),transparent 70%)}
+.hero .wrap{position:relative;display:flex;flex-direction:column;align-items:center}
+.hero h1{max-width:15ch;margin:0 auto 22px}
+.hero .pain{margin:0 0 16px;font-size:clamp(15px,1.5vw,17px);font-style:italic;color:#9a98a6}
+.show{padding:30px 0 90px;scroll-margin-top:70px}
+.showcta{margin-top:34px}
+.showsub{text-align:center;color:var(--mute);font-size:14px;margin:12px 0 0}
+#benefices,#club,#faq{scroll-margin-top:70px}
+.showtabs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 auto 34px}
+.showtabs button{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 20px;border-radius:999px;border:1px solid var(--line);background:#101014;color:#bdbbc9;font:800 14.5px var(--f);cursor:pointer;transition:.2s}
+.showtabs button i{font-style:normal;font:800 11px var(--f);letter-spacing:.12em;color:var(--mute)}
+.showtabs button:hover{border-color:rgba(255,255,255,.3);color:#fff}
+.showtabs button.on{background:#fff;color:#08080a;border-color:#fff}
+.showtabs button.on i{color:#08080a}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:center;position:relative}
+.stage::before{content:"";position:absolute;left:50%;top:50%;width:min(720px,90vw);height:min(720px,90vw);transform:translate(-50%,-50%);pointer-events:none;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 20%,transparent),transparent 62%)}
+.calls{list-style:none;margin:0;padding:0;display:grid;gap:18px;position:relative}
+.calls li{padding:18px 20px;border-radius:20px;border:1px solid var(--line);background:rgba(18,18,22,.82);backdrop-filter:blur(8px);animation:callIn .45s ease both}
+.calls li:nth-child(2){animation-delay:.08s}
+.calls li b{display:block;font:800 16px/1.25 Unbounded,system-ui,sans-serif;letter-spacing:-.01em;margin-bottom:6px}
+.calls li span{font-size:14.5px;line-height:1.55;color:#bdbbc9}
+.calls.left li{text-align:right}
+@keyframes callIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.pinphone{display:grid;gap:12px;justify-items:center;position:relative}
+.pinphone .phonescreen{height:min(620px,calc(100vh - 170px));width:calc(min(620px,calc(100vh - 170px)) * .54)}
+.pinphone .phonenote{min-height:2.6em;max-width:330px;text-align:center}
+.psheet iframe{width:375px!important;height:calc(100% / var(--k))!important;transform:scale(var(--k));transform-origin:0 0}
+/* le message du manager */
+.pchat{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;background:#0b141a;opacity:0;transform:translateX(16px);transition:opacity .4s,transform .5s cubic-bezier(.3,0,.2,1);pointer-events:none}
+/* l'app serveur, pour l'onglet club */
+.pserv{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;background:#0a0a0d;opacity:0;transform:translateX(16px);transition:opacity .4s,transform .5s cubic-bezier(.3,0,.2,1);pointer-events:none;font-size:12px}
+.phonescreen.serv .pserv{opacity:1;transform:none}
+.pservhead{display:flex;justify-content:space-between;align-items:baseline;padding:16px 14px 10px;border-bottom:1px solid rgba(255,255,255,.07)}
+.pservhead b{font:800 14px Unbounded,system-ui,sans-serif}
+.pservhead span{color:var(--mute);font-size:11px}
+.pservtabs{display:flex;gap:6px;padding:10px 12px}
+.pservtabs span{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.1);color:#bdbbc9;font-weight:700;font-size:11px}
+.pservtabs span.on{background:#fff;color:#08080a;border-color:#fff}
+.pservlist{display:grid;gap:8px;padding:4px 12px 12px;overflow:hidden}
+.env{border:1px solid rgba(255,255,255,.1);border-radius:14px;background:#141418;padding:10px 11px;display:grid;gap:5px;opacity:0;transform:translateY(8px);transition:.4s}
+.phonescreen.serv .env{opacity:1;transform:none}
+.phonescreen.serv .env:nth-child(2){transition-delay:.15s}.phonescreen.serv .env:nth-child(3){transition-delay:.3s}
+.env.new{border-color:color-mix(in srgb,var(--accent) 60%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--accent) 25%,transparent)}
+.env .eh{display:flex;justify-content:space-between;align-items:baseline}
+.env .eh b{font:800 13px Unbounded,system-ui,sans-serif}
+.env .eh em{font-style:normal;font-size:10.5px;font-weight:800;color:var(--accent)}
+.env .who{color:var(--mute);font-size:11px}
+.env ul{margin:2px 0 0;padding:0 0 0 14px;color:#e6e4ee;line-height:1.45}
+.env .act{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px}
+.env .act span{padding:6px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.14);font-weight:800;font-size:11px}
+.env .act span.main{background:var(--holo);background-size:200% 100%;color:#08080a;border:0}
+.env .act span.mut{border:0;color:var(--mute);font-weight:600}
+.env.done{opacity:.55}
+.phonescreen.serv .env.done{opacity:.55}
+/* les bénéfices */
+#benefices{padding:80px 0}
+.bens{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:30px}
+.bens article{padding:26px;border-radius:22px;border:1px solid var(--line);background:var(--card)}
+.bens .bn{display:inline-block;font:800 11px var(--f);letter-spacing:.16em;padding:5px 10px;border-radius:999px;background:var(--holo);background-size:200% 100%;color:#0a0a0c;animation:hs 7s linear infinite;margin-bottom:16px}
+.bens h3{font-size:19px;line-height:1.25;margin:0 0 10px}
+.bens p{margin:0;color:#bdbbc9;line-height:1.6;font-size:15px}
+@media(max-width:1000px){
+  .stage{grid-template-columns:1fr;gap:18px}
+  .pinphone{order:-1}
+  .calls{grid-template-columns:1fr 1fr;gap:10px}
+  .calls.left li{text-align:left}
+  .bens{grid-template-columns:1fr}
 }
-@media (prefers-reduced-motion:reduce){.step{transition:none}}
+@media(max-width:620px){
+  .hero .badge{font-size:12px;gap:8px}
+  .hero .badge b{padding:4px 8px}
+  .hero{padding:110px 0 24px}
+  .hero .lead{font-size:16px}
+  .showtabs{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;margin:0 -4vw 22px;padding:0 4vw}
+  .showtabs::-webkit-scrollbar{display:none}
+  .showtabs button{flex:none;min-height:44px;padding:0 16px;font-size:13.5px}
+  .pinphone .phone{padding:7px;border-radius:34px}
+  .pinphone .phonescreen{height:min(560px,calc(100vh - 210px));width:calc(min(560px,calc(100vh - 210px)) * .56);max-width:86vw;border-radius:27px}
+  .calls{grid-template-columns:1fr}
+  .calls li{padding:14px 16px}
+  .calls li b{font-size:14.5px}
+  .calls li span{font-size:14px}
+}
 
 /* Sections qui suivent */
 #club{padding:110px 0 70px}
@@ -265,7 +296,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <nav>
   <a href="#" class="logo"><span class="dot"></span>tablo</a>
   <div class="links">
-    <a href="#comment">Comment ça marche</a>
+    <a href="#demo">La démo</a>
+    <a href="#benefices">Ce que ça change</a>
     <a href="#club">Côté club</a>
     <a href="#faq">Questions</a>
     <a href="/connexion">Connexion</a>
@@ -274,55 +306,30 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 </nav>
 
 <main>
-<section class="scrolly" id="comment" style="--n:5" aria-label="Comment ça marche">
-  <div class="pin">
-    <div class="bar" aria-hidden="true"><i id="bar"></i></div>
-    <div class="wrap pingrid">
-      <div class="steps" id="steps">
+<section class="hero" id="haut">
+  <div class="wrap">
+    <span class="badge"><b>Clubs et beach clubs</b>La réservation de carrés VIP</span>
+    <p class="pain">« Vos clients découvrent vos shows une fois à table. Trop tard pour les commander. »</p>
+    <h1>Plus de shows. Plus de bouteilles. <span class="holo">Sur chaque carré.</span></h1>
+    <p class="lead">Tablo présente vos shows, vos pancartes et vos bouteilles au moment où le client réserve. Il les ajoute lui-même et verse l'acompte. Votre manager, lui, peut toujours faire mieux.</p>
+    <div class="ctas"><a href="/inscription" class="btn main" id="hCta">Mettre mes carrés en ligne</a><a href="#demo" class="btn">Essayer la démo</a></div>
+    <div class="proofs">
+      <span><i>✓</i> Zéro commission</span>
+      <span><i>✓</i> Satisfait ou remboursé 30 jours</span>
+      <span><i>✓</i> En ligne en une soirée</span>
+    </div>
+  </div>
+</section>
 
-        <div class="step on" data-i="0">
-          <span class="badge"><b>Pour les clubs et beach clubs</b></span>
-          <p class="pain">« Vos clients découvrent vos shows une fois à table. Trop tard pour les commander. »</p>
-          <h1>Plus de shows. Plus de bouteilles. Sur chaque carré.</h1>
-          <p class="lead">Tablo présente vos shows, vos pancartes et vos bouteilles au moment où le client réserve. Il les ajoute lui-même et verse l'acompte. Votre manager, lui, peut toujours faire mieux. Zéro commission.</p>
-          <div class="ctas"><a href="/inscription" class="btn main" id="hCta">Mettre mes carrés en ligne</a></div>
-          <div class="proofs">
-            <span><i>✓</i> Zéro commission</span>
-            <span><i>✓</i> Satisfait ou remboursé 30 jours</span>
-          </div>
-          <p class="hint">Essayez : touchez « Réserver une table » dans le téléphone →</p>
-        </div>
-
-        <div class="step" data-i="1">
-          <div class="eyebrow"><i>01</i> · Vos managers</div>
-          <h2>Votre manager vend plus cher. Et garde ses clients.</h2>
-          <p>Il compose la soirée, offre un show, fixe son prix et l'envoie sur WhatsApp. Le client accepte d'un pouce.</p>
-          <span class="gain">Sa commission suit son lien</span>
-        </div>
-
-        <div class="step" data-i="2">
-          <div class="eyebrow"><i>02</i> · Le carré</div>
-          <h2>Le client choisit sa place, à 3 h du matin.</h2>
-          <p>Sur votre plan, sans vous écrire. Chaque carré affiche son minimum.</p>
-          <span class="gain">Plus de demandes perdues en DM</span>
-        </div>
-
-        <div class="step" data-i="3">
-          <div class="eyebrow"><i>03</i> · Le panier</div>
-          <h2>Le minimum est atteint avant d'entrer.</h2>
-          <p>Il ne peut pas valider en dessous. Bouteilles, shows, pancarte à son prénom : le panier se remplit tout seul.</p>
-          <span class="gain">La note monte toute seule</span>
-        </div>
-
-        <div class="step" data-i="4">
-          <div class="eyebrow"><i>04</i> · L'acompte</div>
-          <h2>Un carré réservé est un carré payé.</h2>
-          <p>L'acompte arrive directement sur le compte du club. On ne prend rien dessus.</p>
-          <span class="gain">Zéro commission, jamais</span>
-        </div>
-
-      </div>
-
+<section class="show" id="demo" aria-label="Le produit en démo">
+  <div class="wrap">
+    <div class="showtabs" role="tablist" aria-label="Qui utilise Tablo">
+      <button role="tab" class="on" data-t="client" aria-selected="true"><i>01</i>Le client réserve</button>
+      <button role="tab" data-t="manager" aria-selected="false"><i>02</i>Le manager propose</button>
+      <button role="tab" data-t="club" aria-selected="false"><i>03</i>Le club pilote</button>
+    </div>
+    <div class="stage">
+      <ul class="calls left" id="callsL" aria-live="polite"></ul>
       <div class="pinphone">
         <div class="phone">
           <div class="phonetop">
@@ -362,6 +369,18 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
               </div>
             </div>
 
+                        <div class="pserv" aria-hidden="true">
+              <div class="pservhead"><b>Service du soir</b><span>Velvet Gold · 23 h 48</span></div>
+              <div class="pservtabs"><span class="on">Mes carrés</span><span>Tous</span><span>Servis</span></div>
+              <div class="pservlist">
+                <div class="env new"><div class="eh"><b>Impérial</b><em>Envoi n°2</em></div><span class="who">Sarah · 8 pers. · recommande depuis sa table</span>
+                  <ul><li>2 × Champagne magnum</li><li>Show d'arrivée des bouteilles</li></ul><div class="act"><span class="main">Je prends</span></div></div>
+                <div class="env"><div class="eh"><b>Scène 1</b><em>Envoi n°1</em></div><span class="who">Karim · 6 pers.</span>
+                  <ul><li>1 × Champagne brut</li><li>Pancarte « Joyeux anniversaire Inès »</li></ul><div class="act"><span class="mut">Pris par Léa</span><span class="main">Servi ✓</span></div></div>
+                <div class="env done"><div class="eh"><b>Lounge 1</b><em>Envoi n°1</em></div><span class="who">Servi par Léa à 23 h 31</span></div>
+              </div>
+            </div>
+
             <div class="psheet" id="pSheet">
               <button class="psclose" id="pClose" aria-label="Fermer la réservation">×</button>
               <iframe id="pFrame" title="La réservation Tablo"></iframe>
@@ -370,16 +389,25 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         </div>
         <p class="phonenote" id="pNote">Touchez « Réserver une table » et essayez. Votre site ? Tapez son adresse là-haut.</p>
       </div>
+      <ul class="calls right" id="callsR"></ul>
     </div>
+    <div class="ctas showcta"><a href="/inscription" class="btn main" id="sCta">Mettre mes carrés en ligne</a></div>
+    <p class="showsub">5 questions, puis on configure ensemble. Vous payez quand tout est prêt.</p>
+  </div>
+</section>
 
-    <ol class="rail" id="rail" aria-label="Étapes">
-      <li><button data-i="0" class="on"><span>Essayez</span><i></i></button></li>
-      <li><button data-i="1"><span>Vos managers</span><i></i></button></li>
-      <li><button data-i="2"><span>Le carré</span><i></i></button></li>
-      <li><button data-i="3"><span>Le panier</span><i></i></button></li>
-      <li><button data-i="4"><span>L'acompte</span><i></i></button></li>
-    </ol>
-    <div class="scrollhint"><span>Faites défiler</span><i></i></div>
+<section id="benefices">
+  <div class="wrap">
+    <div class="eyebrow rv">Dès la première soirée</div>
+    <h2 class="rv">Ce que Tablo change chez vous.</h2>
+    <div class="bens">
+      <article class="rv"><span class="bn">01</span><h3>Le panier monte tout seul</h3><p>Bouteilles, shows et pancartes sont proposés pendant la réservation. Le minimum est atteint avant même d'entrer.</p></article>
+      <article class="rv"><span class="bn">02</span><h3>Fini les carrés réservés et vides</h3><p>L'acompte est payé en ligne et arrive directement sur le compte du club. Un carré réservé est un carré payé.</p></article>
+      <article class="rv"><span class="bn">03</span><h3>Vos managers vendent plus cher</h3><p>Chacun compose ses offres à son prix, offre un show s'il le veut, et garde ses clients. Sa commission suit son lien.</p></article>
+    </div>
+    <div class="strip rv">
+      <span>Plan en 3D de votre salle</span><span>App serveur</span><span>Contrôle à l'entrée</span><span>Garage à bouteilles</span><span>Fichier clients automatique</span><span>Statistiques par soirée</span>
+    </div>
   </div>
 </section>
 
@@ -532,59 +560,63 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
  };
  const theme=()=>({venue:look.kind,amb:look.amb,accent:look.accent||undefined,btn:look.btn,name:look.name||undefined});
 
- /* ───── La séquence : le téléphone reste en place, son écran change ───── */
- const scrolly=$('comment'),steps=[...document.querySelectorAll('.step')],railBtns=[...document.querySelectorAll('#rail button')];
- const pScreen=$('pScreen'),pFrame=$('pFrame'),pSheet=$('pSheet'),pFab=$('pFab'),bar=$('bar');
- const N=steps.length;
- let cur=-1,frameReady=false,trying=false;
+ /* ───── La démo au centre : trois onglets, un téléphone, des légendes autour ───── */
+ const pScreen=$('pScreen'),pFrame=$('pFrame'),pSheet=$('pSheet'),pFab=$('pFab'),pNote=$('pNote');
+ const showTabs=[...document.querySelectorAll('.showtabs button')],callsL=$('callsL'),callsR=$('callsR');
+ let cur='client',frameReady=false,trying=false;
+ const CALLS={
+  client:{note:'Touchez « Réserver une table » et essayez. Votre site ? Tapez son adresse là-haut.',items:[
+   ['Il choisit sa place, à 3 h du matin','Sur votre plan, sans vous écrire. Chaque carré affiche son minimum.'],
+   ['Vos shows, au bon moment','Pancartes et shows sont proposés pendant qu\'il réserve, pas une fois à table.'],
+   ['Le minimum est atteint avant d\'entrer','Il ne peut pas valider en dessous : le panier se remplit tout seul.'],
+   ['Un carré réservé est un carré payé','L\'acompte arrive directement sur le compte du club. Zéro commission.']]},
+  manager:{note:'Le manager envoie son offre sur WhatsApp. Le client accepte d\'un pouce.',items:[
+   ['Il compose la soirée','Carré, bouteilles, shows, pancarte : tout est prêt en une minute.'],
+   ['Il fixe son prix','Il offre un show s\'il le veut, le client voit le cadeau en clair.'],
+   ['Le client accepte d\'un pouce','Sans compte, sans appel : la réservation se crée au prix du manager.'],
+   ['Sa commission suit son lien','Il garde ses clients. Vous voyez enfin ce qui a été promis.']]},
+  club:{note:'Chaque commande part au service, numérotée. Les serveurs la prennent sur leur téléphone.',items:[
+   ['La soirée en direct','Le plan de la nuit : qui est arrivé, qui est absent, qui reste à placer.'],
+   ['Chaque envoi au bon serveur','« Je prends », « Servi » : plus de bouteille oubliée au bar.'],
+   ['Il recommande depuis sa table','Une deuxième bouteille, un show de plus : sans attendre un serveur.'],
+   ['Vos clients et vos chiffres','Fichier clients et statistiques par soirée, sans rien saisir.']]},
+ };
+ const li=([t,d])=>`<li><b>${t}</b><span>${d}</span></li>`;
+ function setTab(t){
+  cur=t;
+  showTabs.forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
+  const c=CALLS[t];callsL.innerHTML=c.items.slice(0,2).map(li).join('');callsR.innerHTML=c.items.slice(2).map(li).join('');
+  pNote.classList.remove('err');pNote.textContent=c.note;
+  pScreen.classList.toggle('chat',t==='manager');pScreen.classList.toggle('serv',t==='club');
+  if(t!=='client'&&trying){trying=false;pScreen.classList.remove('try')}
+  pScreen.classList.toggle('open',t==='client'&&trying);
+  pFab.classList.toggle('pulse',t==='client'&&!trying);
+ }
+ showTabs.forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.t)));
 
  // La fenêtre de réservation est rendue à 375 px de large, puis réduite à la taille de l'écran.
  const fit=()=>{const w=pScreen.clientWidth;pSheet.style.setProperty('--k',(w/375).toFixed(4))};
  addEventListener('resize',fit);fit();
 
- // On la charge tout de suite (sans attendre qu'on la demande) pour que les écrans changent sans délai.
+ // On la charge dès que la page est prête, pour qu'elle s'ouvre sans délai.
  const loadFrame=()=>{if(pFrame.src)return;pFrame.src='demo.html?embed=1';
-   pFrame.addEventListener('load',()=>setTimeout(()=>{frameReady=true;show(cur,true)},350),{once:true})};
+   pFrame.addEventListener('load',()=>setTimeout(()=>{frameReady=true;if(trying)send(pFrame,Object.assign(theme(),{mode:'vip',tour:0}))},350),{once:true})};
  if(document.readyState==='complete')setTimeout(loadFrame,200);else addEventListener('load',()=>setTimeout(loadFrame,200));
 
- // Écran par étape : 0 le site du club, 1 le message du manager, 2 à 4 la réservation (carré, bouteilles, acompte).
- const TOUR={2:0,3:2,4:3};
- function show(i,force){
-  if(i<0||(i===cur&&!force))return;
-  cur=i;
-  steps.forEach((s,k)=>{s.classList.toggle('on',k===i);s.classList.toggle('past',k<i)});
-  railBtns.forEach((b,k)=>b.classList.toggle('on',k===i));
-  pScreen.classList.toggle('chat',i===1);
-  if(i!==0&&trying){trying=false;pScreen.classList.remove('try')}
-  pScreen.classList.toggle('open',i>=2||(i===0&&trying));
-  pFab.classList.toggle('pulse',i===0&&!trying);
-  if(i>=2&&frameReady)send(pFrame,Object.assign(theme(),{mode:'vip',tour:TOUR[i]}));
- }
- function onScroll(){
-  const r=scrolly.getBoundingClientRect(),span=scrolly.offsetHeight-innerHeight;
-  const p=Math.max(0,Math.min(1,-r.top/span));
-  scrolly.classList.toggle('moved',p>.02);
-  if(bar)bar.style.width=(p*100)+'%';
-  show(Math.min(N-1,Math.floor(p*N*.999+.0001)));
- }
- addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
-
- const goStep=i=>{const span=scrolly.offsetHeight-innerHeight;scrollTo({top:scrolly.offsetTop+span*((i+.5)/N),behavior:'smooth'})};
- railBtns.forEach(b=>b.addEventListener('click',()=>goStep(+b.dataset.i)));
  // Le prospect touche « Réserver une table » : la vraie réservation s'ouvre et il l'essaie lui-même.
  function tryIt(){
   trying=true;
   pScreen.classList.add('open','try');pFab.classList.remove('pulse');
   if(frameReady)send(pFrame,Object.assign(theme(),{mode:'vip',tour:0}));
   else{loadFrame();pFrame.addEventListener('load',()=>setTimeout(()=>send(pFrame,Object.assign(theme(),{mode:'vip',tour:0})),400),{once:true})}
-  pNote.textContent='À vous : choisissez un carré, ajoutez bouteilles et shows. Faites défiler pour la suite.';
+  pNote.textContent='À vous : choisissez un carré, ajoutez bouteilles et shows.';
  }
- function stopTrying(){trying=false;pScreen.classList.remove('try');if(cur===0){pScreen.classList.remove('open');pFab.classList.add('pulse')}}
+ function stopTrying(){trying=false;pScreen.classList.remove('try','open');pFab.classList.add('pulse');pNote.textContent=CALLS.client.note}
  pFab.addEventListener('click',tryIt);
  $('pClose').addEventListener('click',stopTrying);
 
  /* Il tape l'adresse de son site : sa vraie page s'affiche dans le téléphone */
- const pUrl=$('pUrl'),pUrlForm=$('pUrlForm'),pSite=$('pSite'),pName=$('pName'),pTitle=$('pTitle'),pDesc=$('pDesc'),pKick=$('pKick'),pNote=$('pNote'),cClub=$('cClub');
+ const pUrl=$('pUrl'),pUrlForm=$('pUrlForm'),pSite=$('pSite'),pName=$('pName'),pTitle=$('pTitle'),pDesc=$('pDesc'),pKick=$('pKick'),cClub=$('cClub');
  let busy=false;
  const setClub=n=>{const v=(n||'Le Velours').trim();pName.textContent=v.toUpperCase().slice(0,22);cClub&&(cClub.textContent=v.slice(0,22))};
  async function showSite(e,quiet){
@@ -593,7 +625,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   const raw=(pUrl.value||'').trim();
   if(!raw){pUrl.focus();return}
   busy=true;pNote.classList.remove('err');pNote.textContent='On va chercher votre page…';
-  if(!quiet&&cur!==0)scrollTo({top:scrolly.offsetTop,behavior:'smooth'});
+  if(!quiet&&cur!=='client')setTab('client');
   let d={};
   try{
    const r=await fetch('/api/apercu',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:raw})});
@@ -610,11 +642,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   pDesc.textContent=d.tagline?d.tagline.slice(0,110):"Votre page, telle qu'elle est aujourd'hui. Le bouton en bas, c'est la seule chose qui change.";
   pSite.style.backgroundImage=d.image?`url(${d.image})`:'';
   pSite.classList.toggle('has-img',!!d.image);
-  pNote.textContent='Voilà votre site avec le bouton. Faites défiler pour la suite.';
+  pNote.textContent='Voilà votre site avec le bouton. Touchez-le pour essayer.';
   if(frameReady)send(pFrame,theme());
   busy=false;
  }
  pUrlForm.addEventListener('submit',showSite);
+ setTab('client');
 
 
  /* ───── L'en-tête du site du club : un teaser de soirée animé (faisceaux, lasers, fumée, foule) ───── */
