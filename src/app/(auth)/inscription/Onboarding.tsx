@@ -32,7 +32,8 @@ const SELL = [
   { v: "platform", t: "Sur une plateforme de billetterie" },
 ];
 const GOALS = [
-  { v: "upsell", t: "Vendre plus de bouteilles et de shows" },
+  { v: "upsell", t: "Augmenter le panier moyen par carré" },
+  { v: "showcase", t: "Mettre en avant mon club, ses prestations et ses shows" },
   { v: "noshow", t: "Fini les carrés réservés… et vides" },
   { v: "managers", t: "Moins de messages pour mes managers" },
   { v: "live", t: "Suivre mes ventes de la soirée en direct" },
@@ -44,7 +45,8 @@ function plan(a: Answers): string[] {
   const out: string[] = [];
   const beach = a.kind === "beach";
   const spot = beach ? "emplacement" : "carré";
-  if (a.goals.includes("upsell")) out.push(`Bouteilles, shows et pancartes proposés pendant la réservation, au moment où le client a envie de se faire plaisir.`);
+  if (a.goals.includes("upsell")) out.push(`Un panier moyen plus haut par ${spot} : bouteilles, shows et pancartes proposés pendant la réservation, au moment où le client a envie de se faire plaisir.`);
+  if (a.goals.includes("showcase")) out.push(`Votre club mis en valeur : vos shows, vos prestations et vos bouteilles présentés en photos avec leurs prix, avant même que le client arrive.`);
   if (a.goals.includes("noshow")) out.push(`Acompte payé en ligne dès la réservation, réglable par catégorie : un ${spot} réservé est un ${spot} payé.`);
   if (a.sell.includes("dm") || a.sell.includes("whatsapp")) out.push(`Un lien à mettre dans votre bio Instagram et à envoyer sur WhatsApp : le client choisit son ${spot} seul, sans aller-retour de messages.`);
   if (a.goals.includes("managers")) out.push(`Chaque manager a son lien et compose ses offres sur mesure ; vous voyez qui vend quoi.`);
@@ -53,8 +55,11 @@ function plan(a: Answers): string[] {
   if (a.goals.includes("live")) out.push(`« Ce soir » : le plan de la soirée en direct, arrivées et absences en un geste.`);
   if (a.goals.includes("brand") || out.length < 3) out.push(`Votre plan en 3D, à vos couleurs, posé sur votre site en une ligne de code.`);
   if (a.size === "gt25") out.push(`Un plan qui zoome pour les grandes salles : chaque ${spot} reste lisible, même sur téléphone.`);
-  return out.slice(0, 5);
+  return out.slice(0, 6);
 }
+
+/** Tout ce que Tablo propose, montré sous le plan (ce qui n'y figure pas déjà). */
+const INCLUDED = ["Plan 3D de vos carrés", "Bouteilles et formats", "Shows et pancartes", "Acompte en ligne", "Offres des managers", "Lien bio et QR code", "App serveur", "QR à l'entrée", "Recommander depuis la table", "Garage à bouteilles", "Fichier clients", "Statistiques", "Zéro commission"];
 
 export default function Onboarding({ look, google }: { look: Look; google: boolean }) {
   const [step, setStep] = useState(0);
@@ -159,6 +164,7 @@ export default function Onboarding({ look, google }: { look: Look; google: boole
               <span className="ob-badge"><b>Votre plan</b>Construit avec vos réponses</span>
               <h1>Voici ce que Tablo change pour <span className="holo">{name}</span>.</h1>
               <ul className="ob-plan">{plan(a).map((l) => <li key={l}>{l}</li>)}</ul>
+              <div className="ob-incl"><b>Aussi inclus dans Tablo</b><div>{INCLUDED.map((x) => <span key={x}>{x}</span>)}</div></div>
               <p className="mute ob-next">Prochaine étape : on configure ensemble votre espace (ambiance, {a.kind === "beach" ? "emplacements" : "carrés"}, bouteilles, shows, première soirée). Vous mettez en ligne quand tout est prêt.</p>
               <div className="ob-nav">
                 <button type="button" className="btn btn-out" onClick={() => go(4)}>Retour</button>

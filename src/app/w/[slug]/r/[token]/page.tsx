@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
+import Decor from "@/app/w/Decor";
 import { db } from "@/lib/db";
 import { itemLabel } from "@/lib/orderitem";
 import Reorder from "./Reorder";
@@ -83,6 +84,7 @@ export default async function Page({ params, searchParams }: Props) {
   const date = r.event.date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
   return (
     <main className="w" style={{ ...(themeVars(theme) as React.CSSProperties), gridTemplateColumns: "1fr", placeItems: "start center" }}>
+      <Decor layers={theme.layers} />
       <section className="w-main" style={{ maxWidth: 620, width: "100%" }}>
         {theme.logoUrl ? <img className="w-logo" src={theme.logoUrl} alt={r.venue.name} /> : <span className="w-brand">{r.venue.name}</span>}
         <h1 className="w-title">{awaiting ? "Plus qu'une étape" : r.status === "CANCELLED" ? "Réservation annulée" : `C'est noté, ${r.organizerName.split(" ")[0]} !`}</h1>

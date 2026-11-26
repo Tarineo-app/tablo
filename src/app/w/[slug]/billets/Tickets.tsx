@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Decor from "@/app/w/Decor";
 import { useRouter } from "next/navigation";
 import { buyTickets } from "@/app/actions/tickets";
 import { themeVars } from "@/lib/theme";
@@ -42,6 +43,7 @@ export default function Tickets({ data, managerCode }: { data: WidgetData; manag
 
   return (
     <div className="w" style={themeVars(venue.theme) as React.CSSProperties}>
+      <Decor layers={venue.theme.layers} />
       <section className="w-main">
         <div className="w-top">
           {venue.theme.logoUrl ? <img className="w-logo" src={venue.theme.logoUrl} alt={venue.name} /> : <span className="w-brand">{venue.name}</span>}

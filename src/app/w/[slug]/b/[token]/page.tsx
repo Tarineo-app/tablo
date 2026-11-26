@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
+import Decor from "@/app/w/Decor";
 import { db } from "@/lib/db";
 import { eur } from "@/lib/money";
 import { readTheme, themeVars } from "@/lib/theme";
@@ -20,6 +21,7 @@ export default async function Page({ params }: Props) {
   const date = t.event.date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
   return (
     <main className="w" style={{ ...(themeVars(theme) as React.CSSProperties), gridTemplateColumns: "1fr", placeItems: "start center" }}>
+      <Decor layers={theme.layers} />
       <section className="w-main" style={{ maxWidth: 620, width: "100%" }}>
         {theme.logoUrl ? <img className="w-logo" src={theme.logoUrl} alt={t.venue.name} /> : <span className="w-brand">{t.venue.name}</span>}
         <h1 className="w-title">À ce soir, {t.buyerName.split(" ")[0]} !</h1>

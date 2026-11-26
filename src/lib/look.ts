@@ -15,7 +15,7 @@ export type Look = {
 /** Réponses possibles du questionnaire d'accueil : seules celles-ci sont gardées. */
 export const SIZES = ["lt10", "10-25", "gt25"] as const;
 export const SELL = ["dm", "whatsapp", "phone", "place", "platform"] as const;
-export const GOALS = ["upsell", "noshow", "managers", "live", "brand"] as const;
+export const GOALS = ["upsell", "showcase", "noshow", "managers", "live", "brand"] as const;
 const pickList = (v: string | undefined, allowed: readonly string[]) => {
   const list = (v ?? "").split(",").map((x) => x.trim()).filter((x) => allowed.includes(x));
   return list.length ? [...new Set(list)].join(",") : undefined;

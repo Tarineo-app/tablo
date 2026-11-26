@@ -12,7 +12,32 @@ export type Theme = {
   logoUrl?: string | null;
   /** Couleurs choisies partie par partie ; une partie absente suit l'ambiance. */
   colors?: Partial<Record<ColorKey, string>>;
+  /** Arrondi des boutons en px (0 = carré, 30 = pilule). Absent : suit `btn`. */
+  btnRadius?: number;
+  /** Arrondi des cartes et encadrés en px (0 à 28). Absent : 18 px. */
+  uiRadius?: number;
+  /** Phrase d'accueil sous le nom du club, en haut de la réservation. */
+  tagline?: string;
+  /** Images et textes posés en arrière-plan, positions en % de la fenêtre. */
+  layers?: Layer[];
 };
+
+export type Layer = {
+  id: string;
+  kind: "img" | "text";
+  /** Image (data: le temps de l'édition, puis /media/… ou https). */
+  src?: string;
+  text?: string;
+  font?: string;
+  color?: string;
+  /** Image : largeur en % de la fenêtre. Texte : taille de police en % de la largeur. */
+  size: number;
+  x: number;
+  y: number;
+  rot: number;
+  opacity: number;
+};
+export const MAX_LAYERS = 8;
 
 /** Les parties du widget qu'un club peut colorer une à une. */
 export const COLOR_PARTS = [
@@ -52,8 +77,25 @@ export const GRADIENTS: Record<Exclude<Theme["grad"], "">, { label: string; css:
   sun: { label: "Coucher de soleil", css: "linear-gradient(110deg,#ff8a5f,#ff5fa2 45%,#0fa3b1)" },
 };
 
-export const HEAD_FONTS = ["Unbounded", "Montserrat", "Playfair Display", "Cinzel", "Fraunces", "Monoton", "Bungee", "Inter"];
-export const TEXT_FONTS = ["Manrope", "Inter", "Montserrat"];
+/** Polices des titres, rangées par style (toutes hébergées dans public/fonts). */
+export const FONT_GROUPS: { label: string; fonts: string[] }[] = [
+  { label: "Moderne", fonts: ["Unbounded", "Syne", "Space Grotesk", "Montserrat", "Outfit", "Poppins", "Archivo Black", "Inter"] },
+  { label: "Élégant", fonts: ["Playfair Display", "Cinzel", "Cormorant Garamond", "DM Serif Display", "Abril Fatface", "Fraunces"] },
+  { label: "Affiche", fonts: ["Bebas Neue", "Anton", "Oswald", "Bungee"] },
+  { label: "Néon et nuit", fonts: ["Monoton", "Audiowide", "Orbitron", "Tilt Neon", "Righteous"] },
+  { label: "Manuscrit", fonts: ["Pacifico", "Lobster", "Great Vibes"] },
+];
+export const HEAD_FONTS = FONT_GROUPS.flatMap((g) => g.fonts);
+export const TEXT_FONTS = ["Manrope", "Inter", "Montserrat", "DM Sans", "Outfit", "Poppins", "Space Grotesk"];
+export const ALL_FONTS = [...new Set([...HEAD_FONTS, ...TEXT_FONTS])];
+
+/** Palette proposée dans le sélecteur de couleur (nuit, néons, luxe, plage). */
+export const PALETTE = [
+  "#ffffff", "#f3f2f7", "#c9c7d1", "#8e8c99", "#3a3942", "#16141a", "#060607",
+  "#ff3b5c", "#ff5fa2", "#ff8ad8", "#c86bff", "#a970ff", "#6a5cff", "#3d7bff",
+  "#4fd8ff", "#22d3c5", "#0fa3b1", "#3ddc97", "#b6ff6a", "#ffe45c", "#ffb45f",
+  "#ff7a3d", "#e2b860", "#f7dc95", "#a87a2c", "#7a1428", "#3b1d6e", "#0b1020",
+];
 /** Polices hébergées sur le site (public/fonts) : aucune adresse IP de visiteur n'est envoyée à Google. */
 export const FONTS_URL = "/fonts/fonts.css";
 
@@ -117,8 +159,16 @@ export function themeVars(t: Theme): Record<string, string> {
     "--w-on": on,
     "--w-fab": fab,
     "--w-fab-on": isHex(c.fab) ? onColor(c.fab) : on,
-    "--w-radius": { round: "14px", pill: "999px", square: "3px" }[t.btn] ?? "14px",
+    "--w-radius": typeof t.btnRadius === "number" ? (t.btnRadius >= 30 ? "999px" : `${t.btnRadius}px`) : ({ round: "14px", pill: "999px", square: "3px" }[t.btn] ?? "14px"),
+    ...radiusVars(t.uiRadius),
     "--w-font": `'${t.font}', system-ui, sans-serif`,
     "--w-head": `'${t.head}', system-ui, sans-serif`,
   };
+}
+
+/** Arrondi des cartes : trois tailles qui gardent les mêmes proportions. */
+function radiusVars(r: number | undefined): Record<string, string> {
+  if (typeof r !== "number") return {};
+  const v = Math.max(0, Math.min(28, r));
+  return { "--w-r": `${v}px`, "--w-r2": `${Math.round(v * 0.75)}px`, "--w-r3": `${Math.round(v * 0.55)}px` };
 }

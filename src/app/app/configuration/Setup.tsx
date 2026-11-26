@@ -9,6 +9,8 @@ import { connectPayments, startSubscription } from "@/app/actions/stripe";
 import StripeButton from "@/components/StripeButton";
 import Plan3D, { type Box } from "@/app/w/[slug]/Plan3D";
 import { samplePlan } from "@/lib/sample-plan";
+import ColorPicker from "@/components/ColorPicker";
+import { FontPicker, RadiusPicker, btnRadiusOf, themeColors, uiRadiusOf } from "@/components/ThemeControls";
 import { GARANTIE_JOURS } from "@/lib/legal";
 import { AMBIANCES, themeVars, type Theme } from "@/lib/theme";
 
@@ -190,16 +192,20 @@ function Ambiance({ data, onDone }: { data: SetupData; onDone: () => void }) {
           <div className="ambs">
             {Object.values(AMBIANCES).map((a) => (
               <button type="button" key={a.amb} className={`amb ${t.amb === a.amb ? "on" : ""}`}
-                onClick={() => setT({ ...t, amb: a.amb, accent: a.accent, grad: a.grad, mode: a.mode, font: a.font, head: a.head, btn: a.btn, colors: {} })}>
+                onClick={() => setT({ ...t, amb: a.amb, accent: a.accent, grad: a.grad, mode: a.mode, font: a.font, head: a.head, btn: a.btn, colors: {}, btnRadius: undefined, uiRadius: undefined })}>
                 <span className="sw" style={{ background: a.swatch }}><em style={{ fontFamily: `'${a.head}'`, color: a.amb === "pool" ? "#fff" : a.accent }}>Aa</em></span>
                 {a.name}<small>{a.desc}</small>
               </button>
             ))}
           </div>
-          <label className="field">Votre couleur
-            <div className="row"><input type="color" value={t.accent} onChange={(e) => setT({ ...t, accent: e.target.value, amb: "perso" })} style={{ width: 54, height: 44, border: 0, background: "none" }} />
+          <div className="field">Votre couleur
+            <div className="row"><ColorPicker value={t.accent} onChange={(c) => setT({ ...t, accent: c, amb: "perso" })} themeColors={themeColors(t)} label="Votre couleur" />
               <span className="mute" style={{ fontSize: 13 }}>Titres, sélection, prix</span></div>
-          </label>
+          </div>
+          <div className="field">Police des titres<FontPicker value={t.head} onChange={(f) => setT({ ...t, head: f, amb: "perso" })} /></div>
+          <RadiusPicker label="Arrondi des boutons" sample="btn" max={30} value={btnRadiusOf(t)} onChange={(v) => setT({ ...t, btnRadius: v, amb: "perso" })} />
+          <RadiusPicker label="Arrondi de l'interface" sample="card" max={28} value={uiRadiusOf(t)} onChange={(v) => setT({ ...t, uiRadius: v, amb: "perso" })} />
+          <p className="mute" style={{ fontSize: 13, margin: 0 }}>Images détourées, textes, couleurs partie par partie : tout se règle ensuite dans « Ambiance et marque ».</p>
         </div>
         <div className="su-preview" style={themeVars(t) as React.CSSProperties}>
           <b style={{ fontFamily: "var(--w-head)", fontSize: 20, color: "var(--w-title)" }}>Choisissez votre {data.venue.kind === "beach" ? "emplacement" : "carré"}</b>

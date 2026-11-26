@@ -6,6 +6,7 @@ import { createReservation } from "@/app/actions/reserve";
 import { findGarage, type GarageFound } from "@/app/actions/garage";
 import { bottleCount, bottleOptionUnlocked, depositCents, priceShows } from "@/lib/pricing";
 import { themeVars } from "@/lib/theme";
+import Decor from "../Decor";
 import type { WidgetData } from "@/lib/widget";
 import ModeTabs from "./ModeTabs";
 import AskOffer from "./AskOffer";
@@ -114,6 +115,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
 
   return (
     <div className="w" style={themeVars(venue.theme) as React.CSSProperties}>
+      <Decor layers={venue.theme.layers} />
       <section className="w-main">
         <div className="w-top">
           {venue.theme.logoUrl ? <img className="w-logo" src={venue.theme.logoUrl} alt={venue.name} /> : <span className="w-brand">{venue.name}</span>}
@@ -121,6 +123,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
             {STEPS.map((s, i) => <button key={s} className={i === step ? "on" : ""} disabled={i > step} onClick={() => setStep(i)} aria-label={s}>{i + 1}<span className="lbl">. {s}</span></button>)}
           </nav>
         </div>
+        {step === 0 && venue.theme.tagline && <p className="w-tagline">{venue.theme.tagline}</p>}
         {venue.ticketsEnabled && events.some((e) => e.tiers.length > 0) && step === 0 && <ModeTabs slug={venue.slug} kind={venue.kind} current="table" managerCode={managerCode} />}
 
         {step === 0 && (

@@ -8,7 +8,7 @@ import { MANAGE, requireMembership, requireUser, refuseInDemo } from "@/lib/auth
 import { toCents } from "@/lib/money";
 import { forgetLook, readLook } from "@/lib/look";
 import { createVenueFor } from "@/lib/venue-create";
-import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme, COLOR_PARTS, isHex } from "@/lib/theme";
+import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme, COLOR_PARTS, isHex, ALL_FONTS, MAX_LAYERS, type Layer } from "@/lib/theme";
 import { imageFromForm, isImageValue, persistImage } from "@/lib/storage";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
@@ -63,9 +63,32 @@ export async function saveTheme(theme: Theme): Promise<ActionState> {
     logoUrl: theme.logoUrl && isImageValue(theme.logoUrl, true) && theme.logoUrl.length < 600_000 ? theme.logoUrl : null,
     // Couleurs partie par partie : seules les parties connues, en #rrggbb.
     colors: Object.fromEntries(COLOR_PARTS.map((p) => [p.key, theme.colors?.[p.key]]).filter(([, v]) => isHex(v))),
+    ...(Number.isFinite(theme.btnRadius) ? { btnRadius: Math.round(Math.min(30, Math.max(0, Number(theme.btnRadius)))) } : {}),
+    ...(Number.isFinite(theme.uiRadius) ? { uiRadius: Math.round(Math.min(28, Math.max(0, Number(theme.uiRadius)))) } : {}),
+    ...(theme.tagline?.trim() ? { tagline: String(theme.tagline).trim().slice(0, 90) } : {}),
   };
   // Le logo envoyé par le navigateur est rangé dans le stockage (s'il est branché) : la base ne garde qu'un lien.
   try { clean.logoUrl = await persistImage(venue.id, clean.logoUrl); } catch { return { error: "Logo trop lourd." }; }
+  // Décor : images et textes en arrière-plan, nettoyés un par un.
+  const num = (v: unknown, a: number, b: number, d: number) => (Number.isFinite(Number(v)) ? Math.min(b, Math.max(a, Number(v))) : d);
+  const layers: Layer[] = [];
+  let weight = 0;
+  for (const l of (Array.isArray(theme.layers) ? theme.layers : []).slice(0, MAX_LAYERS)) {
+    const box = { id: String(l.id || "").replace(/[^a-z0-9]/gi, "").slice(0, 16) || Math.random().toString(36).slice(2, 10), x: num(l.x, -20, 120, 50), y: num(l.y, -20, 120, 50), rot: num(l.rot, -180, 180, 0), opacity: num(l.opacity, 0.05, 1, 1) };
+    if (l.kind === "img") {
+      if (typeof l.src !== "string" || !isImageValue(l.src) || l.src.length > 750_000) continue;
+      weight += l.src.startsWith("data:") ? l.src.length : 0;
+      if (weight > 3_000_000) return { error: "Images trop lourdes : retirez-en une ou deux." };
+      let src: string | null;
+      try { src = await persistImage(venue.id, l.src); } catch { return { error: "Une image est trop lourde." }; }
+      if (src) layers.push({ ...box, kind: "img", src, size: num(l.size, 2, 120, 24) });
+    } else if (l.kind === "text") {
+      const text = String(l.text ?? "").slice(0, 60);
+      if (!text.trim()) continue;
+      layers.push({ ...box, kind: "text", text, font: ALL_FONTS.includes(String(l.font)) ? String(l.font) : clean.head, color: isHex(l.color) ? l.color : "#ffffff", size: num(l.size, 1, 30, 6) });
+    }
+  }
+  if (layers.length) clean.layers = layers;
   await db.venue.update({ where: { id: venue.id }, data: { theme: clean } });
   revalidatePath(`/w/${venue.slug}`);
   return { ok: "Ambiance enregistrée. Le widget est à jour." };
