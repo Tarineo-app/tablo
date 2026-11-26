@@ -8,7 +8,7 @@ import { MANAGE, requireMembership, requireUser, refuseInDemo } from "@/lib/auth
 import { toCents } from "@/lib/money";
 import { forgetLook, readLook } from "@/lib/look";
 import { createVenueFor } from "@/lib/venue-create";
-import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme, COLOR_PARTS, isHex, ALL_FONTS, MAX_LAYERS, type Layer } from "@/lib/theme";
+import { defaultTheme, AMBIANCES, MODES, GRADIENTS, HEAD_FONTS, TEXT_FONTS, type Theme, COLOR_PARTS, isHex, ALL_FONTS, MAX_LAYERS, type Layer, SIGN_STYLES, DEFAULT_SIGN } from "@/lib/theme";
 import { imageFromForm, isImageValue, persistImage } from "@/lib/storage";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
@@ -89,6 +89,21 @@ export async function saveTheme(theme: Theme): Promise<ActionState> {
     }
   }
   if (layers.length) clean.layers = layers;
+  // Pancarte : modèle Tablo, ou photo de la vraie pancarte avec sa zone de texte.
+  if (theme.sign && SIGN_STYLES.some((x) => x.key === theme.sign!.style)) {
+    const sg = theme.sign;
+    let photo: string | null = null;
+    if (sg.photo && isImageValue(sg.photo) && sg.photo.length < 1_200_000) {
+      try { photo = await persistImage(venue.id, sg.photo); } catch { return { error: "Photo de la pancarte trop lourde." }; }
+    }
+    const b = sg.box ?? DEFAULT_SIGN.box!;
+    clean.sign = {
+      style: sg.style === "photo" && !photo ? "hex" : sg.style, photo,
+      box: { x: num(b.x, 0, 95, 20), y: num(b.y, 0, 95, 30), w: num(b.w, 5, 100, 60), h: num(b.h, 5, 100, 40) },
+      font: ALL_FONTS.includes(String(sg.font)) ? String(sg.font) : "Oswald",
+      color: isHex(sg.color) ? sg.color : "#121214",
+    };
+  }
   await db.venue.update({ where: { id: venue.id }, data: { theme: clean } });
   revalidatePath(`/w/${venue.slug}`);
   return { ok: "Ambiance enregistrée. Le widget est à jour." };

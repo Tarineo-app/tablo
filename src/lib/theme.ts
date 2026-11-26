@@ -20,7 +20,28 @@ export type Theme = {
   tagline?: string;
   /** Images et textes posés en arrière-plan, positions en % de la fenêtre. */
   layers?: Layer[];
+  /** La pancarte : un modèle Tablo, ou la photo de la vraie pancarte du club avec la zone où s'écrit le message. */
+  sign?: SignConfig;
 };
+
+export const SIGN_STYLES = [
+  { key: "hex", label: "Hexagone lumineux" },
+  { key: "neon", label: "Néon" },
+  { key: "gold", label: "Plaque dorée" },
+  { key: "led", label: "Écran LED" },
+  { key: "photo", label: "Votre pancarte (photo)" },
+] as const;
+export type SignStyle = (typeof SIGN_STYLES)[number]["key"];
+export type SignConfig = {
+  style: SignStyle;
+  /** Photo de la pancarte du club (style « photo »). */
+  photo?: string | null;
+  /** Zone du message sur la photo, en % : gauche, haut, largeur, hauteur. */
+  box?: { x: number; y: number; w: number; h: number };
+  font?: string;
+  color?: string;
+};
+export const DEFAULT_SIGN: SignConfig = { style: "hex", box: { x: 20, y: 30, w: 60, h: 40 }, font: "Oswald", color: "#121214" };
 
 export type Layer = {
   id: string;

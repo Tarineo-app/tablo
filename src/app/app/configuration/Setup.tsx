@@ -3,16 +3,20 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState, useTransition } from "react";
-import { addBottle, addEvent, saveTheme, type ActionState } from "@/app/actions/club";
-import { addSetupShows, autoPlan, markSetup } from "@/app/actions/setup";
+import { addEvent, saveTheme, type ActionState } from "@/app/actions/club";
+import { markSetup } from "@/app/actions/setup";
 import { connectPayments, startSubscription } from "@/app/actions/stripe";
 import StripeButton from "@/components/StripeButton";
-import Plan3D, { type Box } from "@/app/w/[slug]/Plan3D";
-import { samplePlan } from "@/lib/sample-plan";
+import type { Box } from "@/app/w/[slug]/Plan3D";
 import ColorPicker from "@/components/ColorPicker";
+import BottleStudio, { type StudioBottle } from "@/components/BottleStudio";
+import CarresStep from "./CarresStep";
+import ShowsStep from "./ShowsStep";
+import SignStep from "./SignStep";
+import Phone from "./Phone";
 import { FontPicker, RadiusPicker, btnRadiusOf, themeColors, uiRadiusOf } from "@/components/ThemeControls";
 import { GARANTIE_JOURS } from "@/lib/legal";
-import { AMBIANCES, themeVars, type Theme } from "@/lib/theme";
+import { AMBIANCES, DEFAULT_SIGN, type SignConfig, type Theme } from "@/lib/theme";
 
 export type SetupData = {
   firstName: string;
@@ -20,8 +24,9 @@ export type SetupData = {
   theme: Theme;
   cats: { id: string; name: string; color: string | null; minEuros: number; depositPct: number; count: number; capacity: number }[];
   tables: Box[];
-  bottles: { id: string; name: string; type: string | null; price: string }[];
-  shows: { id: string; name: string; price: number }[];
+  bottles: StudioBottle[];
+  shows: { id: string; name: string; price: number; description: string | null; mediaUrl: string | null; isSign: boolean; active: boolean }[];
+  tablesFull: { id: string; name: string; categoryId: string; capacity: number; minCents: number | null; photoUrl: string | null }[];
   events: { id: string; name: string | null; date: string }[];
   done: string[];
   chargesEnabled: boolean;
@@ -36,31 +41,14 @@ const STEPS = [
   { key: "carres", t: "Carrés et prix" },
   { key: "bouteilles", t: "Bouteilles" },
   { key: "shows", t: "Shows" },
+  { key: "pancarte", t: "Pancarte" },
   { key: "soiree", t: "Première soirée" },
   { key: "paiements", t: "Encaissement" },
   { key: "lancement", t: "Mise en ligne" },
 ] as const;
 type Key = (typeof STEPS)[number]["key"];
 
-const SHOW_IDEAS = {
-  club: [
-    { name: "Pancarte personnalisée", description: "Le message du client porté jusqu'à la table", priceEuros: 30, isSign: true },
-    { name: "Arrivée des bouteilles en musique", description: "Le service arrive avec la musique et les lumières", priceEuros: 50 },
-    { name: "Annonce du DJ", description: "Le prénom du client annoncé au micro", priceEuros: 20 },
-    { name: "Canon à confettis", description: "Explosion de confettis au-dessus du carré", priceEuros: 90 },
-    { name: "Mallette lumineuse", description: "Bouteille servie dans une mallette LED", priceEuros: 120 },
-    { name: "Danseurs à la table", description: "Show de quelques minutes autour du carré", priceEuros: 150 },
-  ],
-  beach: [
-    { name: "Pancarte personnalisée", description: "Le message du client porté jusqu'à son emplacement", priceEuros: 30, isSign: true },
-    { name: "Arrivée des bouteilles en musique", description: "Le service arrive avec la musique", priceEuros: 50 },
-    { name: "Annonce du DJ", description: "Le prénom du client annoncé au micro", priceEuros: 20 },
-    { name: "Fumigènes colorés", description: "Fumée de couleur pour la photo de groupe", priceEuros: 60 },
-    { name: "Plateau de fruits", description: "Fruits frais servis avec les bouteilles", priceEuros: 45 },
-  ],
-};
 
-const TYPES = ["Champagne", "Vodka", "Whisky", "Gin", "Rhum", "Tequila"];
 
 export default function Setup({ data, initialStep }: { data: SetupData; initialStep?: string }) {
   const router = useRouter();
@@ -71,7 +59,8 @@ export default function Setup({ data, initialStep }: { data: SetupData; initialS
     ambiance: data.done.includes("ambiance"),
     carres: data.tables.length > 0,
     bouteilles: data.bottles.length > 0,
-    shows: data.shows.length > 0,
+    shows: data.shows.some((x) => !x.isSign && x.active),
+    pancarte: data.done.includes("pancarte"),
     soiree: data.events.length > 0,
     paiements: data.chargesEnabled || data.done.includes("paiements-plus-tard"),
     lancement: data.live,
@@ -82,6 +71,10 @@ export default function Setup({ data, initialStep }: { data: SetupData; initialS
   const pct = Math.round((STEPS.filter((s) => s.key !== "lancement" && doneOf[s.key]).length / (STEPS.length - 1)) * 100);
   const idx = STEPS.findIndex((s) => s.key === step);
   const go = (k: Key) => { setStep(k); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  // Ce que montre le téléphone : l'ambiance et la pancarte en cours de réglage, le carré survolé.
+  const [liveTheme, setLiveTheme] = useState<Theme>(data.theme);
+  const [signCfg, setSignCfg] = useState<SignConfig>(data.theme.sign ?? DEFAULT_SIGN);
+  const [focusTable, setFocusTable] = useState<string | null>(null);
   const next = () => go(STEPS[Math.min(STEPS.length - 1, idx + 1)].key);
 
   return (
@@ -108,18 +101,15 @@ export default function Setup({ data, initialStep }: { data: SetupData; initialS
       <section className="su-main">
         <p className="su-eyebrow">Étape {idx + 1} sur {STEPS.length}</p>
 
-        {step === "ambiance" && <Ambiance data={data} onDone={() => { router.refresh(); next(); }} />}
+        {step === "ambiance" && <Ambiance data={data} onChange={setLiveTheme} onDone={() => { router.refresh(); next(); }} />}
 
-        {step === "carres" && <Carres data={data} spot={spot} onNext={next} />}
+        {step === "carres" && <CarresStep data={data} spot={spot} onNext={next} onFocus={setFocusTable} />}
 
         {step === "bouteilles" && (
           <>
             <h1>Vos bouteilles</h1>
-            <p className="mute">Ajoutez celles que vous vendez en carré. Une ligne suffit par bouteille : vous ajouterez photos, formats et parfums plus tard dans « Bouteilles ».</p>
-            <BottleForm onAdded={() => router.refresh()} />
-            {data.bottles.length > 0 && (
-              <ul className="su-list">{data.bottles.map((b) => <li key={b.id}><b>{b.name}</b><span className="mute">{[b.type, b.price].filter(Boolean).join(" · ")}</span></li>)}</ul>
-            )}
+            <p className="mute">Ajoutez celles que vous avez en stock d&apos;un « + », réglez vos prix et, si vous voulez, combien vous pouvez en vendre par soirée (vide = illimité).</p>
+            <BottleStudio bottles={data.bottles} compact />
             <div className="su-nav">
               <button className="btn btn-out" onClick={() => go("carres")}>Retour</button>
               <button className="btn btn-main" disabled={!data.bottles.length} onClick={next}>{data.bottles.length ? "Continuer" : "Ajoutez au moins une bouteille"}</button>
@@ -127,7 +117,8 @@ export default function Setup({ data, initialStep }: { data: SetupData; initialS
           </>
         )}
 
-        {step === "shows" && <Shows data={data} spot={spot} onBack={() => go("bouteilles")} onNext={next} />}
+        {step === "shows" && <ShowsStep data={data} spot={spot} onBack={() => go("bouteilles")} onNext={next} />}
+        {step === "pancarte" && <SignStep data={data} cfg={signCfg} setCfg={setSignCfg} onBack={() => go("shows")} onNext={next} />}
 
         {step === "soiree" && (
           <>
@@ -152,7 +143,7 @@ export default function Setup({ data, initialStep }: { data: SetupData; initialS
               <p className="okmsg">C&apos;est activé : les acomptes arrivent sur votre compte.</p>
             ) : (
               <div className="card" style={{ display: "grid", gap: 12 }}>
-                <p style={{ margin: 0 }}>Comptez 5 minutes : Stripe vous demande l&apos;identité du gérant, le SIRET et l&apos;IBAN du club.</p>
+                <p style={{ margin: 0 }}>Comptez 5 minutes : Stripe vous demande l&apos;identité du gérant, le SIRET et l&apos;IBAN du club. <strong>Vous pouvez passer cette étape</strong> et voir la suite : tant que ce n&apos;est pas activé, l&apos;acompte se règle sur place.</p>
                 {data.stripe ? <StripeButton action={connectPayments} label="Activer les paiements" /> : <p className="mute" style={{ margin: 0 }}>Le paiement en ligne sera branché très bientôt.</p>}
               </div>
             )}
@@ -167,14 +158,15 @@ export default function Setup({ data, initialStep }: { data: SetupData; initialS
 
         {step === "lancement" && <Launch data={data} ready={ready} doneOf={doneOf} go={go} />}
       </section>
+      <aside className="su-phone"><Phone step={step} data={data} theme={step === "ambiance" ? liveTheme : { ...data.theme, sign: signCfg }} sign={signCfg} focusTable={focusTable} /></aside>
     </main>
   );
 }
 
 /* ---------- Étape 1 : ambiance ---------- */
-function Ambiance({ data, onDone }: { data: SetupData; onDone: () => void }) {
-  const [t, setT] = useState<Theme>(data.theme);
-  const [pick, setPick] = useState<string | null>("c");
+function Ambiance({ data, onDone, onChange }: { data: SetupData; onDone: () => void; onChange: (t: Theme) => void }) {
+  const [t, setT0] = useState<Theme>(data.theme);
+  const setT = (n: Theme) => { setT0(n); onChange(n); };
   const [err, setErr] = useState<string>();
   const [pending, start] = useTransition();
   const save = () => start(async () => {
@@ -207,128 +199,9 @@ function Ambiance({ data, onDone }: { data: SetupData; onDone: () => void }) {
           <RadiusPicker label="Arrondi de l'interface" sample="card" max={28} value={uiRadiusOf(t)} onChange={(v) => setT({ ...t, uiRadius: v, amb: "perso" })} />
           <p className="mute" style={{ fontSize: 13, margin: 0 }}>Images détourées, textes, couleurs partie par partie : tout se règle ensuite dans « Ambiance et marque ».</p>
         </div>
-        <div className="su-preview" style={themeVars(t) as React.CSSProperties}>
-          <b style={{ fontFamily: "var(--w-head)", fontSize: 20, color: "var(--w-title)" }}>Choisissez votre {data.venue.kind === "beach" ? "emplacement" : "carré"}</b>
-          <Plan3D planImageUrl={null} wallColor={null} tilt={50} beach={data.venue.kind === "beach"} selected={pick} onSelect={setPick} boxes={samplePlan(data.venue.kind)} />
-          <div className="su-btn">Continuer</div>
-        </div>
       </div>
       {err && <p className="err">{err}</p>}
       <div className="su-nav"><span /><button className="btn btn-main" disabled={pending} onClick={save}>{pending ? "Enregistrement…" : "Valider l'ambiance"}</button></div>
-    </>
-  );
-}
-
-/* ---------- Étape 2 : carrés et prix, plan dessiné automatiquement ---------- */
-function Carres({ data, spot, onNext }: { data: SetupData; spot: string; onNext: () => void }) {
-  const router = useRouter();
-  const has = data.tables.length > 0;
-  const [rows, setRows] = useState(data.cats.map((c) => ({ ...c, count: c.count || (has ? 0 : [2, 2, 4, 2][data.cats.indexOf(c)] ?? 2) })));
-  const [msg, setMsg] = useState<ActionState>();
-  const [pick, setPick] = useState<string | null>(null);
-  const [pending, start] = useTransition();
-  const patch = (i: number, p: Partial<(typeof rows)[number]>) => setRows((r) => r.map((x, j) => (j === i ? { ...x, ...p } : x)));
-  const num = (v: string) => Math.max(0, Number(v.replace(",", ".")) || 0);
-  const save = () => start(async () => {
-    const r = await autoPlan({ cats: rows.map((c) => ({ id: c.id, count: Math.round(c.count), minEuros: c.minEuros, depositPct: Math.round(c.depositPct), capacity: Math.max(1, Math.round(c.capacity)) })) });
-    setMsg(r);
-    if (r?.ok) router.refresh();
-  });
-  return (
-    <>
-      <h1>Vos {spot}s et leurs prix</h1>
-      <p className="mute">Le minimum, c&apos;est ce que le client s&apos;engage à consommer en bouteilles. L&apos;acompte est payé en ligne à la réservation : c&apos;est ce qui évite les {spot}s réservés et vides.</p>
-      <div className="su-table" role="table">
-        <div className="su-tr head" role="row"><span>Catégorie</span><span>{has ? "Sur le plan" : `Nombre de ${spot}s`}</span><span>Personnes</span><span>Minimum</span><span>Acompte</span></div>
-        {rows.map((c, i) => (
-          <div className="su-tr" role="row" key={c.id}>
-            <span className="cat"><i style={{ background: c.color ?? "#a970ff" }} />{c.name}</span>
-            {has ? <span className="mute">{data.cats[i].count}</span> : <input className="input" inputMode="numeric" value={c.count} onChange={(e) => patch(i, { count: num(e.target.value) })} aria-label={`Nombre de ${spot}s ${c.name}`} />}
-            <input className="input" inputMode="numeric" value={c.capacity} onChange={(e) => patch(i, { capacity: num(e.target.value) })} aria-label={`Personnes ${c.name}`} disabled={has} />
-            <span className="unit"><input className="input" inputMode="decimal" value={c.minEuros} onChange={(e) => patch(i, { minEuros: num(e.target.value) })} aria-label={`Minimum ${c.name}`} />€</span>
-            <span className="unit"><input className="input" inputMode="numeric" value={c.depositPct} onChange={(e) => patch(i, { depositPct: Math.min(100, num(e.target.value)) })} aria-label={`Acompte ${c.name}`} />%</span>
-          </div>
-        ))}
-      </div>
-      <div className="row" style={{ gap: 12 }}>
-        <button className="btn btn-main" disabled={pending} onClick={save}>{pending ? "Un instant…" : has ? "Enregistrer les prix" : "Placer mes " + spot + "s sur le plan"}</button>
-        {msg?.error && <span className="err">{msg.error}</span>}
-        {msg?.ok && <span className="okmsg">{msg.ok}</span>}
-      </div>
-      {has && (
-        <div className="su-plan" style={themeVars(data.theme) as React.CSSProperties}>
-          <Plan3D planImageUrl={data.venue.planImageUrl} wallColor={data.venue.wallColor} tilt={data.venue.tilt} beach={data.venue.kind === "beach"} selected={pick} onSelect={setPick} boxes={data.tables} />
-          <p className="mute" style={{ fontSize: 13, margin: "8px 0 0" }}>Votre plan, tel que vos clients le verront. Importez la photo de votre salle et déplacez les {spot}s dans <Link href="/app/plan" style={{ color: "inherit" }}>Plan des carrés</Link>, quand vous voulez.</p>
-        </div>
-      )}
-      <div className="su-nav"><span /><button className="btn btn-main" disabled={!has} onClick={onNext}>{has ? "Continuer" : `Placez d'abord vos ${spot}s`}</button></div>
-    </>
-  );
-}
-
-/* ---------- Étape 3 : une bouteille par ligne ---------- */
-function BottleForm({ onAdded }: { onAdded: () => void }) {
-  const [state, action, pending] = useActionState(async (s: ActionState, f: FormData) => addBottle(s, f), undefined);
-  const [type, setType] = useState("Champagne");
-  useEffect(() => { if (state?.ok) { onAdded(); (document.getElementById("su-bottle") as HTMLFormElement | null)?.reset(); } }, [state, onAdded]);
-  return (
-    <form id="su-bottle" action={action} className="card su-addrow">
-      <label className="field">Bouteille<input className="input" name="name" required placeholder="Ex. Champagne brut" /></label>
-      <label className="field">Type
-        <select className="select" name="type" value={type} onChange={(e) => setType(e.target.value)}>{TYPES.map((t) => <option key={t}>{t}</option>)}</select>
-      </label>
-      <label className="field">Format<input className="input" name="volume0" defaultValue={type === "Champagne" ? "75 cl" : "70 cl"} key={type} /></label>
-      <input type="hidden" name="label0" value="Bouteille" />
-      <label className="field">Prix (€)<input className="input" name="price0" inputMode="decimal" required placeholder="180" /></label>
-      <button className="btn btn-main" disabled={pending}>{pending ? "…" : "Ajouter"}</button>
-      {state?.error && <span className="err" style={{ gridColumn: "1 / -1" }}>{state.error}</span>}
-    </form>
-  );
-}
-
-/* ---------- Étape 4 : shows suggérés ---------- */
-function Shows({ data, spot, onBack, onNext }: { data: SetupData; spot: string; onBack: () => void; onNext: () => void }) {
-  const router = useRouter();
-  const have = new Set(data.shows.map((s) => s.name.toLowerCase()));
-  const ideas = SHOW_IDEAS[data.venue.kind].filter((s) => !have.has(s.name.toLowerCase()));
-  const [sel, setSel] = useState(() => ideas.map((s, i) => ({ ...s, on: i < 3 })));
-  const [msg, setMsg] = useState<ActionState>();
-  const [pending, start] = useTransition();
-  const add = () => start(async () => {
-    const list = sel.filter((s) => s.on).map(({ name, description, priceEuros, isSign }) => ({ name, description, priceEuros, isSign }));
-    if (!list.length) return setMsg({ error: "Cochez au moins un show." });
-    const r = await addSetupShows(list);
-    setMsg(r);
-    if (r?.ok) router.refresh();
-  });
-  return (
-    <>
-      <h1>Vos shows et pancartes</h1>
-      <p className="mute">C&apos;est ce qui fait grimper le panier : ils sont proposés au client pendant qu&apos;il réserve son {spot}. Cochez ceux que vous faites, ajustez le prix (0 € = gratuit).</p>
-      {sel.length > 0 && (
-        <div className="su-shows">
-          {sel.map((s, i) => (
-            <label key={s.name} className={`su-show ${s.on ? "on" : ""}`}>
-              <input type="checkbox" checked={s.on} onChange={(e) => setSel((x) => x.map((y, j) => (j === i ? { ...y, on: e.target.checked } : y)))} />
-              <span><b>{s.name}</b><small>{s.description}</small></span>
-              <span className="unit"><input className="input" inputMode="decimal" value={s.priceEuros} onChange={(e) => setSel((x) => x.map((y, j) => (j === i ? { ...y, priceEuros: Math.max(0, Number(e.target.value.replace(",", ".")) || 0) } : y)))} aria-label={`Prix ${s.name}`} />€</span>
-            </label>
-          ))}
-        </div>
-      )}
-      {sel.length > 0 && (
-        <div className="row" style={{ gap: 12 }}>
-          <button className="btn btn-main" disabled={pending} onClick={add}>{pending ? "…" : "Ajouter à ma carte"}</button>
-          {msg?.error && <span className="err">{msg.error}</span>}
-          {msg?.ok && <span className="okmsg">{msg.ok}</span>}
-        </div>
-      )}
-      {data.shows.length > 0 && <ul className="su-list">{data.shows.map((s) => <li key={s.id}><b>{s.name}</b><span className="mute">{s.price ? `${s.price.toLocaleString("fr-FR")} €` : "Gratuit"}</span></li>)}</ul>}
-      <p className="mute" style={{ fontSize: 13 }}>Photos, vidéos et shows liés aux bouteilles (« couronne de 3 champagnes ») : dans <Link href="/app/shows" style={{ color: "inherit" }}>Shows et pancarte</Link>.</p>
-      <div className="su-nav">
-        <button className="btn btn-out" onClick={onBack}>Retour</button>
-        <button className="btn btn-main" disabled={!data.shows.length} onClick={onNext}>{data.shows.length ? "Continuer" : "Ajoutez au moins un show"}</button>
-      </div>
     </>
   );
 }
@@ -349,7 +222,7 @@ function EventForm({ onAdded }: { onAdded: () => void }) {
 
 function LaterButton({ onDone }: { onDone: () => void }) {
   const [pending, start] = useTransition();
-  return <button className="btn btn-out" disabled={pending} onClick={() => start(async () => { await markSetup("paiements-plus-tard"); onDone(); })}>Plus tard</button>;
+  return <button className="btn btn-main" disabled={pending} onClick={() => start(async () => { await markSetup("paiements-plus-tard"); onDone(); })}>{pending ? "…" : "Passer : je l'activerai plus tard"}</button>;
 }
 
 /* ---------- Étape 7 : mise en ligne et paiement ---------- */

@@ -27,10 +27,10 @@ function encode(c: HTMLCanvasElement): string {
 }
 
 /** Réduit jusqu'à tenir dans la taille maximale enregistrable. */
-function fit(c: HTMLCanvasElement): string {
+function fit(c: HTMLCanvasElement, max = MAX_CHARS): string {
   let url = encode(c);
   let cur = c;
-  while (url.length > MAX_CHARS && cur.width > 240) {
+  while (url.length > max && cur.width > 240) {
     const n = document.createElement("canvas");
     n.width = Math.round(cur.width * 0.8); n.height = Math.round(cur.height * 0.8);
     n.getContext("2d")!.drawImage(cur, 0, 0, n.width, n.height);
@@ -39,15 +39,15 @@ function fit(c: HTMLCanvasElement): string {
   return url;
 }
 
-export async function cutout(file: File, opts: { remove: boolean; tolerance?: number } = { remove: true }): Promise<CutoutResult> {
+export async function cutout(file: File, opts: { remove: boolean; tolerance?: number; maxSide?: number; maxChars?: number } = { remove: true }): Promise<CutoutResult> {
   const img = await load(file);
-  const k = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+  const k = Math.min(1, (opts.maxSide ?? MAX_SIDE) / Math.max(img.naturalWidth, img.naturalHeight));
   const w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k));
   const c = document.createElement("canvas");
   c.width = w; c.height = h;
   const ctx = c.getContext("2d", { willReadFrequently: true })!;
   ctx.drawImage(img, 0, 0, w, h);
-  if (!opts.remove) return { url: fit(c), removed: false };
+  if (!opts.remove) return { url: fit(c, opts.maxChars), removed: false };
 
   const data = ctx.getImageData(0, 0, w, h);
   const px = data.data;

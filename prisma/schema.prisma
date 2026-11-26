@@ -226,10 +226,14 @@ model Bottle {
   type     String? // champagne, vodka…
   flavors  String[] // goûts éventuels
   photoUrl String?
+  /// Bouteille ajoutée depuis le catalogue Tablo (src/lib/catalog.ts), sinon créée par le club.
+  catalogId String?
+  description String?
   active   Boolean      @default(true)
   venue    Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
   sizes    BottleSize[]
   shows    Show[]
+  @@index([venueId, catalogId])
 }
 
 model BottleSize {
@@ -238,7 +242,7 @@ model BottleSize {
   label       String // Classique, Magnum, Jéroboam…
   volume      String // 75 cl, 1,5 L
   priceCents  Int
-  stock       Int? // null = illimité
+  stock       Int? // quantité vendable par soirée ; null = illimité, 0 = rupture
   bottle      Bottle       @relation(fields: [bottleId], references: [id], onDelete: Cascade)
   orderItems  OrderItem[]
   offerItems  OfferItem[]

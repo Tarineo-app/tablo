@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { gateFor } from "@/lib/billing";
 import { bottleCount, bottleOptionUnlocked, depositCents, priceShows } from "@/lib/pricing";
 import { rateLimit } from "@/lib/ratelimit";
-import { occupying } from "@/lib/holds";
+import { occupying, soldForEvent } from "@/lib/holds";
 import { holdFromNow, paymentsReady } from "@/lib/stripe";
 
 const Input = z.object({
@@ -56,7 +56,11 @@ export async function createReservation(raw: z.infer<typeof Input>): Promise<Res
   for (const it of d.items) {
     const s = sizeById.get(it.sizeId);
     if (!s) return { error: "Une bouteille n'est plus disponible." };
-    if (s.stock !== null && s.stock < it.quantity) return { error: `Plus assez de stock pour ${s.bottle.name} ${s.label}.` };
+    if (s.stock !== null) {
+      // Le stock se compte par soirée : ce qui est déjà réservé pour cette soirée, plus cette commande.
+      const sold = await soldForEvent(event.id, s.id);
+      if (sold + it.quantity > s.stock) return { error: s.stock - sold > 0 ? `Plus que ${s.stock - sold} ${s.bottle.name} ${s.label} pour cette soirée.` : `${s.bottle.name} ${s.label} est épuisée pour cette soirée.` };
+    }
     if (it.flavor && !s.bottle.flavors.includes(it.flavor)) return { error: `Goût inconnu pour ${s.bottle.name}.` };
     bottlesCents += s.priceCents * it.quantity;
   }

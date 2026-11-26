@@ -3,7 +3,7 @@ import { db } from "./db";
 import { gateFor } from "./billing";
 import { readTheme } from "./theme";
 import { SOLD, tierDeadline } from "./tickets";
-import { occupying } from "./holds";
+import { occupying, soldBySize } from "./holds";
 
 /** Tout ce dont le widget public a besoin, en données simples (envoyées au navigateur). */
 export async function loadWidget(slug: string) {
@@ -26,6 +26,15 @@ export async function loadWidget(slug: string) {
     }),
   ]);
   const catById = new Map(categories.map((c) => [c.id, c]));
+  // Stock par soirée : les formats épuisés pour chaque soirée ouverte.
+  const limited = bottles.flatMap((b) => b.sizes).filter((s) => s.stock !== null && s.stock > 0);
+  const soldOutByEvent = new Map<string, string[]>();
+  if (limited.length) {
+    await Promise.all(events.map(async (e) => {
+      const sold = await soldBySize(e.id);
+      soldOutByEvent.set(e.id, limited.filter((s) => (sold.get(s.id) ?? 0) >= (s.stock ?? Infinity)).map((s) => s.id));
+    }));
+  }
   return {
     venue: {
       name: venue.name, slug: venue.slug, kind: venue.kind, city: venue.city, rules: venue.rules, planImageUrl: venue.planImageUrl, payModes: venue.payModes, ticketsEnabled: venue.ticketsEnabled,
@@ -41,13 +50,14 @@ export async function loadWidget(slug: string) {
       photoUrl: t.photoUrl, color: catById.get(t.categoryId)?.color ?? null, elevation: catById.get(t.categoryId)?.elevation ?? 2,
       x: t.x, y: t.y, w: t.w, h: t.h,
     })),
-    bottles: bottles.map((b) => ({ id: b.id, name: b.name, type: b.type, photoUrl: b.photoUrl, flavors: b.flavors, sizes: b.sizes.map((s) => ({ id: s.id, bottleId: b.id, label: s.label, volume: s.volume, priceCents: s.priceCents, soldOut: s.stock === 0 })) })),
+    bottles: bottles.map((b) => ({ id: b.id, name: b.name, type: b.type, description: b.description, photoUrl: b.photoUrl, flavors: b.flavors, sizes: b.sizes.map((s) => ({ id: s.id, bottleId: b.id, label: s.label, volume: s.volume, priceCents: s.priceCents, soldOut: s.stock === 0 })) })),
     shows: shows.map((s) => ({ id: s.id, name: s.name, description: s.description, priceCents: s.priceCents, mediaUrl: s.mediaUrl, isSign: s.isSign, minBottles: s.minBottles, bottleId: s.bottleId, categoryIds: s.categories.map((c) => c.id) })),
     events: events.map((e) => ({
       open: gateFor(venue, e.id).open,
       closedNote: gateFor(venue, e.id).message,
       id: e.id, date: e.date.toISOString(), name: e.name,
       taken: [...new Set(e.reservations.map((r) => r.tableId))],
+      soldOut: soldOutByEvent.get(e.id) ?? [],
       prices: Object.fromEntries(e.prices.map((p) => [p.tableId, p.minSpendCents])),
       tiers: e.ticketTiers.map((t) => {
         const sold = t.tickets.reduce((a, x) => a + x.quantity, 0);

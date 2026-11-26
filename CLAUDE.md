@@ -34,7 +34,7 @@ et donne toujours la commande exacte à lancer.
 
 ## Règles de code
 - Montants en **centimes (Int)**, jamais en float. Devise EUR. Fuseau `Europe/Paris`.
-- Aucune marque de bouteille codée en dur : tout vient de la base (le club crée ses bouteilles).
+- Les marques de bouteilles ne viennent que du **catalogue Tablo** (`src/lib/catalog.ts` + images détourées dans `public/bottles/`), préparé par Alann ; le club les ajoute d'un « + » ou crée les siennes. Nulle part ailleurs dans le code.
 - Initialisation Stripe **paresseuse** (jamais au chargement du module) pour ne pas casser le build si une clé manque.
 - Webhooks Stripe = source de vérité pour les statuts de paiement. Vérifier la signature.
 - `vercel-build` lance `prisma migrate deploy` avant `next build`.
@@ -52,7 +52,7 @@ et donne toujours la commande exacte à lancer.
   L'enum `PayMode.POOL` et les colonnes `poolToken`/`poolDeadline` restent en base, dormantes.
 - **La billetterie** est fermée par défaut (`Venue.ticketsEnabled`). Shotgun sert déjà l'entrée simple ;
   le cœur du produit, c'est le carré. Le code reste entier, un interrupteur suffit à la rouvrir.
-- Toujours hors sujet : bouteilles 3D, shows générés par IA, détourage automatique, fidélité et classement,
+- Toujours hors sujet : bouteilles 3D, shows générés par IA, fidélité et classement,
   objectifs par soirée, vues 360°.
 
 ## Où en est le code
@@ -243,3 +243,17 @@ Partage : balises Open Graph + `public/og.png` (1200×630), données structurée
 `GARANTIE_JOURS` y est la seule source (utilisée aussi par la configuration). Liens dans le pied de la landing, le widget (étape des coordonnées et mention), le questionnaire, l'inscription, la mise en ligne et le menu de l'espace club.
 **Aucun bandeau cookies** : le site ne pose que des cookies indispensables (`tablo_session`, `tablo_look`, `tablo_oauth_*`) et les polices sont servies depuis `public/fonts/` (plus de Google Fonts).
 Tout nouveau cookie, outil de mesure ou pixel publicitaire → mettre à jour `/cookies` **et** ajouter un vrai bandeau de consentement.
+
+## Studio d'ambiance, catalogue, configuration avec téléphone (26/11/2026)
+- **Ambiance** (`/app/ambiance`, `ThemeEditor.tsx`) : 28 polices hébergées (`FONT_GROUPS`, `TEXT_FONTS` dans `theme.ts`), sélecteur de couleur maison `src/components/ColorPicker.tsx`
+  (dégradé, teinte, code hexadécimal, pipette Chrome, palette `PALETTE`, couleurs récentes en localStorage), arrondis `btnRadius` (0-30, 30 = pilule) et `uiRadius` (0-28 → `--w-r`, `--w-r2`, `--w-r3` dans widget.css),
+  phrase d'accueil `tagline`, et **décor** `layers` (images et textes en arrière-plan, positions en % de l'écran, tailles en `cqw`, rendu par `src/app/w/Decor.tsx` derrière le contenu grâce à `isolation` + `z-index:-1`).
+  L'aperçu (Ordinateur / Téléphone) reproduit l'écran : on y fait glisser les éléments.
+- **Détourage** `src/lib/cutout.ts`, dans le navigateur, sans service extérieur : couleur du fond lue sur les bords puis effacée depuis les bords (bord adouci). Marche sur fond uni ; sinon l'image est gardée telle quelle avec un message.
+- **Catalogue de bouteilles** `src/lib/catalog.ts` (12 bouteilles d'Alann, images `public/bottles/*.webp`) : `addFromCatalog` (`src/app/actions/bottles.ts`) crée une `Bottle` avec `catalogId`. `BottleStudio` (`src/components/BottleStudio.tsx`) sert à la configuration et à `/app/bouteilles`.
+  **`BottleSize.stock` = quantité vendable par soirée** (null = illimité, 0 = rupture), comptée dans `soldBySize()` (`src/lib/holds.ts`) : formats épuisés par soirée dans `loadWidget` (`events[].soldOut`) et vérifiés dans `reserve.ts`. « Pas en stock » = `active: false`.
+- **Pancarte** `theme.sign` (`SignConfig` : `hex` modèle exemple, `neon`, `gold`, `led`, ou `photo` = photo de la vraie pancarte du club avec la zone du message `box` en %), rendue par `src/app/w/Sign.tsx` dans le widget et la configuration.
+- **Configuration** (`/app/configuration`) : 8 étapes (ambiance, carrés, bouteilles, shows, **pancarte**, soirée, encaissement, mise en ligne). **Un téléphone à droite** (`Phone.tsx`) montre ce que voit le client à chaque étape.
+  Carrés (`CarresStep.tsx`, actions `src/app/actions/tables.ts`) : explication, catégories et prix, puis chaque carré un par un (nom, places, minimum propre, photo, ajout, retrait),
+  et **import du plan analysé par l'IA** (`analyzePlan` : API Anthropic, `ANTHROPIC_API_KEY`, limité à 12 analyses par heure et refusé en démo ; le club vérifie la liste avant `applyPlan`).
+  Shows (`ShowsStep.tsx`) : photo par show, show créé par le club, 14 idées rangées par moment. Encaissement : « Passer : je l'activerai plus tard » est le bouton principal.

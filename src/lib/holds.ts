@@ -14,3 +14,17 @@ export function occupying(also: ReservationStatus[] = [], now = new Date()): Pri
     ],
   };
 }
+
+/** Bouteilles déjà réservées pour une soirée, format par format (stock par soirée). */
+export async function soldBySize(eventId: string): Promise<Map<string, number>> {
+  const { db } = await import("./db");
+  const rows = await db.orderItem.groupBy({
+    by: ["bottleSizeId"],
+    where: { bottleSizeId: { not: null }, fromGarage: false, order: { reservation: { eventId, ...occupying() } } },
+    _sum: { quantity: true },
+  });
+  return new Map(rows.map((r) => [r.bottleSizeId!, r._sum.quantity ?? 0]));
+}
+export async function soldForEvent(eventId: string, sizeId: string) {
+  return (await soldBySize(eventId)).get(sizeId) ?? 0;
+}

@@ -7,6 +7,7 @@ import { findGarage, type GarageFound } from "@/app/actions/garage";
 import { bottleCount, bottleOptionUnlocked, depositCents, priceShows } from "@/lib/pricing";
 import { themeVars } from "@/lib/theme";
 import Decor from "../Decor";
+import Sign from "../Sign";
 import type { WidgetData } from "@/lib/widget";
 import ModeTabs from "./ModeTabs";
 import AskOffer from "./AskOffer";
@@ -21,7 +22,7 @@ const PAY: Record<string, [string, string]> = { FULL: ["Tout payer", "Vous régl
 type Line = { sizeId: string; flavor: string | null; quantity: number };
 
 export default function Widget({ data, managerCode }: { data: WidgetData; managerCode: string | null }) {
-  const { venue, categories, tables, bottles, shows, events } = data;
+  const { venue, categories, tables, shows, events } = data;
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [cartOpen, setCartOpen] = useState(false); // récapitulatif en tiroir sur mobile
@@ -44,6 +45,8 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
   const [pending, start] = useTransition();
 
   const event = events.find((e) => e.id === eventId);
+  // Stock par soirée : un format épuisé pour la soirée choisie ne se commande plus.
+  const bottles = useMemo(() => data.bottles.map((b) => ({ ...b, sizes: b.sizes.map((s) => ({ ...s, soldOut: s.soldOut || !!event?.soldOut?.includes(s.id) })) })), [data.bottles, event]);
   const table = tables.find((t) => t.id === tableId);
   const cat = categories.find((c) => c.id === table?.categoryId);
   const baseMinCents = table ? (event?.prices[table.id] ?? table.minSpendCents) : 0;
@@ -296,7 +299,7 @@ export default function Widget({ data, managerCode }: { data: WidgetData; manage
             <p className="w-sub">{cat?.includedShows ? `Votre catégorie ${cat.name} inclut ${cat.includedShows} show(s) offert(s) parmi ceux marqués « offert possible ». Il vous en reste ${freeLeft}.` : "Ajoutez des shows à votre soirée."}</p>
             {sign && showIds.includes(sign.id) && (
               <>
-                <div className="w-sign">{signText || "VOTRE TEXTE ICI"}</div>
+                <Sign text={signText} cfg={venue.theme.sign} />
                 <label className="w-field">Texte de la pancarte (40 caractères)<input className="w-input" maxLength={40} value={signText} onChange={(e) => setSignText(e.target.value.toUpperCase())} placeholder="HAPPY BDAY SARAH" /></label>
               </>
             )}

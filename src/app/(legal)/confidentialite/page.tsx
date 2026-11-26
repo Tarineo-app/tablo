@@ -10,6 +10,7 @@ const SOUS_TRAITANTS = [
   ["Stripe", "Paiements des clients et abonnement des clubs", "Union européenne (Irlande) ; transferts vers les États-Unis encadrés par le cadre UE–États-Unis"],
   ["Plus Five Five, Inc. (Resend)", "Envoi des emails (confirmations, invitations, relances)", "États-Unis (garanties appropriées : cadre UE–États-Unis ou clauses contractuelles types)"],
   ["Google", "Connexion avec Google, si vous la choisissez", "Union européenne et États-Unis"],
+  ["Anthropic PBC", "Lecture automatique du plan de salle importé par un club (image du plan uniquement, aucune donnée de client)", "États-Unis (garanties appropriées : clauses contractuelles types)"],
 ];
 
 export default function Page() {
